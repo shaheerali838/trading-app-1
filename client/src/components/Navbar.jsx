@@ -27,10 +27,10 @@ const Navbar = () => {
           <Link to={"/"} className=""><i><img className="w-[4vw]" src={logoSrc} alt="LOGO" /></i></Link>
         </div>
         <div className="flex space-x-4">
-          <Link to={"/trade"} className="text-[#1E90FF] hover:text-[#00FF7F]">Trade</Link>
-          <Link to={"/finance"} className="text-[#1E90FF] hover:text-[#00FF7F]">Finance</Link>
-          <Link to={"/about"} className="text-[#1E90FF] hover:text-[#00FF7F]">About</Link>
-          <Link to={"/another"} className="text-[#1E90FF] hover:text-[#00FF7F]">Another</Link>
+          <Link to={"/trade"} className="text-white hover:text-[#00FF7F]">Trade</Link>
+          <Link to={"/finance"} className="text-white hover:text-[#00FF7F]">Finance</Link>
+          <Link to={"/about"} className="text-white hover:text-[#00FF7F]">About</Link>
+          <Link to={"/another"} className="text-white hover:text-[#00FF7F]">Feature</Link>
         </div>
         <div className="flex items-center space-x-4">
           <div className="w-[7vw] px-3 py-1 flex justify-center rounded-full bg-transparent border-2 border-[#1E90FF]">

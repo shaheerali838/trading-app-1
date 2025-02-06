@@ -90,3 +90,7 @@
   box-shadow: 0 -4px 6px -1px #1e90ff,
     0 -2px 4px -1px #1e90ff;
 }
+
+.border-primary {
+  border: 1px solid var(--primary-color);
+}
