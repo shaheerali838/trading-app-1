@@ -33,10 +33,10 @@ const Navbar = () => {
           <Link to={"/another"} className="text-[#1E90FF] hover:text-[#00FF7F]">Another</Link>
         </div>
         <div className="flex items-center space-x-4">
-          <div className="w-[7vw] px-3 py-2 flex justify-center rounded-full bg-transparent border-2 border-[#1E90FF]">
+          <div className="w-[7vw] px-3 py-1 flex justify-center rounded-full bg-transparent border-2 border-[#1E90FF]">
             <button className="text-[#1E90FF]">Login</button>
           </div>
-          <div className="w-[7vw] px-3 py-2 flex justify-center rounded-full bg-[#1E90FF] text-white">
+          <div className="w-[7vw] px-2 py-1 flex justify-center rounded-full bg-[#1E90FF] text-white">
             <button>Register</button>
           </div>
         </div>
