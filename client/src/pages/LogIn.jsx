@@ -11,7 +11,7 @@ const LogIn = () => {
       <div className="flex justify-evenly">
         <form action="" className="w-[40vw] mt-20">
           <input
-            type="text"
+            type="email"
             placeholder="Enter Your Email"
             className="w-full bg-transparent focus:border-none rounded-md px-3 py-2 my-3 border-primary"
           />
