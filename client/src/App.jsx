@@ -4,9 +4,10 @@ import Footer from "./components/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
 import Home from "./pages/Home";
 
+
 const App = () => {
   return (
-    <div className="bg-[#121212] text-white">
+    <div className="bg-gradient text-white">
     <Router>
       <Navbar/>
       <main>
