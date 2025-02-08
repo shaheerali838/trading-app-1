@@ -1,6 +1,6 @@
 import React from "react";
-import ImgSrc from "../assets/whyChooseUs.png";
-import AnimatedHeading from "./AnimateHeading";
+import ImgSrc from "../../assets/whyChooseUs.png";
+import AnimatedHeading from "../../components/animation/AnimateHeading";
 
 const WhyChoosUs = () => {
   return (
@@ -12,9 +12,7 @@ const WhyChoosUs = () => {
       <div className="flex flex-col md:flex-row justify-center items-center">
         <div className="text-left w-[25vw] md:mr-8 mb-4 md:mb-0">
           <div className="flex justify-center items-center mb-4"></div>
-          <h3 className="mt-4 font-semibold text-primary">
-            Secure Trading
-          </h3>
+          <h3 className="mt-4 font-semibold text-primary">Secure Trading</h3>
           <p className="mt-2 text-[#F5F5F5]">
             Our platform offers the most secure trading environment with
             bank-level encryption and cold wallets.

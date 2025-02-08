@@ -1,5 +1,5 @@
 import React from "react";
-import AnimatedHeading from "./AnimateHeading";
+import AnimatedHeading from "../../components/animation/AnimateHeading";
 
 const Slider = () => {
   return (

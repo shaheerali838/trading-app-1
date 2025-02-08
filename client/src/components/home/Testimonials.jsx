@@ -3,12 +3,12 @@ import { Swiper, SwiperSlide } from "swiper/react";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
-import AnimatedHeading from "./AnimateHeading";
-import avatarIImg from "../assets/1.jpg";
-import avatarIIImg from "../assets/1.jpg";
-import avatarIIIImg from "../assets/1.jpg";
-import avatarIVImg from "../assets/1.jpg";
-import avatarVImg from "../assets/1.jpg";
+import AnimatedHeading from "../../components/animation/AnimateHeading";
+import avatarIImg from "../../assets/1.jpg";
+import avatarIIImg from "../../assets/1.jpg";
+import avatarIIIImg from "../../assets/1.jpg";
+import avatarIVImg from "../../assets/1.jpg";
+import avatarVImg from "../../assets/1.jpg";
 import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import "./Testimonials.css";
 

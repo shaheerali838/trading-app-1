@@ -1,6 +1,6 @@
 import React from "react";
 import ImgSrc from "../assets/whyChooseUs.png";
-import AnimatedHeading from "../components/AnimateHeading";
+import AnimatedHeading from "../components/animation/AnimateHeading";
 
 const LogIn = () => {
   return (

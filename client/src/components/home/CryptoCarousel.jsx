@@ -4,7 +4,7 @@ import "swiper/css";
 import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
-import AnimatedHeading from "./AnimateHeading";
+import AnimatedHeading from "../../components/animation/AnimateHeading";
 
 const CryptoCarousel = () => {
   return (
