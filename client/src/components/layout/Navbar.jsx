@@ -81,7 +81,7 @@ const Navbar = () => {
             <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
               <MenuItem>
                 <Link
-                  to={"/finance/overview"}
+                  to={"/overview"}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Overview
@@ -89,7 +89,7 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem>
                 <Link
-                  to={"/finance/assets"}
+                  to={"/assets"}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Assets
@@ -97,7 +97,7 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem>
                 <Link
-                  to={"/finance/profit"}
+                  to={"/profit"}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Profit

@@ -40,3 +40,35 @@
 .read-the-docs {
   color: #888;
 }
+
+.btn {
+  @apply px-4 py-2 rounded-lg font-medium transition-all duration-200;
+}
+
+.btn-primary {
+  @apply bg-primary hover:bg-primary/80 text-white;
+}
+
+.btn-success {
+  @apply bg-success hover:bg-success/80 text-white;
+}
+
+.btn-danger {
+  @apply bg-danger hover:bg-danger/80 text-white;
+}
+
+.card {
+  @apply bg-dark/50 backdrop-blur-sm rounded-xl p-6 border border-light/10;
+}
+
+.input {
+  @apply bg-dark/50 border border-light/10 rounded-lg px-4 py-2 focus:outline-none focus:border-primary;
+}
+
+.modal-overlay {
+  @apply fixed inset-0 bg-black/50 backdrop-blur-sm flex items-center justify-center p-4;
+}
+
+.modal-content {
+  @apply relative bg-transparent outline-none;
+}

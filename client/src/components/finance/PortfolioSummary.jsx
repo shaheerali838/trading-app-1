@@ -39,20 +39,20 @@ function PortfolioSummary({ portfolio }) {
     <motion.div
       initial={{ opacity: 0, y: 20 }}
       animate={{ opacity: 1, y: 0 }}
-      className="flex flex-col md:flex-row justify-around items-center md:items-start"
+      className="pt-8"
     >
       {/* Left (Takes 2 columns on large screens) */}
-      <div className=" card">
+      <div className=" card w-full text-center">
         <AnimatedHeading>
-          <h2 className="text-xl font-bold mb-4">Portfolio Value</h2>
+          <h2 className="text-xl font-bold mb-4">Assets Summary Overview</h2>
         </AnimatedHeading>
-        <div className="h-[60vh] w-[70vw]">
-          <Line data={chartData} options={chartOptions} />
-        </div>
       </div>
 
       {/* Right (Takes 1 column on large screens) */}
-      <div className="card w-[20vw] flex justify-center">
+      <div className="card  flex justify-evenly">
+        <div className="h-[60vh] w-[70vw]">
+          <Line data={chartData} options={chartOptions} />
+        </div>
         <div>
           <h2 className="text-2xl font-bold mb-4">Summary</h2>
           <div className="space-y-4">

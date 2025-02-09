@@ -14,14 +14,7 @@
   --background-gradient-reverse: linear-gradient(to top, #000000, #181818);
 }
 
-/* .home {
-  transform: scale(0.8);
-  transform-origin: top left;
-  width: 125%;
-  height: 125%;
-} */
 
-/* Optional: Define classes to use these colors and gradients */
 .text-primary {
   color: var(--primary-color);
 }
@@ -94,3 +87,4 @@
 .border-primary {
   border: 1px solid var(--primary-color);
 }
+ 
