@@ -2,7 +2,7 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-
+/* Core CSS required for Ionic components to work properly */
 
 /* Define the colors as CSS custom properties */
 :root {

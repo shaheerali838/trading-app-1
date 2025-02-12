@@ -4,12 +4,10 @@ import jwt from "jsonwebtoken";
 
 const UserSchema = new mongoose.Schema(
   {
-    fullName: { type: String, required: true },
+    firstName: { type: String, required: true },
+    lastName: { type: String, required: true },
     email: { type: String, required: true, unique: true },
-    password: { type: String, required: true }, // Hashed
-    phone: { type: String, unique: true },
-    country: { type: String },
-    profilePicture: { type: String, default: "" },
+    password: { type: String, required: true },
     isVerified: { type: Boolean, default: false },
     verificationCode: { type: String }, // OTP for email/phone verification
     role: { type: String, enum: ["user", "admin"], default: "user" },

@@ -11,10 +11,14 @@ import {
   Typography,
 } from "@material-tailwind/react";
 import { VscChevronDown } from "react-icons/vsc";
+import { useSelector } from "react-redux";
 
 const Navbar = () => {
   const [isScrolled, setIsScrolled] = useState(false);
   const [openMenu, setOpenMenu] = useState(false);
+  const [closeMenu, setCloseMenu] = useState(false);
+  const [showDialogBox, setShowDialogBox] = useState(false);
+  const { user } = useSelector((state) => state.user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -55,9 +59,28 @@ const Navbar = () => {
           <Link to={"/trade"} className="text-white hover:text-[#00FF7F]">
             Trade
           </Link>
+          <Link to={"/assets"} className="text-white hover:text-[#00FF7F]">
+            Wallet
+          </Link>
           <Link to={"/about"} className="text-white hover:text-[#00FF7F]">
             About
           </Link>
+        </div>
+
+        {!user ? (
+          <div className="flex items-center space-x-4">
+            <Link to={"/login"}>
+              <div className="min-w-[10vw] sm:w-[7vw] px-3 py-1 flex justify-center cursor-pointer rounded-full bg-transparent border-2 border-[#1E90FF]">
+                <button className="text-[#1E90FF]">Login</button>
+              </div>
+            </Link>
+            <Link to={"/register"}>
+              <div className="min-w-[10vw] sm:w-[7vw] px-2 py-1 flex justify-center cursor-pointer rounded-full bg-[#1E90FF] text-white">
+                <button>Register</button>
+              </div>
+            </Link>
+          </div>
+        ) : (
           <Menu
             open={openMenu}
             handler={setOpenMenu}
@@ -69,7 +92,7 @@ const Navbar = () => {
                 variant="text"
                 className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
               >
-                <span className="text-[16px]">Finance</span>
+                <span className="text-[16px]">Profile</span>
                 <VscChevronDown
                   strokeWidth={2.5}
                   className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
@@ -80,44 +103,31 @@ const Navbar = () => {
             </MenuHandler>
             <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
               <MenuItem>
-                <Link
-                  to={"/overview"}
+                <p
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
-                  Overview
-                </Link>
+                  {user.email}
+                </p>
               </MenuItem>
               <MenuItem>
                 <Link
                   to={"/assets"}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
-                  Assets
+                  Assets Wallet
                 </Link>
               </MenuItem>
               <MenuItem>
-                <Link
-                  to={"/profit"}
+                <p
+                  onClick={setShowDialogBox(true)}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Profit
-                </Link>
+                </p>
               </MenuItem>
             </MenuList>
           </Menu>
-        </div>
-        <div className="flex items-center space-x-4">
-          <Link to={"/login"}>
-            <div className="min-w-[10vw] sm:w-[7vw] px-3 py-1 flex justify-center cursor-pointer rounded-full bg-transparent border-2 border-[#1E90FF]">
-              <button className="text-[#1E90FF]">Login</button>
-            </div>
-          </Link>
-          <Link to={"/register"}>
-            <div className="min-w-[10vw] sm:w-[7vw] px-2 py-1 flex justify-center cursor-pointer rounded-full bg-[#1E90FF] text-white">
-              <button>Register</button>
-            </div>
-          </Link>
-        </div>
+        )}
       </nav>
     </header>
   );

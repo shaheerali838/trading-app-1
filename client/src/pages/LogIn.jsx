@@ -1,39 +1,59 @@
-import React from "react";
+import React, { useState } from "react";
 import ImgSrc from "../assets/whyChooseUs.png";
 import AnimatedHeading from "../components/animation/AnimateHeading";
+import { useDispatch } from "react-redux";
+import { loginUser } from "../store/slices/userSlice";
+import axios from "axios";
 
 const LogIn = () => {
+  const dispatch = useDispatch();
+  const [email, setEmail] = useState("");
+  const [password, setPassword] = useState("");
+
+  const handleSubmit = (e) => {
+    e.preventDefault();
+
+    dispatch(loginUser({ email, password }));
+  };
   return (
     <div className="min-h-screen bg-gradient flex flex-col justify-center items-center">
       <AnimatedHeading>
         <h1 className="text-4xl font-bold">Login</h1>
       </AnimatedHeading>
       <div className="flex justify-evenly">
-        <form action="" className="w-[40vw] mt-20">
-          <input
-            type="email"
-            placeholder="Enter Your Email"
-            className="w-full bg-transparent focus:border-none rounded-md px-3 py-2 my-3 border-primary"
-          />
-          <input
-            type="password"
-            placeholder="Enter Your Password"
-            className="w-full bg-transparent active:border-none rounded-md px-3 py-2 my-3 border-primary"
-          />
-          <p className="px-2 py-1 bg-secondary rounded-md text-tertiary2 font-medium hover:scale- cursor-pointer text-center">
-            Login
-          </p>
-          <p className="px-2 py-1 my-4 bg-primary rounded-md text-tertiary3  font-medium hover:scale- cursor-pointer text-center">
-            Continue With Google
-          </p>
-
+        <div className="w-[40vw] mt-20">
+          <form onSubmit={handleSubmit}>
+            <input
+              type="email"
+              placeholder="Email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="w-full bg-transparent focus:border-none rounded-md px-3 py-2 my-3 border-primary"
+            />
+            <input
+              type="password"
+              placeholder="Password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              className="w-full bg-transparent active:border-none rounded-md px-3 py-2 my-3 border-primary"
+            />
+            <button
+              type="submit"
+              className="w-full px-2 py-1 bg-secondary rounded-md text-tertiary2 font-medium hover:scale- cursor-pointer text-center"
+            >
+              Login
+            </button>
+            <p className="w-full px-2 py-1 my-4 bg-primary rounded-md text-tertiary3  font-medium hover:scale- cursor-pointer text-center">
+              Continue With Google
+            </p>
+          </form>
           <p className="w-full text-center text-gray-500">
             Don't Have an account?{" "}
             <a href="" className="text-white">
               Sign Up
             </a>
           </p>
-        </form>
+        </div>
         <div className="img w-[40vw]">
           <img src={ImgSrc} alt="" />
         </div>

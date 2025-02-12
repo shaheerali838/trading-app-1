@@ -8,6 +8,7 @@ import { join } from "path";
 import { fileURLToPath } from "url";
 import fileUpload from "express-fileupload";
 import userRouter from "./routers/userRoutes.js";
+import tradeRouter from "./routers/tradeRoutes.js";
 
 const app = express();
 
@@ -32,6 +33,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 
 app.use("/api/user", userRouter);
+app.use("/api/trade", tradeRouter);
 
 
 dbConnection();

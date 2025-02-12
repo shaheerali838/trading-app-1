@@ -6,18 +6,17 @@ import TradingChart from "../components/trade/TradingChart";
 import OrderForm from "../components/trade/OrderForm";
 import RecentTrades from "../components/trade/RecentTrades";
 import OrderBook from "../components/trade/OrderBook";
+import io from "socket.io-client";
 
 function Trade() {
   const [marketData, setMarketData] = useState([]);
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");
+  const [recentTrades, setRecentTrades] = useState([]);
 
   const { symbol } = useParams();
   const dispatch = useDispatch();
-  const { recentTrades } = useSelector((state) => state.trade);
   const { coins } = useSelector((state) => state.market);
-
- 
 
   const selectedCoin = coins.find(
     (coin) => coin.symbol.toLowerCase() === symbol
@@ -77,6 +76,24 @@ function Trade() {
     return () => ws.close();
   }, [selectedPair, selectedInterval]);
 
+  // WebSocket for real-time trade updates
+  useEffect(() => {
+    const socket = io("http://localhost:5000");
+
+    socket.on("tradeUpdate", (trade) => {
+      setRecentTrades((prevTrades) => [trade, ...prevTrades.slice(0, 9)]);
+    });
+
+    return () => {
+      socket.off("tradeUpdate");
+      socket.disconnect();
+    };
+  }, []);
+
+  // Extract the current market price from the market data
+  const currentMarketPrice =
+    marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
+
   return (
     <div className="max-w-7xl mx-auto">
       <motion.div
@@ -102,9 +119,6 @@ function Trade() {
           )}
         </div>
 
-        {/* Trading Pair & Time Interval Selection */}
-
-
         <div className="flex justify-evenly">
           <div className="w-full">
             <div className="rounded-lg">
@@ -124,7 +138,10 @@ function Trade() {
           </div>
 
           <div className="border-l border-b border-[#00c853] w-[25vw]">
-            <OrderForm coin={selectedCoin} />
+            <OrderForm
+              marketPrice={currentMarketPrice}
+              selectedPair={selectedPair}
+            />
           </div>
         </div>
 
