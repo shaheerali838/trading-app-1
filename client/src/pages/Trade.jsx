@@ -1,67 +1,92 @@
-import { useEffect } from 'react';
-import { useParams } from 'react-router-dom';
-import { useDispatch, useSelector } from 'react-redux';
-import { motion } from 'framer-motion';
-import { fetchCoinData } from '../store/slices/tradeSlice';
-import TradingChart from '../components/trade/TradingChart';
-import OrderForm from '../components/trade/OrderForm';
-import RecentTrades from '../components/trade/RecentTrades';
+import { useState, useEffect } from "react";
+import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
+import { Input } from "@/components/ui/input";
+import { Button } from "@/components/ui/button";
+import { Card, CardContent } from "@/components/ui/card";
 
-function Trade() {
-  const { symbol } = useParams();
-  const dispatch = useDispatch();
-  const { chartData, status, recentTrades } = useSelector((state) => state.trade);
-  const { coins } = useSelector((state) => state.market);
-  const selectedCoin = coins.find(coin => coin.symbol.toLowerCase() === symbol);
+const OrderForm = ({ orderBookData, currentPrice }) => {
+  const [orderType, setOrderType] = useState("limit");
+  const [price, setPrice] = useState("");
+  const [amount, setAmount] = useState("");
+  const [total, setTotal] = useState("");
 
   useEffect(() => {
-    if (selectedCoin) {
-      dispatch(fetchCoinData(selectedCoin.id));
+    if (orderType === "market") {
+      setPrice(currentPrice);
     }
-  }, [dispatch, selectedCoin]);
+  }, [orderType, currentPrice]);
+
+  useEffect(() => {
+    if (price && amount) {
+      setTotal((parseFloat(price) * parseFloat(amount)).toFixed(2));
+    }
+  }, [price, amount]);
+
+  const handleOrderSubmit = (side) => {
+    const orderData = {
+      type: orderType,
+      price: orderType === "market" ? currentPrice : price,
+      amount,
+      total,
+      side,
+    };
+    console.log("Order Submitted:", orderData);
+  };
 
   return (
-    <div className="max-w-7xl mx-auto">
-      <motion.div
-        initial={{ opacity: 0, y: 20 }}
-        animate={{ opacity: 1, y: 0 }}
-        className="mb-8"
-      >
-        <div className="flex items-center gap-4 mb-6">
-          {selectedCoin && (
-            <>
-              <img src={selectedCoin.image} alt={selectedCoin.name} className="w-10 h-10" />
-              <div>
-                <h1 className="text-4xl font-bold">{selectedCoin.name}</h1>
-                <span className="text-light/60">{selectedCoin.symbol.toUpperCase()}/USDT</span>
-              </div>
-            </>
-          )}
-        </div>
+    <Card className="w-full p-4 bg-darkGray text-lightGray">
+      <Tabs defaultValue="limit" className="w-full">
+        <TabsList className="flex gap-2">
+          <TabsTrigger value="limit" onClick={() => setOrderType("limit")}>
+            Limit Order
+          </TabsTrigger>
+          <TabsTrigger value="market" onClick={() => setOrderType("market")}>
+            Market Order
+          </TabsTrigger>
+        </TabsList>
 
-        <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
-          <div className="lg:col-span-2 card">
-            {status === 'loading' && (
-              <div className="h-[400px] flex items-center justify-center">
-                <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary"></div>
-              </div>
-            )}
-            {status === 'succeeded' && chartData.length > 0 && (
-              <TradingChart data={chartData} />
-            )}
+        <TabsContent value="limit">
+          <div className="flex flex-col gap-3 mt-4">
+            <Input
+              type="number"
+              placeholder="Price"
+              value={price}
+              onChange={(e) => setPrice(e.target.value)}
+            />
           </div>
+        </TabsContent>
 
-          <div>
-            <OrderForm coin={selectedCoin} />
-          </div>
-        </div>
+        <TabsContent value="market">
+          <p className="text-sm text-green-400">Market price: {currentPrice}</p>
+        </TabsContent>
+      </Tabs>
 
-        <div className="mt-6">
-          <RecentTrades trades={recentTrades} />
-        </div>
-      </motion.div>
-    </div>
+      <div className="flex flex-col gap-3 mt-4">
+        <Input
+          type="number"
+          placeholder="Amount"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+        />
+        <Input type="number" placeholder="Total" value={total} readOnly />
+      </div>
+
+      <div className="flex justify-between gap-4 mt-4">
+        <Button
+          className="w-1/2 bg-neonGreen hover:bg-green-700"
+          onClick={() => handleOrderSubmit("buy")}
+        >
+          Buy
+        </Button>
+        <Button
+          className="w-1/2 bg-crimsonRed hover:bg-red-700"
+          onClick={() => handleOrderSubmit("sell")}
+        >
+          Sell
+        </Button>
+      </div>
+    </Card>
   );
-}
+};
 
-export default Trade;
+export default OrderForm;

@@ -1,114 +1,91 @@
-import { useState } from 'react';
-import { useDispatch } from 'react-redux';
-import { motion } from 'framer-motion';
-import { addTrade } from '../../store/slices/tradeSlice';
+import { useState } from "react";
 
-function OrderForm({ coin }) {
-  const dispatch = useDispatch();
-  const [orderType, setOrderType] = useState('market');
-  const [side, setSide] = useState('buy');
-  const [amount, setAmount] = useState('');
-  const [price, setPrice] = useState('');
+const OrderForm = ({ onSubmit }) => {
+  const [orderType, setOrderType] = useState("buy");
+  const [price, setPrice] = useState("");
+  const [amount, setAmount] = useState("");
+  const [total, setTotal] = useState("");
+
+  // Auto-calculate total
+  const handleAmountChange = (e) => {
+    setAmount(e.target.value);
+    setTotal((parseFloat(price || 0) * parseFloat(e.target.value || 0)).toFixed(6));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    const trade = {
-      id: Date.now(),
-      pair: `${coin?.symbol?.toUpperCase()}/USDT`,
-      type: orderType,
-      side,
-      amount: parseFloat(amount),
-      price: orderType === 'market' ? coin?.current_price : parseFloat(price),
-      total: parseFloat(amount) * (orderType === 'market' ? coin?.current_price : parseFloat(price)),
-      timestamp: new Date().toISOString(),
-    };
-    dispatch(addTrade(trade));
-    setAmount('');
-    setPrice('');
+    if (!price || !amount) return alert("Please enter price and amount.");
+
+    onSubmit({ type: orderType, price, amount, total });
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="card"
-    >
-      <div className="flex gap-2 mb-6">
+    <div className="bg-[#1C1C1C] p-4 rounded-lg shadow-md w-full max-w-md">
+      {/* Tabs */}
+      <div className="flex justify-between mb-4">
         <button
-          className={`flex-1 btn ${side === 'buy' ? 'btn-success' : 'bg-dark/50'}`}
-          onClick={() => setSide('buy')}
+          className={`w-1/2 py-2 text-center rounded-md ${
+            orderType === "buy" ? "bg-[#00C853] text-white" : "bg-gray-700 text-gray-300"
+          }`}
+          onClick={() => setOrderType("buy")}
         >
           Buy
         </button>
         <button
-          className={`flex-1 btn ${side === 'sell' ? 'btn-danger' : 'bg-dark/50'}`}
-          onClick={() => setSide('sell')}
+          className={`w-1/2 py-2 text-center rounded-md ${
+            orderType === "sell" ? "bg-[#D32F2F] text-white" : "bg-gray-700 text-gray-300"
+          }`}
+          onClick={() => setOrderType("sell")}
         >
           Sell
         </button>
       </div>
 
-      <div className="flex gap-2 mb-6">
-        {['market', 'limit', 'stop'].map((type) => (
-          <button
-            key={type}
-            className={`flex-1 btn ${orderType === type ? 'btn-primary' : 'bg-dark/50'}`}
-            onClick={() => setOrderType(type)}
-          >
-            {type.charAt(0).toUpperCase() + type.slice(1)}
-          </button>
-        ))}
-      </div>
-
-      <form onSubmit={handleSubmit} className="space-y-4">
+      {/* Order Form */}
+      <form onSubmit={handleSubmit} className="space-y-3">
         <div>
-          <label className="block text-sm mb-2">Amount ({coin?.symbol?.toUpperCase()})</label>
+          <label className="text-gray-300 block">Price (USDT)</label>
           <input
             type="number"
-            value={amount}
-            onChange={(e) => setAmount(e.target.value)}
-            className="input w-full"
-            placeholder="0.00"
-            required
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600"
+            placeholder="Enter price"
           />
         </div>
 
-        {orderType !== 'market' && (
-          <div>
-            <label className="block text-sm mb-2">Price (USDT)</label>
-            <input
-              type="number"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-              className="input w-full"
-              placeholder="0.00"
-              required
-            />
-          </div>
-        )}
+        <div>
+          <label className="text-gray-300 block">Amount (BTC)</label>
+          <input
+            type="number"
+            value={amount}
+            onChange={handleAmountChange}
+            className="w-full p-2 rounded bg-gray-800 text-white border border-gray-600"
+            placeholder="Enter amount"
+          />
+        </div>
 
         <div>
-          <label className="block text-sm mb-2">Total (USDT)</label>
+          <label className="text-gray-300 block">Total (USDT)</label>
           <input
             type="text"
-            value={
-              amount && (orderType === 'market' ? amount * coin?.current_price : amount * price) || ''
-            }
-            className="input w-full"
+            value={total}
             disabled
-            placeholder="0.00"
+            className="w-full p-2 rounded bg-gray-700 text-gray-400 border border-gray-600"
           />
         </div>
 
         <button
           type="submit"
-          className={`w-full btn ${side === 'buy' ? 'btn-success' : 'btn-danger'}`}
+          className={`w-full py-2 rounded-md text-white ${
+            orderType === "buy" ? "bg-[#00C853]" : "bg-[#D32F2F]"
+          }`}
         >
-          {side === 'buy' ? 'Buy' : 'Sell'} {coin?.symbol?.toUpperCase()}
+          {orderType === "buy" ? "Buy BTC" : "Sell BTC"}
         </button>
       </form>
-    </motion.div>
+    </div>
   );
-}
+};
 
 export default OrderForm;

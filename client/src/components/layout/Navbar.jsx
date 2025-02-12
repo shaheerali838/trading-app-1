@@ -33,7 +33,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`sticky top-0 z-10 smooth-transition ${
+      className={`sticky w-full top-0 z-10 smooth-transition ${
         isScrolled ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"
       }`}
     >

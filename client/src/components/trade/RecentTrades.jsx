@@ -16,7 +16,7 @@ function RecentTrades({ trades }) {
           </tr>
         </thead>
         <tbody>
-          {trades.map((trade) => (
+          {trades.length > 0 ? trades.map((trade) => (
             <motion.tr
               key={trade.id}
               initial={{ opacity: 0 }}
@@ -32,7 +32,7 @@ function RecentTrades({ trades }) {
               <td className="py-4">{trade.amount}</td>
               <td className="py-4">${trade.total.toLocaleString()}</td>
             </motion.tr>
-          ))}
+          )): <td>No trades yet</td>}
         </tbody>
       </table>
     </div>
