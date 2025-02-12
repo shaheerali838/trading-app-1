@@ -1,92 +1,139 @@
-import { useState, useEffect } from "react";
-import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs";
-import { Input } from "@/components/ui/input";
-import { Button } from "@/components/ui/button";
-import { Card, CardContent } from "@/components/ui/card";
+import { useEffect, useState } from "react";
+import { useParams } from "react-router-dom";
+import { useDispatch, useSelector } from "react-redux";
+import { motion } from "framer-motion";
+import TradingChart from "../components/trade/TradingChart";
+import OrderForm from "../components/trade/OrderForm";
+import RecentTrades from "../components/trade/RecentTrades";
+import OrderBook from "../components/trade/OrderBook";
 
-const OrderForm = ({ orderBookData, currentPrice }) => {
-  const [orderType, setOrderType] = useState("limit");
-  const [price, setPrice] = useState("");
-  const [amount, setAmount] = useState("");
-  const [total, setTotal] = useState("");
+function Trade() {
+  const [marketData, setMarketData] = useState([]);
+  const [selectedPair, setSelectedPair] = useState("BTCUSDT");
+  const [selectedInterval, setSelectedInterval] = useState("1h");
 
+  const { symbol } = useParams();
+  const dispatch = useDispatch();
+  const { recentTrades } = useSelector((state) => state.trade);
+  const { coins } = useSelector((state) => state.market);
+
+ 
+
+  const selectedCoin = coins.find(
+    (coin) => coin.symbol.toLowerCase() === symbol
+  );
+
+  // Fetch historical market data
   useEffect(() => {
-    if (orderType === "market") {
-      setPrice(currentPrice);
-    }
-  }, [orderType, currentPrice]);
+    const fetchMarketData = async () => {
+      try {
+        const response = await fetch(
+          `https://api.binance.com/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
+        );
+        const data = await response.json();
 
-  useEffect(() => {
-    if (price && amount) {
-      setTotal((parseFloat(price) * parseFloat(amount)).toFixed(2));
-    }
-  }, [price, amount]);
+        const formattedData = data.map((candle) => ({
+          time: Math.floor(candle[0] / 1000),
+          open: parseFloat(candle[1]),
+          high: parseFloat(candle[2]),
+          low: parseFloat(candle[3]),
+          close: parseFloat(candle[4]),
+          volume: parseFloat(candle[5]),
+        }));
 
-  const handleOrderSubmit = (side) => {
-    const orderData = {
-      type: orderType,
-      price: orderType === "market" ? currentPrice : price,
-      amount,
-      total,
-      side,
+        setMarketData(formattedData);
+      } catch (error) {
+        console.error("Error fetching market data:", error);
+      }
     };
-    console.log("Order Submitted:", orderData);
-  };
+
+    fetchMarketData();
+    const interval = setInterval(fetchMarketData, 60000);
+
+    return () => clearInterval(interval);
+  }, [selectedPair, selectedInterval]);
+
+  // WebSocket for real-time updates
+  useEffect(() => {
+    const ws = new WebSocket(
+      `wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
+    );
+
+    ws.onmessage = (event) => {
+      const response = JSON.parse(event.data);
+      const kline = response.k;
+      const newCandle = {
+        time: Math.floor(kline.t / 1000),
+        open: parseFloat(kline.o),
+        high: parseFloat(kline.h),
+        low: parseFloat(kline.l),
+        close: parseFloat(kline.c),
+        volume: parseFloat(kline.v),
+      };
+
+      setMarketData((prevData) => [...prevData.slice(-99), newCandle]);
+    };
+
+    return () => ws.close();
+  }, [selectedPair, selectedInterval]);
 
   return (
-    <Card className="w-full p-4 bg-darkGray text-lightGray">
-      <Tabs defaultValue="limit" className="w-full">
-        <TabsList className="flex gap-2">
-          <TabsTrigger value="limit" onClick={() => setOrderType("limit")}>
-            Limit Order
-          </TabsTrigger>
-          <TabsTrigger value="market" onClick={() => setOrderType("market")}>
-            Market Order
-          </TabsTrigger>
-        </TabsList>
+    <div className="max-w-7xl mx-auto">
+      <motion.div
+        initial={{ opacity: 0, y: 20 }}
+        animate={{ opacity: 1, y: 0 }}
+        className="px-8"
+      >
+        <div className="flex items-center gap-4 mb-6">
+          {selectedCoin && (
+            <>
+              <img
+                src={selectedCoin.image}
+                alt={selectedCoin.name}
+                className="w-10 h-10"
+              />
+              <div>
+                <h1 className="text-4xl font-bold">{selectedCoin.name}</h1>
+                <span className="text-light/60">
+                  {selectedCoin.symbol.toUpperCase()}/USDT
+                </span>
+              </div>
+            </>
+          )}
+        </div>
 
-        <TabsContent value="limit">
-          <div className="flex flex-col gap-3 mt-4">
-            <Input
-              type="number"
-              placeholder="Price"
-              value={price}
-              onChange={(e) => setPrice(e.target.value)}
-            />
+        {/* Trading Pair & Time Interval Selection */}
+
+
+        <div className="flex justify-evenly">
+          <div className="w-full">
+            <div className="rounded-lg">
+              <TradingChart
+                marketData={marketData}
+                onPairChange={setSelectedPair}
+                indicators={["volume", "macd", "rsi"]}
+                selectedInterval={selectedInterval}
+                setSelectedInterval={setSelectedInterval}
+                setSelectedPair={setSelectedPair}
+                selectedPair={selectedPair}
+              />
+            </div>
           </div>
-        </TabsContent>
+          <div className="col-span-3 bg-darkGray p-4 rounded-lg">
+            <OrderBook selectedPair={selectedPair} />
+          </div>
 
-        <TabsContent value="market">
-          <p className="text-sm text-green-400">Market price: {currentPrice}</p>
-        </TabsContent>
-      </Tabs>
+          <div className="border-l border-b border-[#00c853] w-[25vw]">
+            <OrderForm coin={selectedCoin} />
+          </div>
+        </div>
 
-      <div className="flex flex-col gap-3 mt-4">
-        <Input
-          type="number"
-          placeholder="Amount"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
-        />
-        <Input type="number" placeholder="Total" value={total} readOnly />
-      </div>
-
-      <div className="flex justify-between gap-4 mt-4">
-        <Button
-          className="w-1/2 bg-neonGreen hover:bg-green-700"
-          onClick={() => handleOrderSubmit("buy")}
-        >
-          Buy
-        </Button>
-        <Button
-          className="w-1/2 bg-crimsonRed hover:bg-red-700"
-          onClick={() => handleOrderSubmit("sell")}
-        >
-          Sell
-        </Button>
-      </div>
-    </Card>
+        <div className="mt-6">
+          <RecentTrades trades={recentTrades} />
+        </div>
+      </motion.div>
+    </div>
   );
-};
+}
 
-export default OrderForm;
+export default Trade;

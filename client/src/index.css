@@ -3,6 +3,7 @@
 @tailwind components;
 @tailwind utilities;
 
+
 /* Define the colors as CSS custom properties */
 :root {
   --primary-color: #1e90ff;
