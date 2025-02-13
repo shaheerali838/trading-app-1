@@ -4,6 +4,7 @@ import ImgSrc from "../assets/whyChooseUs.png";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/slices/userSlice";
+import { toast } from "react-toastify";
 
 const LogIn = () => {
   const dispatch = useDispatch();
@@ -20,7 +21,11 @@ const LogIn = () => {
 
   const handleSubmit = (e) => {
     e.preventDefault();
-    dispatch(loginUser({ email, password }));
+    const res = dispatch(loginUser({ email, password }));
+    
+    if (res) {
+      toast.success(res.msg);
+    }
   };
 
   return (

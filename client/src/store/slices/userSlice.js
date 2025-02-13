@@ -14,12 +14,15 @@ export const loginUser = createAsyncThunk(
           withCredentials: true,
         }
       );
-      toast.success(response.data.msg);
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
+      toast.success("User Logged In Successfully");
+      
       return response.data;
     } catch (error) {
-      toast.error(error.response.data.msg);
+      console.log('the error is ');
+      
+      toast.error(JSON.stringify(error.response.data.msg));
       return rejectWithValue(error.response.data);
     }
   }
@@ -37,12 +40,12 @@ export const registerUser = createAsyncThunk(
           withCredentials: true,
         }
       );
-      toast.success(response.data.msg);
+      toast.success("User Registered Successfully");
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
-      toast.error(error.response.data.msg);
+      toast.error(JSON.stringify(error.response.data.msg));
       return rejectWithValue(error.response.data);
     }
   }

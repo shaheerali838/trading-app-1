@@ -72,3 +72,8 @@
 .modal-content {
   @apply relative bg-transparent outline-none;
 }
+/* Add this CSS to your styles */
+
+.dialog-overlay {
+  background-color: rgba(0, 0, 0, 0.5); /* Semi-transparent black */
+}

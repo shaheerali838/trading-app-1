@@ -15,7 +15,7 @@ import {
 } from "@material-tailwind/react";
 import { VscChevronDown } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser} from '../../store/slices/userSlice'
+import { logoutUser } from "../../store/slices/userSlice";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
@@ -32,8 +32,7 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
-    console.log(user);
-    
+
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
@@ -43,11 +42,11 @@ const Navbar = () => {
   const handleLogout = () => {
     localStorage.removeItem("user");
     window.location.href = "/";
-    dispatch(logoutUser())
+    dispatch(logoutUser());
   };
   const handleLogoutDialog = () => {
     setOpenDialog(!openDialog);
-  }
+  };
 
   return (
     <header
@@ -131,7 +130,7 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem>
                 <p
-                onClick={handleLogoutDialog}
+                  onClick={handleLogoutDialog}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Logout
@@ -140,25 +139,30 @@ const Navbar = () => {
             </MenuList>
           </Menu>
         )}
-      <Dialog open={openDialog} handler={handleLogoutDialog} className="bg-gray-900 text-white">
-        <DialogHeader className="text-tertiary1">Confirmation!</DialogHeader>
-        <DialogBody>
-          Are you sure you want to logout from this account?
-        </DialogBody>
-        <DialogFooter>
-          <Button
-            variant="text"
-            color="red"
-            onClick={handleLogoutDialog}
-            className="mr-1"
-          >
-            <span>Cancel</span>
-          </Button>
-          <Button variant="gradient" color="green" onClick={handleLogout}>
-            <span>Confirm</span>
-          </Button>
-        </DialogFooter>
-      </Dialog>
+        <Dialog
+          open={openDialog}
+          size="xs"
+          handler={handleLogoutDialog}
+          className="text-white bg-[#242424]"
+        >
+          <DialogHeader className="text-tertiary1">Confirmation!</DialogHeader>
+          <DialogBody>
+            Are you sure you want to logout from this account?
+          </DialogBody>
+          <DialogFooter>
+            <Button
+              variant="text"
+              color="red"
+              onClick={handleLogoutDialog}
+              className="mr-1"
+            >
+              <span>Cancel</span>
+            </Button>
+            <Button variant="gradient" color="green" onClick={handleLogout}>
+              <span>Confirm</span>
+            </Button>
+          </DialogFooter>
+        </Dialog>
       </nav>
     </header>
   );
