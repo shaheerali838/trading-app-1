@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 // Async thunk for logging in
 export const loginUser = createAsyncThunk(
@@ -13,8 +14,12 @@ export const loginUser = createAsyncThunk(
           withCredentials: true,
         }
       );
+      toast.success(response.data.msg);
+      // Store user data in local storage
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
+      toast.error(error.response.data.msg);
       return rejectWithValue(error.response.data);
     }
   }
@@ -32,8 +37,12 @@ export const registerUser = createAsyncThunk(
           withCredentials: true,
         }
       );
+      toast.success(response.data.msg);
+      // Store user data in local storage
+      localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
+      toast.error(error.response.data.msg);
       return rejectWithValue(error.response.data);
     }
   }
@@ -51,6 +60,8 @@ export const logoutUser = createAsyncThunk(
           withCredentials: true,
         }
       );
+      // Remove user data from local storage
+      localStorage.removeItem("user");
       return {};
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -60,7 +71,7 @@ export const logoutUser = createAsyncThunk(
 
 // Initial state
 const initialState = {
-  user: null,
+  user: JSON.parse(localStorage.getItem("user")) || null,
   loading: false,
   error: null,
 };

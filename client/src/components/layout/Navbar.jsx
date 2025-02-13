@@ -1,7 +1,6 @@
 import React, { useState, useEffect } from "react";
 import { Link } from "react-router-dom";
 import logoSrc from "../../assets/logo.png";
-
 import {
   Menu,
   MenuHandler,
@@ -9,16 +8,21 @@ import {
   MenuItem,
   Button,
   Typography,
+  DialogFooter,
+  DialogBody,
+  DialogHeader,
+  Dialog,
 } from "@material-tailwind/react";
 import { VscChevronDown } from "react-icons/vsc";
-import { useSelector } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
+import { logoutUser} from '../../store/slices/userSlice'
 
 const Navbar = () => {
-  const [isScrolled, setIsScrolled] = useState(false);
-  const [openMenu, setOpenMenu] = useState(false);
-  const [closeMenu, setCloseMenu] = useState(false);
-  const [showDialogBox, setShowDialogBox] = useState(false);
   const { user } = useSelector((state) => state.user);
+  const [openMenu, setOpenMenu] = useState(false);
+  const [isScrolled, setIsScrolled] = useState(false);
+  const [openDialog, setOpenDialog] = useState(false);
+  const dispatch = useDispatch((state) => state.user);
 
   useEffect(() => {
     const handleScroll = () => {
@@ -28,16 +32,26 @@ const Navbar = () => {
         setIsScrolled(false);
       }
     };
-
+    console.log(user);
+    
     window.addEventListener("scroll", handleScroll);
     return () => {
       window.removeEventListener("scroll", handleScroll);
     };
   }, []);
 
+  const handleLogout = () => {
+    localStorage.removeItem("user");
+    window.location.href = "/";
+    dispatch(logoutUser())
+  };
+  const handleLogoutDialog = () => {
+    setOpenDialog(!openDialog);
+  }
+
   return (
     <header
-      className={`sticky w-full top-0 z-10 smooth-transition ${
+      className={`sticky top-0 z-10  smooth-transition ${
         isScrolled ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"
       }`}
     >
@@ -103,9 +117,7 @@ const Navbar = () => {
             </MenuHandler>
             <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
               <MenuItem>
-                <p
-                  className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
-                >
+                <p className="block m-0  px-4 py-2 text-sm max-w-[100%] overflow-hidden line-wrap  text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]">
                   {user.email}
                 </p>
               </MenuItem>
@@ -119,15 +131,34 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem>
                 <p
-                  onClick={setShowDialogBox(true)}
+                onClick={handleLogoutDialog}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
-                  Profit
+                  Logout
                 </p>
               </MenuItem>
             </MenuList>
           </Menu>
         )}
+      <Dialog open={openDialog} handler={handleLogoutDialog} className="bg-gray-900 text-white">
+        <DialogHeader className="text-tertiary1">Confirmation!</DialogHeader>
+        <DialogBody>
+          Are you sure you want to logout from this account?
+        </DialogBody>
+        <DialogFooter>
+          <Button
+            variant="text"
+            color="red"
+            onClick={handleLogoutDialog}
+            className="mr-1"
+          >
+            <span>Cancel</span>
+          </Button>
+          <Button variant="gradient" color="green" onClick={handleLogout}>
+            <span>Confirm</span>
+          </Button>
+        </DialogFooter>
+      </Dialog>
       </nav>
     </header>
   );

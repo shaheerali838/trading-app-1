@@ -27,12 +27,12 @@ export const register = catchAsyncErrors(async (req, res) => {
   });
 
   await user.save();
-
+  
   // Create a wallet for the user
   const wallet = new Wallet({ userId: user._id });
   await wallet.save();
+  generateToken(user, "User logged in successfully", 200, res);
 
-  res.status(201).json({ success: true, msg: "User registered successfully" });
 });
 
 /**
@@ -52,7 +52,6 @@ export const login = catchAsyncErrors(async (req, res) => {
   // Generate JWT token
   const token = generateToken(user, "User logged in successfully", 200, res);
 
-  res.json({ success: true, token, user });
 });
 
 export const logoutUser = catchAsyncErrors(async (req, res, next) => {

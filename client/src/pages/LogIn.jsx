@@ -1,20 +1,28 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
 import ImgSrc from "../assets/whyChooseUs.png";
 import AnimatedHeading from "../components/animation/AnimateHeading";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import { loginUser } from "../store/slices/userSlice";
-import axios from "axios";
 
 const LogIn = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
+  const { user, loading, error } = useSelector((state) => state.user);
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
 
+  useEffect(() => {
+    if (user) {
+      navigate(-1); // Redirect to the previous page
+    }
+  }, [user, navigate]);
+
   const handleSubmit = (e) => {
     e.preventDefault();
-
     dispatch(loginUser({ email, password }));
   };
+
   return (
     <div className="min-h-screen bg-gradient flex flex-col justify-center items-center">
       <AnimatedHeading>
@@ -49,7 +57,7 @@ const LogIn = () => {
           </form>
           <p className="w-full text-center text-gray-500">
             Don't Have an account?{" "}
-            <a href="" className="text-white">
+            <a href="/signup" className="text-white">
               Sign Up
             </a>
           </p>

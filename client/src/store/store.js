@@ -5,7 +5,7 @@ import financeReducer from './slices/financeSlice';
 import assetsReducer from './slices/assetsSlice';
 import userReducer from './slices/userSlice';
 
-export const store = configureStore({
+const store = configureStore({
   reducer: {
     user: userReducer,
     market: marketReducer,
@@ -14,3 +14,5 @@ export const store = configureStore({
     assets: assetsReducer,
   },
 });
+
+export default store;
