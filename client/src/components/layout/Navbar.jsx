@@ -94,50 +94,55 @@ const Navbar = () => {
             </Link>
           </div>
         ) : (
-          <Menu
-            open={openMenu}
-            handler={setOpenMenu}
-            allowHover
-            className="relative"
-          >
-            <MenuHandler>
-              <Button
-                variant="text"
-                className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
-              >
-                <span className="text-[16px]">Profile</span>
-                <VscChevronDown
-                  strokeWidth={2.5}
-                  className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
-                    openMenu ? "rotate-180" : ""
-                  }`}
-                />
-              </Button>
-            </MenuHandler>
-            <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
-              <MenuItem>
-                <p className="block m-0  px-4 py-2 text-sm max-w-[100%] overflow-hidden line-wrap  text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]">
-                  {user.email}
-                </p>
-              </MenuItem>
-              <MenuItem>
-                <Link
-                  to={"/wallet"}
-                  className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+          <>
+            {/* <div className="w-[5vw] h-[5vw] rounded-full overflow-hidden contain">
+              <img src="../../assets/images/user-avatar.png" alt="" />
+            </div> */}
+            <Menu
+              open={openMenu}
+              handler={setOpenMenu}
+              allowHover
+              className="relative"
+            >
+              <MenuHandler>
+                <Button
+                  variant="text"
+                  className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
                 >
-                  Assets Wallet
-                </Link>
-              </MenuItem>
-              <MenuItem>
-                <p
-                  onClick={handleLogoutDialog}
-                  className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
-                >
-                  Logout
-                </p>
-              </MenuItem>
-            </MenuList>
-          </Menu>
+                  <span className="text-[16px]">Profile</span>
+                  <VscChevronDown
+                    strokeWidth={2.5}
+                    className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
+                      openMenu ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+              </MenuHandler>
+              <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
+                <MenuItem>
+                  <p className="block m-0  px-4 py-2 text-sm max-w-[100%] overflow-hidden line-wrap  text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]">
+                    {user.email}
+                  </p>
+                </MenuItem>
+                <MenuItem>
+                  <Link
+                    to={"/wallet"}
+                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                  >
+                    Assets Wallet
+                  </Link>
+                </MenuItem>
+                <MenuItem>
+                  <p
+                    onClick={handleLogoutDialog}
+                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                  >
+                    Logout
+                  </p>
+                </MenuItem>
+              </MenuList>
+            </Menu>
+          </>
         )}
         <Dialog
           open={openDialog}

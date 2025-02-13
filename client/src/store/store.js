@@ -4,6 +4,7 @@ import tradeReducer from './slices/tradeSlice';
 import financeReducer from './slices/financeSlice';
 import assetsReducer from './slices/assetsSlice';
 import userReducer from './slices/userSlice';
+import adminReducer from './slices/adminSlice';
 
 const store = configureStore({
   reducer: {
@@ -12,6 +13,7 @@ const store = configureStore({
     trade: tradeReducer,
     finance: financeReducer,
     assets: assetsReducer,
+    admin: adminReducer,
   },
 });
 

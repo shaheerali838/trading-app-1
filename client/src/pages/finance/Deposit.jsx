@@ -165,7 +165,7 @@ function Deposit() {
               </div>
             </div>
           </div>
-          <Link to={"/assets/request-release-funds"} className="text-blue-400">
+          <Link to={"/wallet/request-release-funds"} className="text-blue-400">
             Already have maded transaction? Send Request for releasing funds.
           </Link>
         </form>

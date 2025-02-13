@@ -95,32 +95,12 @@ function Trade() {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4 py-6">
+    <div className="max-w-7xl mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <div className="flex items-center gap-4 mb-6">
-          {selectedCoin && (
-            <>
-              <img
-                src={selectedCoin.image}
-                alt={selectedCoin.name}
-                className="w-10 h-10"
-              />
-              <div>
-                <h1 className="text-4xl font-bold text-white">
-                  {selectedCoin.name}
-                </h1>
-                <span className="text-gray-400">
-                  {selectedCoin.symbol.toUpperCase()}/USDT
-                </span>
-              </div>
-            </>
-          )}
-        </div>
-
         <div className="flex flex-col lg:flex-row">
           <div className="w-full lg:w-3/5bg-transparent border-y border-[#2f2f2f] lg:border-r  p-4">
             <div>

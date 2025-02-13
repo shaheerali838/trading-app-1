@@ -48,13 +48,13 @@ const Wallet = () => {
             </div>
             <div className="flex gap-4">
               <button
-                onClick={() => navigate("/assets/deposit")}
+                onClick={() => navigate("/wallet/deposit")}
                 className="btn bg-[#1E90FF] px-4 py-2 text-white rounded-md hover:bg-[#1C86EE] transition duration-300"
               >
                 Deposit
               </button>
               <button
-                onClick={() => navigate("/assets/withdraw")}
+                onClick={() => navigate("/wallet/withdraw")}
                 className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
               >
                 Withdraw

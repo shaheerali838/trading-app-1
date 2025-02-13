@@ -9,6 +9,7 @@
   import fileUpload from "express-fileupload";
   import userRouter from "./routers/userRoutes.js";
   import tradeRouter from "./routers/tradeRoutes.js";
+  import adminRouter from "./routers/adminRoutes.js";
 
   const app = express();
 
@@ -34,6 +35,7 @@
 
   app.use("/api/user", userRouter);
   app.use("/api/trade", tradeRouter);
+  app.use("/api/admin", adminRouter);
 
 
   dbConnection();
