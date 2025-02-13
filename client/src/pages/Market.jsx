@@ -5,6 +5,7 @@ import GraphCard from "../components/market/GraphCard";
 import AnimateSection from "../components/animation/AnimateSection";
 import { Link, useHref, useNavigate } from "react-router-dom";
 import AnimatedHeading from "../components/animation/AnimateHeading";
+import Loader from "../components/layout/Loader";
 
 function Market() {
   const dispatch = useDispatch();
@@ -37,11 +38,7 @@ function Market() {
           <h1 className="text-4xl font-bold mb-4">Cryptocurrency Market</h1>
         </AnimatedHeading>
 
-        {status === "loading" && (
-          <div className="text-center">
-            <div className="animate-spin rounded-full h-12 w-12 border-t-2 border-primary mx-auto"></div>
-          </div>
-        )}
+        {status === "loading" && <Loader />}
 
         {status === "succeeded" && (
           <>

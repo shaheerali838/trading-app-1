@@ -5,14 +5,41 @@ import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import avatarIImg from "../../assets/1.jpg";
-import avatarIIImg from "../../assets/1.jpg";
-import avatarIIIImg from "../../assets/1.jpg";
-import avatarIVImg from "../../assets/1.jpg";
-import avatarVImg from "../../assets/1.jpg";
+import avatarIIImg from "../../assets/2.jpg";
+import avatarIIIImg from "../../assets/3.jpg";
+import avatarIVImg from "../../assets/4.jpg";
 import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import "./Testimonials.css";
 
 const Testimonials = () => {
+  const testimonials = [
+    {
+      id: 1,
+      name: "Malik Noman",
+      avatar: avatarIImg,
+      testimonial:
+        "I am extremely satisfied with the services provided by this company. Their team is professional, efficient, and always goes above and beyond to meet my needs. I highly recommend them to anyone in need of reliable and high-quality services.",
+    },
+    {
+      id: 2,
+      name: "Muhammad Raza",
+      avatar: avatarIIImg,
+      testimonial:
+        "I have been using the services of this company for several years now, and I have always been impressed with their quality and reliability. Their team is knowledgeable and always provides excellent customer service. I would not hesitate to recommend them to anyone in need of professional services.",
+    },
+    {
+      id: 3,
+      name: "Smith",
+      avatar: avatarIIIImg, 
+      testimonial: "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and high-quality services."
+    }, {
+      id: 4,
+      name: "Ali",
+      avatar: avatarIVImg,
+      testimonial:
+        "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and professional services.",
+    },
+  ];
   return (
     <section className="testimonials min-h-screen flex flex-col items-center justify-center bg-gradient-reverse text-white text-center">
       <AnimatedHeading>
@@ -53,7 +80,8 @@ const Testimonials = () => {
           },
         }}
       >
-        <SwiperSlide className="swiper-slide">
+        {testimonials.map((testimonial) => (
+        <SwiperSlide key={testimonial.id} className="swiper-slide">
           <div
             style={{
               paddingRight: 20,
@@ -62,118 +90,19 @@ const Testimonials = () => {
           >
             <div className="testimonials-profile-circle">
               <img
-                src={avatarIImg}
+                src={testimonial.avatar}
                 alt="testimonial-avatar"
                 className="testimonial-avatar"
               />
             </div>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Similique
-              praesentium voluptate natus sunt, molestiae dolorum?
+            <p className="text-gray-400">{testimonial.name}</p>
+            <p className="testimonial-text">
+              {testimonial.testimonial}
             </p>
-            <button className="bg-secondary px-1 py-1 rounded-md text-black">
-              Learn More
-            </button>
+            
           </div>
         </SwiperSlide>
-
-        <SwiperSlide className="swiper-slide">
-          <div
-            style={{
-              paddingRight: 20,
-              paddingLeft: 20,
-            }}
-          >
-            <div className="testimonials-profile-circle">
-              <img
-                src={avatarIIImg}
-                alt="testimonial-avatar"
-                className="testimonial-avatar"
-                loading="lazy"
-              />
-            </div>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit.
-              Distinctio, animi libero facere eligendi illo consectetur!
-            </p>
-            <button className="bg-secondary px-1 py-1 rounded-md text-black">
-              Learn More
-            </button>
-          </div>
-        </SwiperSlide>
-
-        <SwiperSlide className="swiper-slide">
-          <div
-            style={{
-              paddingRight: 20,
-              paddingLeft: 20,
-            }}
-          >
-            <div className="testimonials-profile-circle">
-              <img
-                src={avatarIIIImg}
-                alt="testimonial-avatar"
-                className="testimonial-avatar"
-              />
-            </div>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Nesciunt
-              id quaerat, quas minus cum provident?
-            </p>
-            <button className="bg-secondary mt-2 px-1 py-1 rounded-md text-black">
-              Learn More
-            </button>
-          </div>
-        </SwiperSlide>
-
-        <SwiperSlide className=" ">
-          <div
-            style={{
-              paddingRight: 20,
-
-              paddingLeft: 20,
-            }}
-          >
-            <div className="testimonials-profile-circle">
-              <img
-                src={avatarIVImg}
-                alt="testimonial-avatar"
-                className="testimonial-avatar"
-              />
-            </div>
-            <p>
-              Lorem ipsum dolor, sit amet consectetur adipisicing elit. Cumque
-              culpa suscipit, ad iure esse nihil?
-            </p>
-            <button className="bg-secondary px-1 py-1 rounded-md text-black">
-              Learn More
-            </button>
-          </div>
-        </SwiperSlide>
-
-        <SwiperSlide className="swiper-slide">
-          <div
-            style={{
-              paddingRight: 20,
-              paddingLeft: 20,
-            }}
-          >
-            <div className="testimonials-profile-circle">
-              <img
-                src={avatarVImg}
-                alt="testimonial-avatar"
-                className="testimonial-avatar"
-              />
-            </div>
-            <p>
-              Lorem ipsum dolor sit amet consectetur adipisicing elit. Unde
-              dicta, quibusdam dolor eligendi quaerat nulla.
-            </p>
-            <button className="bg-secondary px-1 py-1 rounded-md text-black">
-              Learn More
-            </button>
-          </div>
-        </SwiperSlide>
+        ))}
       </Swiper>
     </section>
   );

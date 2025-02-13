@@ -1,41 +1,41 @@
-import express from "express";
-import cookieParser from "cookie-parser";
-import cors from "cors";
-import { config } from "dotenv";
-import { dbConnection } from "./config/dbConnection.js";
-import { dirname } from "node:path";
-import { join } from "path";
-import { fileURLToPath } from "url";
-import fileUpload from "express-fileupload";
-import userRouter from "./routers/userRoutes.js";
-import tradeRouter from "./routers/tradeRoutes.js";
+  import express from "express";
+  import cookieParser from "cookie-parser";
+  import cors from "cors";
+  import { config } from "dotenv";
+  import { dbConnection } from "./config/dbConnection.js";
+  import { dirname } from "node:path";
+  import { join } from "path";
+  import { fileURLToPath } from "url";
+  import fileUpload from "express-fileupload";
+  import userRouter from "./routers/userRoutes.js";
+  import tradeRouter from "./routers/tradeRoutes.js";
 
-const app = express();
+  const app = express();
 
-const __filename = fileURLToPath(import.meta.url);
-const __dirname = dirname(__filename);
+  const __filename = fileURLToPath(import.meta.url);
+  const __dirname = dirname(__filename);
 
-const envPath = join(__dirname, "/config/config.env");
+  const envPath = join(__dirname, "/config/config.env");
 
-config({ path: envPath });
+  config({ path: envPath });
 
-app.use(
-  cors({
-    origin: ["http://localhost:5173", "http://localhost:5174"],
-    credentials: true,
-    methods: "GET,POST,PUT,DELETE",
-    allowedHeaders: "Content-Type,Authorization",
-  })
-);
-app.use(express.json());
-app.use(cookieParser());
-app.use(express.urlencoded({ extended: true }));
-app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
+  app.use(
+    cors({
+      origin: ["http://localhost:5173", "http://localhost:5174"],
+      credentials: true,
+      methods: "GET,POST,PUT,DELETE",
+      allowedHeaders: "Content-Type,Authorization",
+    })
+  );
+  app.use(express.json());
+  app.use(cookieParser());
+  app.use(express.urlencoded({ extended: true }));
+  app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 
-app.use("/api/user", userRouter);
-app.use("/api/trade", tradeRouter);
+  app.use("/api/user", userRouter);
+  app.use("/api/trade", tradeRouter);
 
 
-dbConnection();
+  dbConnection();
 
-export default app;
+  export default app;

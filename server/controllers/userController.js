@@ -114,11 +114,14 @@ export const updateProfile = async (req, res) => {
  * @access Private
  */
 export const getWallet = async (req, res) => {
-  try {
-    const wallet = await Wallet.findOne({ userId: req.user.userId });
-    if (!wallet)
-      return res.status(404).json({ success: false, msg: "Wallet not found" });
+  try {    
+    const wallet = await Wallet.findOne({ userId: req.user._id });
+    if (!wallet){
 
+      return res.status(404).json({ success: false, msg: "Wallet not found" });
+    }
+    console.log(wallet);
+    
     res.json(wallet);
   } catch (error) {
     res.status(500).json({ success: false, msg: "Server Error", error });

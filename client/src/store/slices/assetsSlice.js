@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import { toast } from "react-toastify";
 
 export const depositFunds = createAsyncThunk(
   "assets/deposit",
@@ -33,6 +34,23 @@ export const withdrawFunds = createAsyncThunk(
     }
   }
 );
+export const getWallet = createAsyncThunk(
+  "user/wallet",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await axios.get("http://localhost:5000/api/user/getwallet", {
+        withCredentials: true,
+        headers: {
+          "Content-Type": "application/json",
+        },
+      });
+      console.log(JSON.stringify(response.data));
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const assetsSlice = createSlice({
   name: "assets",
@@ -40,7 +58,7 @@ const assetsSlice = createSlice({
     balance: 0,
     pendingTransactions: [],
     depositHistory: [],
-    withdrawalHistory: [], // Add withdrawalHistory to the initial state
+    withdrawalHistory: [],
     status: "idle",
     error: null,
   },
@@ -84,12 +102,27 @@ const assetsSlice = createSlice({
       .addCase(withdrawFunds.fulfilled, (state, action) => {
         state.status = "succeeded";
         state.balance -= action.payload.amount;
-        state.withdrawalHistory.push(action.payload); // Add withdrawal to history
+        state.withdrawalHistory.push(action.payload);
         state.error = null;
       })
       .addCase(withdrawFunds.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload?.message || "Failed to process withdrawal";
+      })
+      .addCase(getWallet.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(getWallet.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.balance = action.payload.balance;
+        state.pendingTransactions = action.payload.pendingTransactions;
+        state.depositHistory = action.payload.depositHistory;
+        state.withdrawalHistory = action.payload.withdrawalHistory;
+        state.error = null;
+      })
+      .addCase(getWallet.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload?.message || "Failed to fetch wallet data";
       });
   },
 });
@@ -99,7 +132,7 @@ export const {
   addPendingTransaction,
   removePendingTransaction,
   addDepositHistory,
-  addWithdrawalHistory, // Export addWithdrawalHistory action
+  addWithdrawalHistory,
 } = assetsSlice.actions;
 
 export default assetsSlice.reducer;

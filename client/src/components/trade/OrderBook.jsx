@@ -27,7 +27,7 @@ const OrderBook = ({ selectedPair }) => {
   }, [selectedPair]);
 
   return (
-    <div className="w-full p-4 border-y-[.3px] border-[#00c853]">
+    <div className="w-full p-4">
       <h3 className="text-sm text-secondary font-semibold text-center">
         Order Book
       </h3>

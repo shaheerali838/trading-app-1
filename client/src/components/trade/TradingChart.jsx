@@ -193,7 +193,7 @@ const TradingChart = ({
   };
 
   return (
-    <div className=" border-y-[.3px] border-r-[.3px] border-[#00c853] ">
+    <div>
       <div className="flex justify-between items-center border-b-[.3px] border-[#00c853] ">
         <div className=" flex gap-4 w-fit">
           <div>

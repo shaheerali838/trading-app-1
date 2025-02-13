@@ -35,9 +35,6 @@ const Hero = () => {
               Trade safely, quickly and easily
             </p>
           </div>
-          <div className="button mt-8 md:mt-16 w-fit px-2 py-2 text-xl rounded-full bg-[#007BFF] text-white  cursor-pointer">
-            <button>Login/Register</button>
-          </div>
         </div>
         <div className="second mt-8 md:mt-0">
           <div className="heroImage w-[50vw] md:w-[25vw] rotate-[-27deg] animate-up-down">

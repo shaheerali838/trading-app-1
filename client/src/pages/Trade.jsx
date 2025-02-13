@@ -95,11 +95,11 @@ function Trade() {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className="max-w-7xl mx-auto">
+    <div className="max-w-7xl mx-auto px-4 py-6">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
-        className="px-8"
+        className="space-y-6"
       >
         <div className="flex items-center gap-4 mb-6">
           {selectedCoin && (
@@ -110,8 +110,10 @@ function Trade() {
                 className="w-10 h-10"
               />
               <div>
-                <h1 className="text-4xl font-bold">{selectedCoin.name}</h1>
-                <span className="text-light/60">
+                <h1 className="text-4xl font-bold text-white">
+                  {selectedCoin.name}
+                </h1>
+                <span className="text-gray-400">
                   {selectedCoin.symbol.toUpperCase()}/USDT
                 </span>
               </div>
@@ -119,9 +121,9 @@ function Trade() {
           )}
         </div>
 
-        <div className="flex justify-evenly">
-          <div className="w-full">
-            <div className="rounded-lg">
+        <div className="flex flex-col lg:flex-row">
+          <div className="w-full lg:w-3/5bg-transparent border-y border-[#2f2f2f] lg:border-r  p-4">
+            <div>
               <TradingChart
                 marketData={marketData}
                 onPairChange={setSelectedPair}
@@ -133,11 +135,10 @@ function Trade() {
               />
             </div>
           </div>
-          <div className="col-span-3 bg-darkGray p-4 rounded-lg">
+          <div className="bg-transparent border border-[#2f2f2f] p-4">
             <OrderBook selectedPair={selectedPair} />
           </div>
-
-          <div className="border-l border-b border-[#00c853] w-[25vw]">
+          <div className=" bg-transparent  border-y border-[#2f2f2f]  p-4">
             <OrderForm
               marketPrice={currentMarketPrice}
               selectedPair={selectedPair}
@@ -146,7 +147,9 @@ function Trade() {
         </div>
 
         <div className="mt-6">
-          <RecentTrades trades={recentTrades} />
+          <div className="bg-transparent border border-[#2f2f2f] p-4">
+            <RecentTrades trades={recentTrades} />
+          </div>
         </div>
       </motion.div>
     </div>

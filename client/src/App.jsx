@@ -10,7 +10,7 @@ import About from "./pages/About";
 import Market from "./pages/Market";
 import Trade from "./pages/Trade";
 import { useDispatch } from "react-redux";
-import Assets from "./pages/finance/Assets.jsx";
+import Wallet from "./pages/finance/Wallet.jsx";
 import Deposit from "./pages/finance/Deposit.jsx";
 import RequestRelease from "./pages/finance/RequestRelease.jsx";
 import Withdraw from "./pages/finance/Withdraw.jsx";
@@ -39,13 +39,13 @@ const App = () => {
             <Route path="/about" element={<About />} />
             <Route path="/market" element={<Market />} />
             <Route element={<ProtectedRoute />}>
-              <Route path="/assets" element={<Assets />} />
-              <Route path="/assets/deposit" element={<Deposit />} />
+              <Route path="/wallet" element={<Wallet />} />
+              <Route path="/wallet/deposit" element={<Deposit />} />
               <Route
-                path="/assets/request-release-funds"
+                path="/wallet/request-release-funds"
                 element={<RequestRelease />}
               />
-              <Route path="/assets/withdraw" element={<Withdraw />} />
+              <Route path="/wallet/withdraw" element={<Withdraw />} />
               <Route path="/trade" element={<Trade />} />
             </Route>
           </Routes>

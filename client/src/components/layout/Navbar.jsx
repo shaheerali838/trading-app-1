@@ -72,7 +72,7 @@ const Navbar = () => {
           <Link to={"/trade"} className="text-white hover:text-[#00FF7F]">
             Trade
           </Link>
-          <Link to={"/assets"} className="text-white hover:text-[#00FF7F]">
+          <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
             Wallet
           </Link>
           <Link to={"/about"} className="text-white hover:text-[#00FF7F]">
@@ -122,7 +122,7 @@ const Navbar = () => {
               </MenuItem>
               <MenuItem>
                 <Link
-                  to={"/assets"}
+                  to={"/wallet"}
                   className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                 >
                   Assets Wallet
