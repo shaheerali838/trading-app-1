@@ -5,6 +5,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchRequests } from "../../store/slices/adminSlice";
 import { Breadcrumbs } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
+import API from "../../utils/api";
 
 const ManageTransactions = () => {
   const dispatch = useDispatch();
@@ -14,7 +15,7 @@ const ManageTransactions = () => {
   }, []);
 
   const approveTransaction = (id) => {
-    axios.put(`/api/admin/requests/${id}/approve`).then(() => {
+    API.put(`/admin/requests/${id}/approve`).then(() => {
       dispatch(fetchRequests());
     });
   };

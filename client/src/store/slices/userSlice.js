@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
+import API from "../../utils/api.js";
 import { toast } from "react-toastify";
 
 // Async thunk for logging in
@@ -7,8 +8,8 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/user/login",
+      const response = await API.post(
+        "/api/user/login",
         { email, password },
         {
           withCredentials: true,
@@ -17,11 +18,11 @@ export const loginUser = createAsyncThunk(
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success("User Logged In Successfully");
-      
+
       return response.data;
     } catch (error) {
-      console.log('the error is ');
-      
+      console.log("the error is ");
+
       toast.error(JSON.stringify(error.response.data.msg));
       return rejectWithValue(error.response.data);
     }
@@ -33,8 +34,8 @@ export const registerUser = createAsyncThunk(
   "user/registerUser",
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
-      const response = await axios.post(
-        "http://localhost:5000/api/user/register",
+      const response = await API.post(
+        "/api/user/register",
         { email, password, firstName, lastName },
         {
           withCredentials: true,
@@ -56,8 +57,8 @@ export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/user/logout",
+      await API.post(
+        "/api/user/logout",
         {},
         {
           withCredentials: true,
@@ -75,8 +76,8 @@ export const logoutAdmin = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await axios.post(
-        "http://localhost:5000/api/admin/logout",
+      await API.post(
+        "/api/admin/logout",
         {},
         {
           withCredentials: true,

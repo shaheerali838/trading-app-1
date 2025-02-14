@@ -1,7 +1,8 @@
 import { useState, useEffect } from "react";
 import { Card} from "@material-tailwind/react";
-import axios from "axios";
+import API from "API";
 import { Link } from "react-router-dom";
+import API from "../../utils/api";
 
 const AdminDashboard = () => {
   const [users, setUsers] = useState([]);
@@ -16,7 +17,7 @@ const AdminDashboard = () => {
 
   const fetchUsers = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/users");
+      const response = await API.get("/admin/users");
       setUsers(response.data);
     } catch (error) {
       console.error("Error fetching users:", error);
@@ -25,8 +26,8 @@ const AdminDashboard = () => {
 
   const fetchTransactions = async () => {
     try {
-      const response = await axios.get(
-        "http://localhost:5000/api/admin/transactions"
+      const response = await API.get(
+        "/admin/transactions"
       );
       setTransactions(response.data);
     } catch (error) {
@@ -36,7 +37,7 @@ const AdminDashboard = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/logs");
+      const response = await API.get("/admin/logs");
       setLogs(response.data);
     } catch (error) {
       console.error("Error fetching logs:", error);

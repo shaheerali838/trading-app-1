@@ -1,12 +1,13 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
+import API from "../../utils/api";
 
 export const fundsRequest = createAsyncThunk(
   "funds/requeset",
   async ({ amount, currency, accountName, accountNumber,type }, { rejectWithValue }) => {
     try {
-      const response = await axios.post("http://localhost:5000/api/funds/request", {
+      const response = await API.post("/funds/request", {
         amount,
         currency,
         type,
@@ -25,7 +26,7 @@ export const getWallet = createAsyncThunk(
   "user/wallet",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/api/user/getwallet", {
+      const response = await API.get("/user/getwallet", {
         withCredentials: true,
         headers: {
           "Content-Type": "application/json",

@@ -3,6 +3,7 @@ import { Card, Button } from "@material-tailwind/react";
 import io from "socket.io-client";
 import axios from "axios";
 import { toast } from "react-toastify";
+import API from "../../utils/api";
 
 const socket = io("http://localhost:5000");
 
@@ -44,7 +45,7 @@ const OrderForm = ({ marketPrice }) => {
     };
 
     try {
-      const response = await axios.post("http://localhost:5000/api/trade/placeOrder", orderData, {
+      const response = await API.post("/trade/placeOrder", orderData, {
         withCredentials: true,
       });
 

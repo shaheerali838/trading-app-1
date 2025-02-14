@@ -78,7 +78,7 @@ function Trade() {
 
   // WebSocket for real-time trade updates
   useEffect(() => {
-    const socket = io("http://localhost:5000");
+    const socket = io("https://trading-app-t6qp.onrender.com");
 
     socket.on("tradeUpdate", (trade) => {
       setRecentTrades((prevTrades) => [trade, ...prevTrades.slice(0, 9)]);
