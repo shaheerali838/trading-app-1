@@ -2,7 +2,12 @@ export const generateToken = (user, message, statusCode, res) => {
   const token = user.generateJWTToken();
 
 
-  let cookieName = user.role === "admin" ? "adminToken" : "userToken";
+  let cookieName;
+  if (user.role === "admin"){
+    cookieName = "adminToken";
+  } else if (user.role === "user"){
+    cookieName = "userToken";
+  }
   res.cookie(cookieName, token, {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production",

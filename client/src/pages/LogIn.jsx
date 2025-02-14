@@ -15,18 +15,24 @@ const LogIn = () => {
 
   useEffect(() => {
     if (user && user.role === "user") {
-      navigate(-1); // Redirect to te previous page
+      navigate(-1); // Redirect to the previous page
     } else if (user && user.role === "admin") {
       navigate("/admin/dashboard");
     }
   }, [user, navigate]);
 
-  const handleSubmit = (e) => {
+  const handleSubmit = async (e) => {
     e.preventDefault();
-    const res = dispatch(loginUser({ email, password }));
-    
-    if (res) {
+    try {
+      const res = await dispatch(loginUser({ email, password })).unwrap();
       toast.success(res.msg);
+      if (res.user.role === "user") {
+        navigate(-1); // Redirect to the previous page
+      } else if (res.user.role === "admin") {
+        navigate("/admin/dashboard");
+      }
+    } catch (err) {
+      toast.error(err.message);
     }
   };
 
