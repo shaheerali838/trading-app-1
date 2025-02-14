@@ -71,6 +71,25 @@ export const logoutUser = createAsyncThunk(
     }
   }
 );
+export const logoutAdmin = createAsyncThunk(
+  "user/logoutUser",
+  async (_, { rejectWithValue }) => {
+    try {
+      await axios.post(
+        "http://localhost:5000/api/admin/logout",
+        {},
+        {
+          withCredentials: true,
+        }
+      );
+      // Remove user data from local storage
+      localStorage.removeItem("user");
+      return {};
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 // Initial state
 const initialState = {

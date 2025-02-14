@@ -5,7 +5,6 @@ import { toast } from "react-toastify";
 import bankQr from "../../assets/transaction-qr.png";
 import easypaisaQr from "../../assets/transaction-qr.png";
 import jazzcashQr from "../../assets/transaction-qr.png";
-import { depositFunds } from "../../store/slices/assetsSlice";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { Link } from "react-router-dom";
 
@@ -22,22 +21,6 @@ function Deposit() {
     if (!amount || parseFloat(amount) <= 0) {
       toast.error("Please enter a valid amount");
       return;
-    }
-
-    try {
-      const result = await dispatch(
-        depositFunds({
-          amount: parseFloat(amount),
-          currency,
-          method,
-        })
-      ).unwrap();
-
-      toast.success("Deposit initiated successfully");
-      setAmount("");
-      setMethod("bank");
-    } catch (error) {
-      toast.error(error?.message || "Failed to process deposit");
     }
   };
 
@@ -85,7 +68,7 @@ function Deposit() {
                   Bank Transfer
                 </option>
                 <option className="text-black hover:bg-tertiary3" value="card">
-                  Easypais/Jazzcash
+                  Easypaisa/Jazzcash
                 </option>
               </select>
             </div>
@@ -93,7 +76,7 @@ function Deposit() {
           <div className="qrCode">
             <img
               src={
-                method === "Bank Transfer"
+                method === "bank"
                   ? bankQr
                   : method === "Easypaisa"
                   ? easypaisaQr
@@ -106,7 +89,7 @@ function Deposit() {
 
           <div className="w-full max-w-[16rem]">
             <div className="relative">
-              <label for="account-number" className="sr-only">
+              <label htmlFor="account-number" className="sr-only">
                 Label
               </label>
               <input
@@ -116,7 +99,7 @@ function Deposit() {
          border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
                 value="1479857fhkjhfiy954945794"
                 disabled
-                readonly
+                readOnly
               />
               <button
                 data-copy-to-clipboard-target="npm-install-copy-button"
@@ -144,12 +127,12 @@ function Deposit() {
                   >
                     <path
                       stroke="currentColor"
-                      stroke-linecap="round"
-                      stroke-linejoin="round"
-                      stroke-width="2"
+                      strokeLinecap="round"
+                      strokeLinejoin="round"
+                      strokeWidth="2"
                       d="M1 5.917 5.724 10.5 15 1.5"
                     />
-                  </svg>
+                  </svg>  
                 </span>
               </button>
               <div
@@ -166,31 +149,31 @@ function Deposit() {
             </div>
           </div>
           <Link to={"/wallet/request-release-funds"} className="text-blue-400">
-            Already have maded transaction? Send Request for releasing funds.
+            Already made a transaction? Send a request to release funds.
           </Link>
         </form>
         <div className="warning rounded-md px-8 py-8 bg-[#242424] w-[40vw] max-h-fit text-start">
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>
-              1.The above deposit address is the official payment address of the
-              platform. please look for the official deposit address of the
-              platform, and the loss of funds caused by incorectcharging shal be
+              1. The above deposit address is the official payment address of the
+              platform. Please ensure you use the official deposit address of the
+              platform. Any loss of funds caused by incorrect charging shall be
               borne by yourself.
             </li>
             <li>
-              2.Please make sure that your computer and browser are safe to
-              prevert information from being tampered with or leak
+              2. Please make sure that your computer and browser are safe to
+              prevent information from being tampered with or leaked.
             </li>
             <li>
-              3.after yoiu recharge the above addess. you need to confirm the
-              entire network node it can credited.
+              3. After you recharge the above address, you need to confirm the
+              entire network node for it to be credited.
             </li>
             <li>
-              4.Please select the above-mentioned token system and currency type
-              and transfer the corresponding amount for deposit, Please do not
-              transfer any other irrelevant assets, othervise they will not be
-              retrieved
+              4. Please select the above-mentioned token system and currency type
+              and transfer the corresponding amount for deposit. Please do not
+              transfer any other irrelevant assets, otherwise, they will not be
+              retrieved.
             </li>
           </ol>
         </div>

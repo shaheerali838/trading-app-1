@@ -3,9 +3,8 @@ import User from "../models/User.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import ErrorHandler from "../middlewares/errorMiddleware.js";
 export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
-  console.log("Auth Middleware Hit");
-  console.log("Request Headers:", req.headers);
-  const token = req.cookies.userToken;
+  const token = req.cookies.adminToken;
+  console.log("the admin token is :", token);
   if (!token) {
     return next(new ErrorHandler("You need to Sign In First", 503));
   }
@@ -17,15 +16,15 @@ export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
   }
   req.user = user;
 
-  if (!user.role === "user") {
+  if (!user.role === "admin") {
     return next(new ErrorHandler(`${req.user.role} Is Not Authorized`, 403));
   }
   next();
 });
 export const isUserAuthenticated = catchAsyncErrors(async (req, res, next) => {
-  console.log("Auth Middleware Hit");
-  console.log("Request Headers:", req.headers);
   const token = req.cookies.userToken;
+  console.log("the user token is :", token);
+
   if (!token) {
     return next(new ErrorHandler("You need to Sign In First", 503));
   }

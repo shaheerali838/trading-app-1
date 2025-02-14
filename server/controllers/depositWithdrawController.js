@@ -4,32 +4,38 @@ import Wallet from "../models/Wallet.js";
 // Create a new deposit or withdrawal request
 export const createDepositWithdrawRequest = async (req, res) => {
   try {
-    const { type, amount, currency } = req.body;
+    const { type, amount, currency, accountNumber, accountName } = req.body;
+    console.log(`the type is: ${type} and the user is ${req.user}`);
+    
     
     if (!["deposit", "withdraw"].includes(type)) {
-      return res.status(400).json({ msg: "Invalid transaction type" });
+      return res.status(400).json({ message: "Invalid transaction type" });
     }
 
     const wallet = await Wallet.findOne({ userId: req.user._id });
     if (!wallet) {
-      return res.status(404).json({ msg: "Wallet not found" });
+      return res.status(404).json({ message: "Wallet not found" });
     }
 
     if (type === "withdraw" && wallet[`balance${currency}`] < amount) {
-      return res.status(400).json({ msg: "Insufficient balance" });
+      return res.status(400).json({ message: "Insufficient balance" });
     }
-
+    
     const request = await DepositWithdrawRequest.create({
       userId: req.user._id,
       type,
       amount,
       currency,
+      accountNumber,
+      accountName,
       status: "pending",
     });
 
-    res.status(201).json({ msg: `${type} request submitted`, request });
+    res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
-    res.status(500).json({ msg: "Error processing request", error });
+    console.log(error.message);
+    
+    res.status(500).json({ message: "Error processing request", error });
   }
 };
 
@@ -39,7 +45,7 @@ export const getUserRequests = async (req, res) => {
     const requests = await DepositWithdrawRequest.find({ userId: req.user._id }).sort({ createdAt: -1 });
     res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json({ msg: "Error fetching requests", error });
+    res.status(500).json({ message: "Error fetching requests", error });
   }
 };
 
@@ -49,7 +55,7 @@ export const getAllRequests = async (req, res) => {
     const requests = await DepositWithdrawRequest.find().populate("userId", "email").sort({ createdAt: -1 });
     res.status(200).json(requests);
   } catch (error) {
-    res.status(500).json({ msg: "Error fetching requests", error });
+    res.status(500).json({ message: "Error fetching requests", error });
   }
 };
 
@@ -60,19 +66,19 @@ export const approveRequest = async (req, res) => {
     const request = await DepositWithdrawRequest.findById(requestId);
     
     if (!request || request.status !== "pending") {
-      return res.status(400).json({ msg: "Invalid request" });
+      return res.status(400).json({ message: "Invalid request" });
     }
 
     const wallet = await Wallet.findOne({ userId: request.userId });
     if (!wallet) {
-      return res.status(404).json({ msg: "Wallet not found" });
+      return res.status(404).json({ message: "Wallet not found" });
     }
 
     if (request.type === "deposit") {
       wallet[`balance${request.currency}`] += request.amount;
     } else if (request.type === "withdraw") {
       if (wallet[`balance${request.currency}`] < request.amount) {
-        return res.status(400).json({ msg: "Insufficient balance" });
+        return res.status(400).json({ message: "Insufficient balance" });
       }
       wallet[`balance${request.currency}`] -= request.amount;
     }
@@ -81,9 +87,9 @@ export const approveRequest = async (req, res) => {
     await request.save();
     await wallet.save();
 
-    res.status(200).json({ msg: `${request.type} request approved`, request });
+    res.status(200).json({ message: `${request.type} request approved`, request });
   } catch (error) {
-    res.status(500).json({ msg: "Error approving request", error });
+    res.status(500).json({ message: "Error approving request", error });
   }
 };
 
@@ -95,15 +101,25 @@ export const rejectRequest = async (req, res) => {
 
     const request = await DepositWithdrawRequest.findById(requestId);
     if (!request || request.status !== "pending") {
-      return res.status(400).json({ msg: "Invalid request" });
+      return res.status(400).json({ message: "Invalid request" });
     }
 
     request.status = "rejected";
     request.adminNote = adminNote || "Request rejected by admin";
     await request.save();
 
-    res.status(200).json({ msg: "Request rejected", request });
+    res.status(200).json({ message: "Request rejected", request });
   } catch (error) {
-    res.status(500).json({ msg: "Error rejecting request", error });
+    res.status(500).json({ message: "Error rejecting request", error });
   }
 };
+
+export const getAllUsers = async (req, res) => {
+  try {
+    const users = await User.find();
+    res.status(200).json({ message: "All users", users });
+  }
+  catch (error) {
+    res.status(500).json({ message: "Error fetching users", error });
+  }
+}

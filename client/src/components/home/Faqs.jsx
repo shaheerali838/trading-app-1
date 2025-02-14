@@ -16,33 +16,33 @@ const Faqs = () => {
   const faqs = [
     {
       id: 1,
-      question: "What is the purpose of this website?",
+      question: "What is this platform?",
       answer:
-        "This website is designed to provide information and resources for individuals interested in learning about the history and culture of the African diaspora in the United States.",
+        "Our platform is a crypto trading exchange where users can buy, sell, deposit, withdraw, and manage their crypto assets in a secure environment.This website is designed to provide information and resources for individuals interested in learning about the history and culture of the African diaspora in the United States.",
     },
     {
       id: 2,
-      question: "Who is the target audience for this website?",
+      question: "Is this platform safe?",
       answer:
-        "This website is intended for individuals of all ages and backgrounds who are interested in learning about the African diaspora in the United States.",
+        "Yes! We use secure authentication, encrypted data, and admin controls to ensure the safety of user funds and transactions.",
     },
     {
       id: 3,
-      question: "How can I contribute to this website?",
+      question: "How do I create an account?",
       answer:
-        "You can contribute by submitting information, resources, or stories about the African diaspora in the United States. You can also help us improve the website by providing feedback or suggestions.",
+        "Click on Register, provide your email, set a password, and verify your email to start trading.",
     },
     {
       id: 4,
-      question: "How can I contact the website administrators?",
+      question: "What is the difference between Market and Limit orders?",
       answer:
-        "You can contact the website administrators by sending an email to info@africandiasporainamerica.com.",
+        "Market Orders → Buy/Sell instantly at the current market price.\nLimit Orders → Buy/Sell at a specific price set by you.",
     },
     {
       id: 5,
-      question: "What is the African diaspora?",
+      question: "How do I place an order?",
       answer:
-        "The African diaspora refers to the communities of people of African descent who have migrated from Africa to other parts of the world, including the United States.",
+        "Select the crypto pair, choose the order type (market/limit), enter the amount, and confirm your order.",
     },
   ];
 

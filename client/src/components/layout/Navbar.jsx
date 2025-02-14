@@ -40,9 +40,10 @@ const Navbar = () => {
   }, []);
 
   const handleLogout = () => {
+    const userRole = user.role;
     localStorage.removeItem("user");
     window.location.href = "/";
-    dispatch(logoutUser());
+    userRole === "admin" ? dispatch(logoutAdmin()) : dispatch(logoutUser());
   };
   const handleLogoutDialog = () => {
     setOpenDialog(!openDialog);

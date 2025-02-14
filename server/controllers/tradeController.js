@@ -1,93 +1,75 @@
 import Wallet from "../models/Wallet.js";
 import Trade from "../models/Trade.js";
-import { emitTradeUpdate } from "../server.js";
+import { io } from "../server.js"; // Import WebSocket instance
 
-// Buy Crypto
-export const buyCrypto = async (req, res) => {
+export const placeOrder = async (req, res) => {
   try {
-    const { asset, quantity, price } = req.body;
-    const totalCost = quantity * price;
+    const { type, orderType, price, amount } = req.body;
 
-    const wallet = await Wallet.findOne({ userId: req.user.userId });
-    if (!wallet) return res.status(404).json({ msg: "Wallet not found" });
-
-    if (wallet.balanceUSDT < totalCost) {
-      return res.status(400).json({ msg: "Insufficient USDT balance" });
+    if (!["buy", "sell"].includes(type)) {
+      return res.status(400).json({ message: "Invalid order type" });
     }
 
-    // Deduct USDT balance
-    wallet.balanceUSDT -= totalCost;
+    if (amount <= 0 || (orderType === "limit" && price <= 0)) {
+      return res.status(400).json({ message: "Invalid order details" });
+    }
 
-    // Add or update crypto holdings
-    const assetHolding = wallet.holdings.find((item) => item.asset === asset);
-    if (assetHolding) {
-      assetHolding.quantity += quantity;
+    const wallet = await Wallet.findOne({ userId: req.user._id });
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
+
+    let totalCost = amount * price;
+
+    if (type === "buy") {
+      // Ensure user has enough USDT balance
+      if (wallet.balanceUSDT < totalCost) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+
+      // Deduct USDT and add crypto
+      wallet.balanceUSDT -= totalCost;
+      const holding = wallet.holdings.find((h) => h.asset === "BTC");
+      if (holding) {
+        holding.quantity += amount;
+      } else {
+        wallet.holdings.push({ asset: "BTC", quantity: amount });
+      }
     } else {
-      wallet.holdings.push({ asset, quantity });
+      // Sell Crypto
+      const holding = wallet.holdings.find((h) => h.asset === "BTC");
+      if (!holding || holding.quantity < amount) {
+        return res.status(400).json({ message: "Insufficient crypto balance" });
+      }
+
+      // Deduct Crypto and add USDT
+      holding.quantity -= amount;
+      if (holding.quantity === 0) {
+        wallet.holdings = wallet.holdings.filter((h) => h.asset !== "BTC");
+      }
+      wallet.balanceUSDT += totalCost;
     }
 
     await wallet.save();
 
     // Record the trade
-    const trade = new Trade({
-      userId: req.user.userId,
-      type: "buy",
-      asset,
-      quantity,
+    const trade = await Trade.create({
+      userId: req.user._id,
+      type,
+      orderType,
       price,
+      amount,
       totalCost,
     });
-    await trade.save();
-    emitTradeUpdate(trade);
 
-    res.json({ msg: "Purchase successful", trade });
+    // Emit real-time trade update
+    io.emit("tradeUpdate", trade);
+
+    res.status(200).json({ message: "Trade successful", trade });
   } catch (error) {
-    res.status(500).json({ msg: "Error processing purchase", error });
+    console.error(error);
+    res.status(500).json({ message: "Server error", error });
   }
 };
 
-// Sell Crypto
-export const sellCrypto = async (req, res) => {
-  try {
-    const { asset, quantity, price } = req.body;
-    const totalValue = quantity * price;
-
-    const wallet = await Wallet.findOne({ userId: req.user.userId });
-    if (!wallet) return res.status(404).json({ msg: "Wallet not found" });
-
-    const assetHolding = wallet.holdings.find((item) => item.asset === asset);
-    if (!assetHolding || assetHolding.quantity < quantity) {
-      return res.status(400).json({ msg: "Insufficient crypto balance" });
-    }
-
-    // Deduct crypto holdings
-    assetHolding.quantity -= quantity;
-    if (assetHolding.quantity === 0) {
-      wallet.holdings = wallet.holdings.filter((item) => item.asset !== asset);
-    }
-
-    // Add USDT balance
-    wallet.balanceUSDT += totalValue;
-
-    await wallet.save();
-
-    // Record the trade
-    const trade = new Trade({
-      userId: req.user.userId,
-      type: "sell",
-      asset,
-      quantity,
-      price,
-      totalCost: totalValue,
-    });
-    await trade.save();
-    emitTradeUpdate(trade);
-
-    res.json({ msg: "Sale successful", trade });
-  } catch (error) {
-    res.status(500).json({ msg: "Error processing sale", error });
-  }
-};
 
 // Get User Trade History
 export const getTradeHistory = async (req, res) => {
@@ -97,7 +79,7 @@ export const getTradeHistory = async (req, res) => {
     });
     res.json(trades);
   } catch (error) {
-    res.status(500).json({ msg: "Error fetching trade history", error });
+    res.status(500).json({ message: "Error fetching trade history", error });
   }
 };
 
@@ -105,10 +87,10 @@ export const getTradeHistory = async (req, res) => {
 export const getWallet = async (req, res) => {
   try {
     const wallet = await Wallet.findOne({ userId: req.user.userId });
-    if (!wallet) return res.status(404).json({ msg: "Wallet not found" });
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
     res.json(wallet);
   } catch (error) {
-    res.status(500).json({ msg: "Error fetching wallet details", error });
+    res.status(500).json({ message: "Error fetching wallet details", error });
   }
 };

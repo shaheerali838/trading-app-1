@@ -2,14 +2,16 @@ import { useState, useEffect } from "react";
 import { Card, Button } from "@material-tailwind/react";
 import io from "socket.io-client";
 import axios from "axios";
+import { toast } from "react-toastify";
 
-const socket = io("http://localhost:5000"); // Adjust URL if needed
+const socket = io("http://localhost:5000");
 
-const OrderForm = ({ marketPrice, orderBook }) => {
+const OrderForm = ({ marketPrice }) => {
   const [orderType, setOrderType] = useState("market");
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
   const [amount, setAmount] = useState("");
+  const [trades, setTrades] = useState([]);
 
   useEffect(() => {
     if (orderType === "market") {
@@ -17,10 +19,21 @@ const OrderForm = ({ marketPrice, orderBook }) => {
     }
   }, [orderType, marketPrice]);
 
+  useEffect(() => {
+    // Listen for real-time trade updates
+    socket.on("tradeUpdate", (trade) => {
+      setTrades((prevTrades) => [trade, ...prevTrades]);
+    });
+
+    return () => {
+      socket.off("tradeUpdate");
+    };
+  }, []);
+
   const handleSubmit = async () => {
-    if (!amount || amount <= 0) return alert("Please enter a valid amount");
+    if (!amount || amount <= 0) return alert("Enter a valid amount");
     if (orderType === "limit" && (!price || price <= 0)) {
-      return alert("Please enter a valid price");
+      return alert("Enter a valid price");
     }
 
     const orderData = {
@@ -31,20 +44,16 @@ const OrderForm = ({ marketPrice, orderBook }) => {
     };
 
     try {
-      // Send order request to backend
-      const response = await axios.post("http://localhost:5000/api/trades", orderData, {
+      const response = await axios.post("http://localhost:5000/api/trade/placeOrder", orderData, {
         withCredentials: true,
       });
 
-      console.log("Order response:", response.data);
+      socket.emit("placeOrder", response.data.trade);
 
-      // Emit WebSocket event to update UI in real time
-      socket.emit("placeOrder", response.data);
-
-      alert("Order placed successfully!");
+      toast.success("Order placed successfully!");
     } catch (error) {
       console.error("Order placement failed:", error);
-      alert("Error placing order");
+      toast.error(error.response.data.message);
     }
   };
 
@@ -54,17 +63,13 @@ const OrderForm = ({ marketPrice, orderBook }) => {
         <div className="bg-gray-800 p-1 rounded-md flex">
           <button
             onClick={() => setSide("buy")}
-            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
-              side === "buy" ? "bg-green-500 text-white" : "text-gray-400"
-            }`}
+            className={`w-1/2 text-center ${side === "buy" ? "bg-green-500 text-white" : "text-gray-400"}`}
           >
             Buy
           </button>
           <button
             onClick={() => setSide("sell")}
-            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
-              side === "sell" ? "bg-red-500 text-white" : "text-gray-400"
-            }`}
+            className={`w-1/2 text-center ${side === "sell" ? "bg-red-500 text-white" : "text-gray-400"}`}
           >
             Sell
           </button>
@@ -75,19 +80,13 @@ const OrderForm = ({ marketPrice, orderBook }) => {
         <div className="bg-gray-800 p-1 rounded-md flex">
           <button
             onClick={() => setOrderType("market")}
-            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
-              orderType === "market"
-                ? "bg-blue-500 text-white"
-                : "text-gray-400"
-            }`}
+            className={`w-1/2 text-center ${orderType === "market" ? "bg-blue-500 text-white" : "text-gray-400"}`}
           >
             Market
           </button>
           <button
             onClick={() => setOrderType("limit")}
-            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
-              orderType === "limit" ? "bg-blue-500 text-white" : "text-gray-400"
-            }`}
+            className={`w-1/2 text-center ${orderType === "limit" ? "bg-blue-500 text-white" : "text-gray-400"}`}
           >
             Limit
           </button>
@@ -101,7 +100,7 @@ const OrderForm = ({ marketPrice, orderBook }) => {
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border-[.2px] border-gray-800"
+            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
           />
         </div>
       )}
@@ -112,7 +111,7 @@ const OrderForm = ({ marketPrice, orderBook }) => {
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border-[.2px] border-gray-800"
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
         />
       </div>
 
@@ -121,12 +120,7 @@ const OrderForm = ({ marketPrice, orderBook }) => {
         <span className="text-white">${marketPrice}</span>
       </div>
 
-      <Button
-        onClick={handleSubmit}
-        className={`w-full py-2 rounded-md ${
-          side === "buy" ? "bg-green-500" : "bg-red-500"
-        }`}
-      >
+      <Button onClick={handleSubmit} className={`w-full py-2 rounded-md ${side === "buy" ? "bg-green-500" : "bg-red-500"}`}>
         {side === "buy" ? "Buy" : "Sell"}
       </Button>
     </Card>

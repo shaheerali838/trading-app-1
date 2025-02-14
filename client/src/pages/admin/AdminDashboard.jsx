@@ -1,5 +1,5 @@
 import { useState, useEffect } from "react";
-import { Card, Button } from "@material-tailwind/react";
+import { Card} from "@material-tailwind/react";
 import axios from "axios";
 import { Link } from "react-router-dom";
 
@@ -45,6 +45,7 @@ const AdminDashboard = () => {
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto px-8 text-white">
+      
       <h1 className="text-4xl font-bold mb-6">Admin Dashboard</h1>
 
       <div className="w-full grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">

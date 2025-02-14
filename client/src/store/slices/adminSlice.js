@@ -6,7 +6,9 @@ export const fetchUsers = createAsyncThunk(
   "admin/fetchUsers",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/users");
+      const response = await axios.get("http://localhost:5000/api/admin/all-users");
+      console.log('the response is ' + response.data);
+      
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -15,11 +17,11 @@ export const fetchUsers = createAsyncThunk(
 );
 
 // Async thunk for fetching transactions
-export const fetchTransactions = createAsyncThunk(
-  "admin/fetchTransactions",
+export const fetchRequests = createAsyncThunk(
+  "admin/fetchRequests",
   async (_, { rejectWithValue }) => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/transactions");
+      const response = await axios.get("http://localhost:5000/api/admin/all-requests");
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -50,15 +52,15 @@ const adminSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(fetchTransactions.pending, (state) => {
+      .addCase(fetchRequests.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(fetchTransactions.fulfilled, (state, action) => {
+      .addCase(fetchRequests.fulfilled, (state, action) => {
         state.loading = false;
         state.transactions = action.payload;
       })
-      .addCase(fetchTransactions.rejected, (state, action) => {
+      .addCase(fetchRequests.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

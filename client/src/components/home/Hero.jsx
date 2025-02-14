@@ -6,8 +6,8 @@ const Hero = () => {
   const counts = [
     {
       index: 1,
-      end: 73576384,
-      symbol: "$",
+      end: 73,
+      symbol: "M $",
       text: "24-hour trading volume",
     },
     {
@@ -18,8 +18,8 @@ const Hero = () => {
     },
     {
       index: 3,
-      end: 20000000,
-      symbol: "+",
+      end: 20,
+      symbol: "M +",
       text: "Users",
     },
   ];

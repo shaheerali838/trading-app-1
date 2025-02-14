@@ -5,22 +5,27 @@ import app from "./app.js";
 // Create HTTP server
 const server = http.createServer(app);
 
-// Setup WebSocket Server
+
 const io = new Server(server, {
   cors: {
-    origin: ["http://localhost:5173", "http://localhost:5174"],
-    methods: ["GET", "POST"],
+    origin: ["http://localhost:5173"],
+    credentials: true,
   },
 });
 
-// WebSocket Events
 io.on("connection", (socket) => {
-  console.log(`WebSocket connected: ${socket.id}`);
+  console.log("User connected:", socket.id);
 
   socket.on("disconnect", () => {
-    console.log(`WebSocket disconnected: ${socket.id}`);
+    console.log("User disconnected:", socket.id);
+  });
+
+  socket.on("placeOrder", (data) => {
+    io.emit("tradeUpdate", data);
   });
 });
+
+export { io };
 
 // Function to emit trade updates
 export const emitTradeUpdate = (trade) => {

@@ -10,6 +10,8 @@ const ManageUser = () => {
 
   useEffect(() => {
     dispatch(fetchUsers());
+    console.log(users);
+    
   }, []);
 
   return (

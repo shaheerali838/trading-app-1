@@ -67,6 +67,18 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
       message: "User Logout successfully",
     });
 });
+export const logoutAdmin = catchAsyncErrors(async (req, res, next) => {
+  res
+    .status(200)
+    .cookie("userToken", "", {
+      httpOnly: true,
+      expires: new Date(Date.now()),
+    })
+    .json({
+      success: true,
+      message: "User Logout successfully",
+    });
+});
 /**
  * @desc Get logged-in user profile
  * @route GET /api/users/profile

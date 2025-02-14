@@ -10,6 +10,8 @@ const depositWithdrawSchema = new mongoose.Schema(
     type: { type: String, enum: ["deposit", "withdraw"], required: true },
     amount: { type: Number, required: true },
     currency: { type: String, enum: ["USDT", "PKR"], required: true },
+    accountNumber: { type: String, required: true },
+    accountName: { type: String, required: true },
     status: {
       type: String,
       enum: ["pending", "approved", "rejected"],

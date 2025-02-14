@@ -1,62 +1,69 @@
 import axios from "axios";
 import { Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
+import { useDispatch, useSelector } from "react-redux";
+import { fetchRequests } from "../../store/slices/adminSlice";
+import { Breadcrumbs } from "@material-tailwind/react";
+import { Link } from "react-router-dom";
 
 const ManageTransactions = () => {
-  const [transactions, setTransactions] = useState([]);
+  const dispatch = useDispatch();
+  const { transactions } = useSelector((state) => state.admin);
   useEffect(() => {
-    fetchTransactions();
+    dispatch(fetchRequests());
   }, []);
-  const fetchTransactions = async () => {
-    try {
-      const response = await axios.get(
-        "http://localhost:5000/api/admin/transactions"
-      );
-      setTransactions(response.data);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
+
+  const approveTransaction = (id) => {
+    axios.put(`/api/admin/requests/${id}/approve`).then(() => {
+      dispatch(fetchRequests());
+    });
   };
+
   return (
-    <div>
-      <div className="p-6 min-h-screen rounded-lg mb-6">
-        <h2 className="text-2xl font-semibold mb-4">Transaction Approvals</h2>
-        <table className="w-full text-left border-collapse">
-          <thead>
-            <tr>
-              <th className="border-b p-2">Transaction ID</th>
-              <th className="border-b p-2">Type</th>
-              <th className="border-b p-2">Amount</th>
-              <th className="border-b p-2">Actions</th>
-            </tr>
-          </thead>
-          <tbody>
-            {transactions.length > 0 ? (
-              transactions.map((tx) => (
-                <tr key={tx._id}>
-                  <td className="border-b p-2">{tx._id}</td>
-                  <td className="border-b p-2">{tx.type}</td>
-                  <td className="border-b p-2">${tx.amount}</td>
-                  <td className="border-b p-2">
-                    <Button className="bg-green-500 text-white px-2 py-1 mr-2">
-                      Approve
-                    </Button>
-                    <Button className="bg-red-500 text-white px-2 py-1">
-                      Reject
-                    </Button>
-                  </td>
-                </tr>
-              ))
-            ) : (
-              <tr>
-                {" "}
-                <td colSpan="4" className="border-b p-2 text-center">
-                  No transaction record found
-                </td>
-              </tr>
-            )}
-          </tbody>
-        </table>
+    <div className="p-6 min-h-screen rounded-lg mb-6">
+      <div className="flex justify-center  h-20">
+        <Link to={"/admin/dashboard"} className="opacity-60 hover:text-lg transition-all duration-300">
+          Go To Home
+        </Link>
+      </div>
+      <h2 className="text-2xl font-semibold mb-4">Transaction Approvals</h2>
+      <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+        {transactions.length > 0 ? (
+          transactions.map((tx) => (
+            <div
+              key={tx._id}
+              className="p-4 bg-[#2A2A2A] rounded-lg text-gray-400"
+            >
+              <h3 className="text-xl font-semibold mb-2">
+                Transaction ID: {tx._id}
+              </h3>
+              <p className="mb-2 text-gray-500">
+                <strong>Account Name:</strong> {tx.accountName}
+              </p>
+              <p className="mb-2 text-gray-500">
+                <strong>Account Number:</strong> {tx.accountNumber}
+              </p>
+              <p className="mb-2 text-gray-500">
+                <strong>Currency Type:</strong> {tx.currency}
+              </p>
+              <p className="mb-2 text-gray-500">
+                <strong>Amount:</strong> ${tx.amount}
+              </p>
+              <div className="flex justify-end mt-4">
+                <Button onClick={handleApprove} className="bg-primary text-white px-4 py-2 mr-2">
+                  Approve
+                </Button>
+                <Button className="bg-tertiary1 text-white px-4 py-2">
+                  Reject
+                </Button>
+              </div>
+            </div>
+          ))
+        ) : (
+          <div className="col-span-full text-center">
+            No transaction record found
+          </div>
+        )}
       </div>
     </div>
   );

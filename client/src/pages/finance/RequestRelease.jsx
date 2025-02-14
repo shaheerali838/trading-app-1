@@ -1,30 +1,30 @@
 import { useState } from "react";
 import { useDispatch } from "react-redux";
-import { toast } from "react-toastify";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import { fundsRequest } from "../../store/slices/assetsSlice";
 
 function RequestRelease() {
   const dispatch = useDispatch();
-  const [amount, setAmount] = useState("");
-  const [currency, setCurrency] = useState("USDT");
-  const [accountName, setAccountName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
-
+  const [requestData, setRequestData] = useState({
+    amount: "",
+    currency: "USDT",
+    accountName: "",
+    accountNumber: "",
+    type: "deposit",
+  });
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!amount || parseFloat(amount) <= 0 || !accountName || !accountNumber) {
-      toast.error("Please fill in all fields with valid information");
-      return;
-    }
+    dispatch(fundsRequest(requestData));
+    console.log(`type : ${requestData.type}`);
 
-    // Dispatch an action or make an API call here if needed
-
-    toast.success("Request sent successfully");
-    setAmount("");
-    setCurrency("USDT");
-    setAccountName("");
-    setAccountNumber("");
+    setRequestData({
+      amount: "",
+      currency: "USDT",
+      accountName: "",
+      accountNumber: "",
+      type: "deposit",
+    });
   };
 
   return (
@@ -40,29 +40,47 @@ function RequestRelease() {
             <label className="block text-sm font-medium mb-2">Amount</label>
             <input
               type="number"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
+              value={requestData.amount}
+              onChange={(e) =>
+                setRequestData({ ...requestData, amount: e.target.value })
+              }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">Currency</label>
             <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
+              value={requestData.currency}
+              onChange={(e) =>
+                setRequestData({ ...requestData, currency: e.target.value })
+              }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             >
               <option className="text-black hover:bg-tertiary3" value="USDT">
                 USDT
               </option>
               <option className="text-black hover:bg-tertiary3" value="USDC">
-                USDC
+                PKR
               </option>
-              <option className="text-black hover:bg-tertiary3" value="BTC">
-                BTC
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Type</label>
+            <select
+              value={requestData.type}
+              onChange={(e) =>
+                setRequestData({ ...requestData, type: e.target.value })
+              }
+              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
+            >
+              <option className="text-black hover:bg-tertiary3" value="deposit">
+                deposit
               </option>
-              <option className="text-black hover:bg-tertiary3" value="ETH">
-                ETH
+              <option
+                className="text-black hover:bg-tertiary3"
+                value="withdraw"
+              >
+                withdraw
               </option>
             </select>
           </div>
@@ -72,8 +90,10 @@ function RequestRelease() {
             </label>
             <input
               type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
+              value={requestData.accountName}
+              onChange={(e) =>
+                setRequestData({ ...requestData, accountName: e.target.value })
+              }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>
@@ -83,12 +103,17 @@ function RequestRelease() {
             </label>
             <input
               type="text"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
+              value={requestData.accountNumber}
+              onChange={(e) =>
+                setRequestData({...requestData, accountNumber: e.target.value })
+              }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>
-          <button type="submit" className="btn btn-primary w-full bg-primary py-1 rounded-sm cursor-pointer">
+          <button
+            type="submit"
+            className="btn btn-primary w-full bg-primary py-1 rounded-sm cursor-pointer"
+          >
             Send Request
           </button>
         </form>

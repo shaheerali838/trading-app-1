@@ -100,24 +100,24 @@ function Withdraw() {
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>
-              1.The above deposit address is the official payment address of the
-              platform. please look for the official deposit address of the
-              platform, and the loss of funds caused by incorectcharging shal be
+              1. The above deposit address is the official payment address of the
+              platform. Please ensure you use the official deposit address of the
+              platform. Any loss of funds caused by incorrect charging shall be
               borne by yourself.
             </li>
             <li>
-              2.Please make sure that your computer and browser are safe to
-              prevert information from being tampered with or leak
+              2. Please make sure that your computer and browser are safe to
+              prevent information from being tampered with or leaked.
             </li>
             <li>
-              3.after yoiu recharge the above addess. you need to confirm the
-              entire network node it can credited.
+              3. After you recharge the above address, you need to confirm the
+              entire network node to ensure it can be credited.
             </li>
             <li>
-              4.Please select the above-mentioned token system and currency type
-              and transfer the corresponding amount for deposit, Please do not
-              transfer any other irrelevant assets, othervise they will not be
-              retrieved
+              4. Please select the above-mentioned token system and currency type
+              and transfer the corresponding amount for deposit. Please do not
+              transfer any other irrelevant assets, otherwise they will not be
+              retrieved.
             </li>
           </ol>
         </div>
