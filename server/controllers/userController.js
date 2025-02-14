@@ -10,20 +10,21 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
  * @route POST /api/users/register
  */
 export const register = catchAsyncErrors(async (req, res) => {
-  const { firstName, lastName, email, password } = req.body;
+  const { firstName, lastName, email, password,role } = req.body;
 
   // Check if user already exists
   let user = await User.findOne({ email });
   if (user) {
     return res.status(400).json({ success: false, msg: "User already exists" });
   }
-
+  const userRole = role || "user";
   // Create new user
   user = new User({
     firstName,
     lastName,
     email,
     password,
+    role: userRole,
   });
 
   await user.save();

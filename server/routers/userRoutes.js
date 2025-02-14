@@ -10,17 +10,17 @@ import {
   getTransactions,
   logoutUser,
 } from "../controllers/userController.js";
-import authMiddleware from "../middlewares/auth.js";
+import { isUserAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
 
 router.post("/register", register);
 router.post("/login", login);
-router.get("/logout", authMiddleware, logoutUser);
-router.get("/profile", authMiddleware, getProfile);
-router.put("/profile", authMiddleware, updateProfile);
-router.get("/getwallet", authMiddleware, getWallet);
-router.post("/deposit", authMiddleware, requestDeposit);
-router.post("/withdraw", authMiddleware, requestWithdraw);
-router.get("/transactions", authMiddleware, getTransactions);
+router.get("/logout", isUserAuthenticated, logoutUser);
+router.get("/profile", isUserAuthenticated, getProfile);
+router.put("/profile", isUserAuthenticated, updateProfile);
+router.get("/getwallet", isUserAuthenticated, getWallet);
+router.post("/deposit", isUserAuthenticated, requestDeposit);
+router.post("/withdraw", isUserAuthenticated, requestWithdraw);
+router.get("/transactions", isUserAuthenticated, getTransactions);
 
 export default router;

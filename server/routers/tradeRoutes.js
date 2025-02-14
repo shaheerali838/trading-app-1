@@ -1,7 +1,7 @@
 import express from "express";
 import { getMarketData } from "../controllers/marketController.js";
 import { buyCrypto, sellCrypto } from "../controllers/tradeController.js";
-import isUserAuthenticated from "../middlewares/auth.js";
+import { isUserAuthenticated } from "../middlewares/auth.js";
 
 const router = express.Router();
 

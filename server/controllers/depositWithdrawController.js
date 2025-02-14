@@ -1,4 +1,4 @@
-import DepositWithdrawRequest from "../models/DepositWithdrawRequest.js";
+import DepositWithdrawRequest from "../models/RequestMessage.js";
 import Wallet from "../models/Wallet.js";
 
 // Create a new deposit or withdrawal request

@@ -14,8 +14,10 @@ const LogIn = () => {
   const [password, setPassword] = useState("");
 
   useEffect(() => {
-    if (user) {
-      navigate(-1); // Redirect to the previous page
+    if (user && user.role === "user") {
+      navigate(-1); // Redirect to te previous page
+    } else if (user && user.role === "admin") {
+      navigate("/admin/dashboard");
     }
   }, [user, navigate]);
 

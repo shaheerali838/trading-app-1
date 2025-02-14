@@ -20,6 +20,7 @@ import "react-toastify/dist/ReactToastify.css";
 import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
+import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -41,9 +42,14 @@ const App = () => {
             <Route path="/register" element={<SignUp />} />
             <Route path="/about" element={<About />} />
             <Route path="/market" element={<Market />} />
-            <Route path="/admin/dashboard" element={<AdminDashboard />} />
-            <Route path="/admin/users/manage" element={<ManageUser />} />
-            <Route path="/admin/transaction/manage" element={<ManageTransactions />} />
+            <Route element={<AdminProtectedRoute />}>
+              <Route path="/admin/dashboard" element={<AdminDashboard />} />
+              <Route path="/admin/users/manage" element={<ManageUser />} />
+              <Route
+                path="/admin/transaction/manage"
+                element={<ManageTransactions />}
+              />
+            </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/wallet/deposit" element={<Deposit />} />
