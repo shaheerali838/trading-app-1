@@ -20,7 +20,7 @@
   const envPath = join(__dirname, "/config/config.env");
 
   config({ path: envPath });
-
+  
   app.use(
     cors({
       origin: [process.env.FRONTEND_URL],

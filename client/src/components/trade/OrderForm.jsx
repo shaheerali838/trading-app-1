@@ -5,7 +5,7 @@ import axios from "axios";
 import { toast } from "react-toastify";
 import API from "../../utils/api";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://trading-app-t6qp.onrender.com");
 
 const OrderForm = ({ marketPrice }) => {
   const [orderType, setOrderType] = useState("market");

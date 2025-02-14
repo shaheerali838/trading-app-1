@@ -1,5 +1,6 @@
 import { Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
+import API from "../../utils/api";
 
 const Logs = () => {
   const [logs, setLogs] = useState([]);
@@ -10,7 +11,7 @@ const Logs = () => {
 
   const fetchLogs = async () => {
     try {
-      const response = await axios.get("http://localhost:5000/api/admin/logs");
+      const response = await API.get("/admin/logs");
       setLogs(response.data);
     } catch (error) {
       console.error("Error fetching logs:", error);
