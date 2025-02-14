@@ -9,7 +9,7 @@ export const loginUser = createAsyncThunk(
   async ({ email, password }, { rejectWithValue }) => {
     try {
       const response = await API.post(
-        "/api/user/login",
+        "/user/login",
         { email, password },
         {
           withCredentials: true,
@@ -35,7 +35,7 @@ export const registerUser = createAsyncThunk(
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
       const response = await API.post(
-        "/api/user/register",
+        "/user/register",
         { email, password, firstName, lastName },
         {
           withCredentials: true,
@@ -58,7 +58,7 @@ export const logoutUser = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await API.post(
-        "/api/user/logout",
+        "/user/logout",
         {},
         {
           withCredentials: true,
@@ -77,7 +77,7 @@ export const logoutAdmin = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       await API.post(
-        "/api/admin/logout",
+        "/admin/logout",
         {},
         {
           withCredentials: true,
