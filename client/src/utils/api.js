@@ -1,8 +1,10 @@
 import axios from "axios";
 
 const API = axios.create({
-  baseURL: "https://trading-app-t6qp.onrender.com/api",
+  baseURL: import.meta.env.VITE_API_URL,
 });
+
+console.log(import.meta.env.VITE_API_URL);
 
 // Add request interceptor for auth token
 API.interceptors.request.use((config) => {

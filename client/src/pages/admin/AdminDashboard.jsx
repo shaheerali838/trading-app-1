@@ -2,44 +2,10 @@ import { useState, useEffect } from "react";
 import { Card } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
 import API from "../../utils/api";
+import { fetchRequests, fetchUsers } from "../../store/slices/adminSlice";
+import { useDispatch } from "react-redux";
 
 const AdminDashboard = () => {
-  const [users, setUsers] = useState([]);
-  const [transactions, setTransactions] = useState([]);
-  const [logs, setLogs] = useState([]);
-
-  useEffect(() => {
-    fetchUsers();
-    fetchTransactions();
-    fetchLogs();
-  }, []);
-
-  const fetchUsers = async () => {
-    try {
-      const response = await API.get("/admin/users");
-      setUsers(response.data);
-    } catch (error) {
-      console.error("Error fetching users:", error);
-    }
-  };
-
-  const fetchTransactions = async () => {
-    try {
-      const response = await API.get("/admin/transactions");
-      setTransactions(response.data);
-    } catch (error) {
-      console.error("Error fetching transactions:", error);
-    }
-  };
-
-  const fetchLogs = async () => {
-    try {
-      const response = await API.get("/admin/logs");
-      setLogs(response.data);
-    } catch (error) {
-      console.error("Error fetching logs:", error);
-    }
-  };
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto px-8 text-white">

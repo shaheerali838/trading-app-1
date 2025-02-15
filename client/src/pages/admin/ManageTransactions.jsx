@@ -51,7 +51,7 @@ const ManageTransactions = () => {
                 <strong>Amount:</strong> ${tx.amount}
               </p>
               <div className="flex justify-end mt-4">
-                <Button onClick={handleApprove} className="bg-primary text-white px-4 py-2 mr-2">
+                <Button onClick={approveTransaction} className="bg-primary text-white px-4 py-2 mr-2">
                   Approve
                 </Button>
                 <Button className="bg-tertiary1 text-white px-4 py-2">

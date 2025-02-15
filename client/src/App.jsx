@@ -30,6 +30,9 @@ const App = () => {
     if (user) {
       dispatch(setUser(user));
     }
+    const apiUrl = import.meta.env.VITE_API_URL;
+    console.log(apiUrl);
+
   }, [dispatch]);
   return (
     <div className="bg-gradient text-white overflow-hidden">
