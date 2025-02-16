@@ -1,4 +1,4 @@
-import { motion } from 'framer-motion';
+import { motion } from "framer-motion";
 
 function RecentTrades({ trades }) {
   return (
@@ -16,23 +16,41 @@ function RecentTrades({ trades }) {
           </tr>
         </thead>
         <tbody>
-          {trades.length > 0 ? trades.map((trade) => (
-            <motion.tr
-              key={trade.id}
-              initial={{ opacity: 0 }}
-              animate={{ opacity: 1 }}
-              className="border-t border-light/10"
-            >
-              <td className="py-4">{trade.pair}</td>
-              <td className="py-4 capitalize">{trade.type}</td>
-              <td className={`py-4 ${trade.side === 'buy' ? 'text-success' : 'text-danger'}`}>
-                {trade.side.toUpperCase()}
+          {trades.length > 0 ? (
+            trades
+              .filter((trade) => trade?.side)
+              .map((trade) => (
+                <motion.tr
+                  key={trade.id}
+                  initial={{ opacity: 0 }}
+                  animate={{ opacity: 1 }}
+                  className="border-t border-light/10"
+                >
+                  <td className="py-4">{trade.pair || "N/A"}</td>
+                  <td className="py-4 capitalize">{trade.type || "N/A"}</td>
+                  <td
+                    className={`py-4 ${
+                      trade?.side === "buy" ? "text-success" : "text-danger"
+                    }`}
+                  >
+                    {trade?.side ? trade.side.toUpperCase() : "UNKNOWN"}
+                  </td>
+                  <td className="py-4">
+                    ${trade.price ? trade.price.toLocaleString() : "0"}
+                  </td>
+                  <td className="py-4">{trade.amount || "0"}</td>
+                  <td className="py-4">
+                    ${trade.total ? trade.total.toLocaleString() : "0"}
+                  </td>
+                </motion.tr>
+              ))
+          ) : (
+            <tr>
+              <td colSpan="6" className="text-center py-4">
+                No trades available
               </td>
-              <td className="py-4">${trade.price.toLocaleString()}</td>
-              <td className="py-4">{trade.amount}</td>
-              <td className="py-4">${trade.total.toLocaleString()}</td>
-            </motion.tr>
-          )): <td>No trades yet</td>}
+            </tr>
+          )}
         </tbody>
       </table>
     </div>
