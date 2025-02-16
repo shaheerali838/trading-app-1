@@ -34,9 +34,9 @@ export const getWallet = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      console.log("Wallet API Response:", response.data); // Debugging log
       return response.data; // Return object, NOT string
     } catch (error) {
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }

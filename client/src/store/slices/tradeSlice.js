@@ -62,7 +62,7 @@ export const approveOrder = createAsyncThunk(
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
-      toast.success(error.response.data.message);
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }
@@ -74,8 +74,12 @@ export const rejectOrder = createAsyncThunk(
   async (orderId, { rejectWithValue }) => {
     try {
       const response = await API.put(`/admin/reject-order/${orderId}`, {});
+      toast.success(response.data.message);
+
       return response.data;
     } catch (error) {
+      toast.success(error.response.data.message);
+
       return rejectWithValue(error.response.data);
     }
   }

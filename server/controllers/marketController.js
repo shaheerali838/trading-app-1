@@ -5,6 +5,6 @@ export const getMarketData = async (req, res) => {
     const response = await axios.get("https://api.binance.com/api/v3/ticker/price");
     res.json(response.data);
   } catch (error) {
-    res.status(500).json({ msg: "Error fetching market data", error });
+    res.status(500).json({ message: "Error fetching market data", error });
   }
 };

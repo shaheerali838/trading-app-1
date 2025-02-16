@@ -11,13 +11,11 @@ export const loginUser = createAsyncThunk(
       const response = await API.post("/user/login", { email, password });
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
-      toast.success("User Logged In Successfully");
+      toast.success(response.data.message);
 
       return response.data;
     } catch (error) {
-      console.log("the error is ");
-
-      toast.error(JSON.stringify(error.response.data.msg));
+      toast.error(JSON.stringify(error.response.data.message));
       return rejectWithValue(error.response.data);
     }
   }
@@ -34,12 +32,12 @@ export const registerUser = createAsyncThunk(
         firstName,
         lastName,
       });
-      toast.success("User Registered Successfully");
+      toast.success(response.data.message);
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
       return response.data;
     } catch (error) {
-      toast.error(JSON.stringify(error.response.data.msg));
+      toast.error(JSON.stringify(error.response.data.message));
       return rejectWithValue(error.response.data);
     }
   }
@@ -53,6 +51,7 @@ export const logoutUser = createAsyncThunk(
       await API.post("/user/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
+      toast.success("User logged out successfully")
       return {};
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -66,8 +65,10 @@ export const logoutAdmin = createAsyncThunk(
       await API.post("/admin/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
+      toast.success("Admin logged out successfully")
       return {};
     } catch (error) {
+      toast.error(error.response.data.message)
       return rejectWithValue(error.response.data);
     }
   }

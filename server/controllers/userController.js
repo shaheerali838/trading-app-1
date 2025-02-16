@@ -15,7 +15,7 @@ export const register = catchAsyncErrors(async (req, res) => {
   // Check if user already exists
   let user = await User.findOne({ email });
   if (user) {
-    return res.status(400).json({ success: false, msg: "User already exists" });
+    return res.status(400).json({ success: false, message: "User already exists" });
   }
   const userRole = role || "user";
   // Create new user
@@ -44,10 +44,10 @@ export const login = catchAsyncErrors(async (req, res) => {
 
   const user = await User.findOne({ email });
   if (!user)
-    return res.status(400).json({ success: false, msg: "Invalid credentials" });
+    return res.status(400).json({ success: false, message: "Invalid credentials" });
 
   const isMatch = await user.comparePasswords(password);
-  if (!isMatch) return res.status(400).json({ msg: "Invalid credentials" });
+  if (!isMatch) return res.status(400).json({ message: "Invalid credentials" });
 
   // Generate JWT token
   const token = generateToken(user, "User logged in successfully", 200, res);
@@ -86,11 +86,11 @@ export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user.userId).select("-password");
     if (!user)
-      return res.status(404).json({ success: false, msg: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
 
     res.json(user);
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
 
@@ -105,7 +105,7 @@ export const updateProfile = async (req, res) => {
 
     const user = await User.findById(req.user.userId);
     if (!user)
-      return res.status(404).json({ success: false, msg: "User not found" });
+      return res.status(404).json({ success: false, message: "User not found" });
 
     user.fullName = fullName || user.fullName;
     user.phone = phone || user.phone;
@@ -113,9 +113,9 @@ export const updateProfile = async (req, res) => {
 
     await user.save();
 
-    res.json({ success: true, msg: "Profile updated successfully", user });
+    res.json({ success: true, message: "Profile updated successfully", user });
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
 
@@ -168,9 +168,9 @@ export const requestDeposit = async (req, res) => {
 
     await transaction.save();
 
-    res.json({ success: true, msg: "Deposit request submitted", transaction });
+    res.json({ success: true, message: "Deposit request submitted", transaction });
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
 
@@ -187,7 +187,7 @@ export const requestWithdraw = async (req, res) => {
     if (wallet.balanceUSDT < amount) {
       return res
         .status(400)
-        .json({ success: false, msg: "Insufficient balance" });
+        .json({ success: false, message: "Insufficient balance" });
     }
 
     const transaction = new Transaction({
@@ -206,11 +206,11 @@ export const requestWithdraw = async (req, res) => {
 
     res.json({
       success: true,
-      msg: "Withdrawal request submitted",
+      message: "Withdrawal request submitted",
       transaction,
     });
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };
 
@@ -227,6 +227,6 @@ export const getTransactions = async (req, res) => {
 
     res.json(transactions);
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ success: false, message: "Server Error", error });
   }
 };

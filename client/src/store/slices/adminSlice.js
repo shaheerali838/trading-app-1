@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api";
+import { toast } from "react-toastify";
 
 // Async thunk for fetching users
 export const fetchUsers = createAsyncThunk(
@@ -33,8 +34,10 @@ export const approveTransaction = createAsyncThunk(
   async (requestId, { rejectWithValue }) => {
     try {
       const response = await API.put(`/admin/approve/${requestId}`, null, );
+      toast.success(response.data.message);
       return response.data;
     } catch (error) {
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }
@@ -46,8 +49,10 @@ export const rejectTransaction = createAsyncThunk(
   async (requestId, { rejectWithValue }) => {
     try {
       const response = await API.put(`/admin/reject/${requestId}`, null, );
+      toast.success(response.data.message);
       return response.data;
     } catch (error) {
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }
