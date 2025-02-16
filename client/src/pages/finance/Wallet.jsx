@@ -26,7 +26,8 @@ const Wallet = () => {
 
   if (status === "loading") return <Loader />;
   if (error) {
-    toast.error("Failed to fetch wallet data");
+    
+    window.location.reload();
     return <p className="text-red-500">Error loading wallet</p>;
   }
   console.log(wallet);

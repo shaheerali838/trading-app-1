@@ -18,6 +18,7 @@ const LogIn = () => {
       navigate(-1); // Redirect to the previous page
     } else if (user && user.role === "admin") {
       navigate("/admin/dashboard");
+      window.location.reload();
     }
   }, [user, navigate]);
 
