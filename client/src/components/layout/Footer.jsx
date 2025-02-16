@@ -19,7 +19,7 @@ const Footer = () => {
               The most trusted website for trading.
             </p>
           </div>
-          <div className="flex flex-col md:flex-row space-y-4 md:space-y-0 md:space-x-16">
+          <div className="flex flex-col min-[w-80vw] md:flex-row space-y-4 md:space-y-0 md:space-x-16">
             <div>
               <h3 className="text-xl font-semibold text-[#1E90FF]">Company</h3>
               <ul className="mt-2 space-y-2">
@@ -95,7 +95,7 @@ const Footer = () => {
         </div>
         <div className="mt-8 text-center">
           <p className="text-[#F5F5F5]">
-            &copy; 2023 Your Company. All rights reserved.
+            &copy; 2025 BitEx. All rights reserved.
           </p>
         </div>
       </div>

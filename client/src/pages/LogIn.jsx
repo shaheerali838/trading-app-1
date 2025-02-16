@@ -18,10 +18,9 @@ const LogIn = () => {
       navigate(-1); // Redirect to the previous page
     } else if (user && user.role === "admin") {
       navigate("/admin/dashboard");
-      window.location.reload();
     }
   }, [user, navigate]);
-
+  
   const handleSubmit = async (e) => {
     e.preventDefault();
     try {
@@ -31,6 +30,7 @@ const LogIn = () => {
         navigate(-1); // Redirect to the previous page
       } else if (res.user.role === "admin") {
         navigate("/admin/dashboard");
+        window.location.reload();
       }
     } catch (err) {
       toast.error(err.message);
