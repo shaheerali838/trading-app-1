@@ -20,3 +20,4 @@ router.put("/approve/:requestId", isAdminAuthenticated, approveRequest);
 router.put("/reject/:requestId", isAdminAuthenticated, rejectRequest);
 
 export default router;
+ 

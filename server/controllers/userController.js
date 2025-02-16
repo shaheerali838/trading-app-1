@@ -10,7 +10,7 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
  * @route POST /api/users/register
  */
 export const register = catchAsyncErrors(async (req, res) => {
-  const { firstName, lastName, email, password,role } = req.body;
+  const { firstName, lastName, email, password, role } = req.body;
 
   // Check if user already exists
   let user = await User.findOne({ email });
@@ -28,12 +28,11 @@ export const register = catchAsyncErrors(async (req, res) => {
   });
 
   await user.save();
-  
+
   // Create a wallet for the user
   const wallet = new Wallet({ userId: user._id });
   await wallet.save();
   generateToken(user, "User logged in successfully", 200, res);
-
 });
 
 /**
@@ -52,7 +51,6 @@ export const login = catchAsyncErrors(async (req, res) => {
 
   // Generate JWT token
   const token = generateToken(user, "User logged in successfully", 200, res);
-
 });
 
 export const logoutUser = catchAsyncErrors(async (req, res, next) => {
@@ -127,17 +125,18 @@ export const updateProfile = async (req, res) => {
  * @access Private
  */
 export const getWallet = async (req, res) => {
-  try {    
-    const wallet = await Wallet.findOne({ userId: req.user._id });
-    if (!wallet){
+  try {
+    const wallet = await Wallet.findOne({ userId: req.user._id })
+      .populate("withdrawalHistory")
+      .populate("depositHistory")
+      .exec();
 
-      return res.status(404).json({ success: false, msg: "Wallet not found" });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
     }
-    console.log(wallet);
-    
-    res.json(wallet);
+    res.status(200).json(wallet);
   } catch (error) {
-    res.status(500).json({ success: false, msg: "Server Error", error });
+    res.status(500).json({ message: "Error fetching wallet data", error });
   }
 };
 

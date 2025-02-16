@@ -5,10 +5,11 @@ import app from "./app.js";
 // Create HTTP server
 const server = http.createServer(app);
 
+console.log(process.env.FRONTEND_URL);
 
 const io = new Server(server, {
   cors: {
-    origin: [process.env.FRONTEND_URL],
+    origin: [process.env.FRONTEND_URL, 'http://localhost:5173'],
     credentials: true,
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
@@ -37,5 +38,5 @@ export const emitTradeUpdate = (trade) => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}`);
+  console.log(`🚀 Server running on port ${PORT} and will get requests from ${process.env.FRONTEND_URL}`);
 });

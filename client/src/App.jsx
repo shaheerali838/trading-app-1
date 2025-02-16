@@ -9,7 +9,7 @@ import SignUp from "./pages/SignUp";
 import About from "./pages/About";
 import Market from "./pages/Market";
 import Trade from "./pages/Trade";
-import { useDispatch } from "react-redux";
+import { useDispatch, useSelector } from "react-redux";
 import Wallet from "./pages/finance/Wallet.jsx";
 import Deposit from "./pages/finance/Deposit.jsx";
 import RequestRelease from "./pages/finance/RequestRelease.jsx";
@@ -32,7 +32,6 @@ const App = () => {
     }
     const apiUrl = import.meta.env.VITE_API_URL;
     console.log(apiUrl);
-
   }, [dispatch]);
   return (
     <div className="bg-gradient text-white overflow-hidden">

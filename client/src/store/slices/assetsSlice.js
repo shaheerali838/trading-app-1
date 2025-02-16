@@ -13,7 +13,10 @@ export const fundsRequest = createAsyncThunk(
         type,
         accountName,
         accountNumber,
-      });
+      }, {
+        withCredentials: true, 
+      }
+      );
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
@@ -32,13 +35,14 @@ export const getWallet = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-      console.log(JSON.stringify(response.data));
-      return response.data;
+      console.log("Wallet API Response:", response.data); // Debugging log
+      return response.data; // Return object, NOT string
     } catch (error) {
       return rejectWithValue(error.response.data);
     }
   }
 );
+
 
 const assetsSlice = createSlice({
   name: "assets",
@@ -89,11 +93,7 @@ const assetsSlice = createSlice({
       })
       .addCase(getWallet.fulfilled, (state, action) => {
         state.status = "succeeded";
-        state.balance = action.payload.balance;
-        state.pendingTransactions = action.payload.pendingTransactions;
-        state.depositHistory = action.payload.depositHistory;
-        state.withdrawalHistory = action.payload.withdrawalHistory;
-        state.error = null;
+        state.wallet = action.payload;
       })
       .addCase(getWallet.rejected, (state, action) => {
         state.status = "failed";

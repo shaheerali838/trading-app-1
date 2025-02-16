@@ -1,5 +1,6 @@
 import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
 import axios from 'axios';
+import API from '../../utils/api';
 
 export const fetchCoinData = createAsyncThunk(
   'trade/fetchCoinData',
@@ -14,6 +15,19 @@ export const fetchCoinData = createAsyncThunk(
     return response.data;
   }
 );
+export const placeOrder = createAsyncThunk(
+  "trade/placeOrder",
+  async (orderData, { rejectWithValue }) => {
+    try {
+      const response = await API.post("/trade/placeOrder", orderData, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
 
 const tradeSlice = createSlice({
   name: 'trade',
@@ -21,6 +35,7 @@ const tradeSlice = createSlice({
     selectedCoin: null,
     chartData: [],
     recentTrades: [],
+    trades: [],
     status: 'idle',
     error: null,
   },
@@ -44,6 +59,17 @@ const tradeSlice = createSlice({
       .addCase(fetchCoinData.rejected, (state, action) => {
         state.status = 'failed';
         state.error = action.error.message;
+      })
+      .addCase(placeOrder.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(placeOrder.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.trades.push(action.payload.trade);
+      })
+      .addCase(placeOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
       });
   },
 });

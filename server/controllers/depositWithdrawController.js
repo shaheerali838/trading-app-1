@@ -20,6 +20,8 @@ export const createDepositWithdrawRequest = async (req, res) => {
     if (type === "withdraw" && wallet[`balance${currency}`] < amount) {
       return res.status(400).json({ message: "Insufficient balance" });
     }
+
+    
     
     const request = await DepositWithdrawRequest.create({
       userId: req.user._id,
@@ -31,6 +33,7 @@ export const createDepositWithdrawRequest = async (req, res) => {
       status: "pending",
     });
 
+    console.log(request);
     res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
     console.log(error.message);
@@ -52,7 +55,7 @@ export const getUserRequests = async (req, res) => {
 // Fetch all deposit/withdrawal requests for admin
 export const getAllRequests = async (req, res) => {
   try {
-    const requests = await DepositWithdrawRequest.find().populate("userId", "email").sort({ createdAt: -1 });
+    const requests = await DepositWithdrawRequest.find({ status: "pending" }).populate("userId", "email").sort({ createdAt: -1 });
     res.status(200).json(requests);
   } catch (error) {
     res.status(500).json({ message: "Error fetching requests", error });
@@ -63,24 +66,29 @@ export const getAllRequests = async (req, res) => {
 export const approveRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
+    
     const request = await DepositWithdrawRequest.findById(requestId);
     
     if (!request || request.status !== "pending") {
+      
       return res.status(400).json({ message: "Invalid request" });
     }
 
     const wallet = await Wallet.findOne({ userId: request.userId });
+    
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
 
     if (request.type === "deposit") {
       wallet[`balance${request.currency}`] += request.amount;
+      wallet.depositHistory.push(requestId)
     } else if (request.type === "withdraw") {
       if (wallet[`balance${request.currency}`] < request.amount) {
         return res.status(400).json({ message: "Insufficient balance" });
       }
       wallet[`balance${request.currency}`] -= request.amount;
+      wallet.withdrawalHistory.push(requestId)
     }
 
     request.status = "approved";

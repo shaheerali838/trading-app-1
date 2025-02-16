@@ -2,6 +2,7 @@ import { useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import { fundsRequest } from "../../store/slices/assetsSlice";
 
 function Withdraw() {
   const dispatch = useDispatch();
@@ -19,13 +20,13 @@ function Withdraw() {
       return;
     }
 
-    // Dispatch an action or make an API call here if needed
-
-    toast.success("Request sent successfully");
-    setAmount("");
-    setCurrency("USDT");
-    setAccountName("");
-    setAccountNumber("");
+    dispatch(fundsRequest({
+      amount,
+      currency,
+      accountName,
+      accountNumber,
+      type: "withdraw",
+    }));
   };
 
   return (

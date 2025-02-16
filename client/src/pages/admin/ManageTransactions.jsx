@@ -1,29 +1,36 @@
-import axios from "axios";
-import { Button, Card } from "flowbite-react";
-import React, { useEffect, useState } from "react";
+import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import { fetchRequests } from "../../store/slices/adminSlice";
-import { Breadcrumbs } from "@material-tailwind/react";
+import {
+  fetchRequests,
+  approveTransaction,
+  rejectTransaction,
+} from "../../store/slices/adminSlice";
 import { Link } from "react-router-dom";
-import API from "../../utils/api";
+import { Button } from "flowbite-react";
 
 const ManageTransactions = () => {
   const dispatch = useDispatch();
   const { transactions } = useSelector((state) => state.admin);
+
   useEffect(() => {
     dispatch(fetchRequests());
-  }, []);
+  }, [dispatch]);
 
-  const approveTransaction = (id) => {
-    API.put(`/admin/requests/${id}/approve`).then(() => {
-      dispatch(fetchRequests());
-    });
+  const handleApprove = (requestId) => {
+    dispatch(approveTransaction(requestId));
+  };
+
+  const handleReject = (requestId) => {
+    dispatch(rejectTransaction(requestId));
   };
 
   return (
     <div className="p-6 min-h-screen rounded-lg mb-6">
-      <div className="flex justify-center  h-20">
-        <Link to={"/admin/dashboard"} className="opacity-60 hover:text-lg transition-all duration-300">
+      <div className="flex justify-center h-20">
+        <Link
+          to={"/admin/dashboard"}
+          className="opacity-60 hover:text-lg transition-all duration-300"
+        >
           Go To Home
         </Link>
       </div>
@@ -51,10 +58,16 @@ const ManageTransactions = () => {
                 <strong>Amount:</strong> ${tx.amount}
               </p>
               <div className="flex justify-end mt-4">
-                <Button onClick={approveTransaction} className="bg-primary text-white px-4 py-2 mr-2">
+                <Button
+                  onClick={() => handleApprove(tx._id)}
+                  className="bg-primary text-white px-4 py-2 mr-2"
+                >
                   Approve
                 </Button>
-                <Button className="bg-tertiary1 text-white px-4 py-2">
+                <Button
+                  onClick={() => handleReject(tx._id)}
+                  className="bg-tertiary1 text-white px-4 py-2"
+                >
                   Reject
                 </Button>
               </div>

@@ -1,87 +1,150 @@
-import { motion } from "framer-motion";
-import { Line } from "react-chartjs-2";
-import AnimatedHeading from "../animation/AnimateHeading";
+import { useState, useEffect } from "react";
+import { Card, Button } from "@material-tailwind/react";
+import io from "socket.io-client";
+import axios from "axios";
 
-function PortfolioSummary({ portfolio }) {
-  const chartData = {
-    labels: ["Jan", "Feb", "Mar", "Apr", "May", "Jun"],
-    datasets: [
-      {
-        label: "Portfolio Value",
-        data: [20000, 22000, 21000, 23000, 24000, 25000],
-        borderColor: "#1E90FF",
-        backgroundColor: "rgba(30, 144, 255, 0.1)",
-        fill: true,
-        tension: 0.4,
-      },
-    ],
-  };
+const socket = io("https://trading-app-t6qp.onrender.com"); // Adjust URL if needed
 
-  const chartOptions = {
-    responsive: true,
-    maintainAspectRatio: false,
-    plugins: {
-      legend: { display: false },
-    },
-    scales: {
-      x: {
-        grid: { color: "rgba(234, 234, 234, 0.1)" },
-        ticks: { color: "#EAEAEA" },
-      },
-      y: {
-        grid: { color: "rgba(234, 234, 234, 0.1)" },
-        ticks: { color: "#EAEAEA" },
-      },
-    },
+const OrderForm = ({ marketPrice, userBalance }) => {
+  const [orderType, setOrderType] = useState("market");
+  const [side, setSide] = useState("buy");
+  const [price, setPrice] = useState(marketPrice);
+  const [amount, setAmount] = useState("");
+  const [isSubmitting, setIsSubmitting] = useState(false);
+
+  useEffect(() => {
+    if (orderType === "market") {
+      setPrice(marketPrice);
+    }
+  }, [orderType, marketPrice]);
+
+  const handleSubmit = async () => {
+    if (!amount || amount <= 0) return alert("Enter a valid amount");
+    if (orderType === "limit" && (!price || price <= 0)) {
+      return alert("Enter a valid price");
+    }
+
+    const totalCost = amount * price;
+
+    if (side === "buy" && totalCost > userBalance.usdt) {
+      return alert("Insufficient USDT balance");
+    }
+    if (side === "sell" && amount > userBalance.crypto) {
+      return alert("Insufficient crypto balance");
+    }
+
+    setIsSubmitting(true);
+
+    try {
+      const response = await axios.post(
+        "https://trading-app-t6qp.onrender.com/api/trade/place-order",
+        {
+          type: side,
+          orderType,
+          price: orderType === "market" ? marketPrice : price,
+          amount,
+        },
+        { withCredentials: true }
+      );
+
+      console.log("Order Response:", response.data);
+
+      // Emit WebSocket event to update UI in real-time
+      socket.emit("newOrder", response.data);
+
+      alert("Order placed successfully!");
+    } catch (error) {
+      console.error("Order placement failed:", error);
+      alert("Error placing order");
+    } finally {
+      setIsSubmitting(false);
+    }
   };
 
   return (
-    <motion.div
-      initial={{ opacity: 0, y: 20 }}
-      animate={{ opacity: 1, y: 0 }}
-      className="pt-8"
-    >
-      {/* Left (Takes 2 columns on large screens) */}
-      <div className=" card w-full text-center">
-        <AnimatedHeading>
-          <h2 className="text-xl font-bold mb-4">Assets Summary Overview</h2>
-        </AnimatedHeading>
+    <Card className="p-4 bg-transparent text-white w-full max-w-md">
+      <div className="mb-4">
+        <div className="bg-gray-800 p-1 rounded-md flex">
+          <button
+            onClick={() => setSide("buy")}
+            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
+              side === "buy" ? "bg-green-500 text-white" : "text-gray-400"
+            }`}
+          >
+            Buy
+          </button>
+          <button
+            onClick={() => setSide("sell")}
+            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
+              side === "sell" ? "bg-red-500 text-white" : "text-gray-400"
+            }`}
+          >
+            Sell
+          </button>
+        </div>
       </div>
 
-      {/* Right (Takes 1 column on large screens) */}
-      <div className="card  flex justify-evenly">
-        <div className="h-[60vh] w-[70vw]">
-          <Line data={chartData} options={chartOptions} />
-        </div>
-        <div>
-          <h2 className="text-2xl font-bold mb-4">Summary</h2>
-          <div className="space-y-4">
-            <div>
-              <span className="text-light/60">Total Balance</span>
-              <p className="text-2xl font-bold">
-                ${portfolio.totalBalance.toLocaleString()}
-              </p>
-            </div>
-            <div>
-              <span className="text-light/60">24h Profit/Loss</span>
-              <p
-                className={`text-xl font-bold ${
-                  portfolio.dailyProfitLoss >= 0
-                    ? "text-success"
-                    : "text-danger"
-                }`}
-              >
-                ${Math.abs(portfolio.dailyProfitLoss).toLocaleString()}
-                <span className="text-sm ml-1">
-                  ({portfolio.dailyProfitLossPercentage}%)
-                </span>
-              </p>
-            </div>
-          </div>
+      <div className="mb-4">
+        <div className="bg-gray-800 p-1 rounded-md flex">
+          <button
+            onClick={() => setOrderType("market")}
+            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
+              orderType === "market"
+                ? "bg-blue-500 text-white"
+                : "text-gray-400"
+            }`}
+          >
+            Market
+          </button>
+          <button
+            onClick={() => setOrderType("limit")}
+            className={`w-1/2 text-center transition-colors duration-300 rounded-sm focus:outline-none ${
+              orderType === "limit" ? "bg-blue-500 text-white" : "text-gray-400"
+            }`}
+          >
+            Limit
+          </button>
         </div>
       </div>
-    </motion.div>
+
+      {orderType === "limit" && (
+        <div className="mb-4">
+          <label className="block text-sm text-gray-300 mb-1">Price</label>
+          <input
+            type="number"
+            value={price}
+            onChange={(e) => setPrice(e.target.value)}
+            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border-[.2px] border-gray-800"
+          />
+        </div>
+      )}
+
+      <div className="mb-4">
+        <label className="block text-sm text-gray-300 mb-1">Amount</label>
+        <input
+          type="number"
+          value={amount}
+          onChange={(e) => setAmount(e.target.value)}
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border-[.2px] border-gray-800"
+        />
+      </div>
+
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Market Price:</span>
+        <span className="text-white">${marketPrice}</span>
+      </div>
+
+      <Button
+        onClick={handleSubmit}
+        disabled={isSubmitting}
+        className={`w-full py-2 rounded-md ${
+          side === "buy" ? "bg-green-500" : "bg-red-500"
+        }`}
+      >
+        {isSubmitting ? "Processing..." : side === "buy" ? "Buy" : "Sell"}
+      </Button>
+    </Card>
   );
-}
+};
 
-export default PortfolioSummary;
+export default OrderForm;

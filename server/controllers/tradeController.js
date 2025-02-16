@@ -1,10 +1,13 @@
 import Wallet from "../models/Wallet.js";
 import Trade from "../models/Trade.js";
 import { io } from "../server.js"; // Import WebSocket instance
+import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 
-export const placeOrder = async (req, res) => {
+export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
-    const { type, orderType, price, amount } = req.body;
+    const { type, orderType, price, amount, coin } = req.body;
+
+    console.log(req.body);
 
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
@@ -27,15 +30,18 @@ export const placeOrder = async (req, res) => {
 
       // Deduct USDT and add crypto
       wallet.balanceUSDT -= totalCost;
-      const holding = wallet.holdings.find((h) => h.asset === "BTC");
+      const holding = wallet.holdings.find((h) => h.asset === coin);
       if (holding) {
         holding.quantity += amount;
       } else {
-        wallet.holdings.push({ asset: "BTC", quantity: amount });
+        wallet.holdings.push({ asset: coin, quantity: amount });
       }
     } else {
       // Sell Crypto
-      const holding = wallet.holdings.find((h) => h.asset === "BTC");
+      console.log(wallet.holdings);
+
+      // Use the `coin` from the request to find the correct holding
+      const holding = wallet.holdings.find((h) => h.asset === coin);
       if (!holding || holding.quantity < amount) {
         return res.status(400).json({ message: "Insufficient crypto balance" });
       }
@@ -43,7 +49,7 @@ export const placeOrder = async (req, res) => {
       // Deduct Crypto and add USDT
       holding.quantity -= amount;
       if (holding.quantity === 0) {
-        wallet.holdings = wallet.holdings.filter((h) => h.asset !== "BTC");
+        wallet.holdings = wallet.holdings.filter((h) => h.asset !== coin);
       }
       wallet.balanceUSDT += totalCost;
     }
@@ -56,8 +62,9 @@ export const placeOrder = async (req, res) => {
       type,
       orderType,
       price,
-      amount,
+      quantity: amount, // This is the quantity being traded
       totalCost,
+      asset: coin, // Add the asset (coin) being traded
     });
 
     // Emit real-time trade update
@@ -68,8 +75,7 @@ export const placeOrder = async (req, res) => {
     console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
-};
-
+});
 
 // Get User Trade History
 export const getTradeHistory = async (req, res) => {

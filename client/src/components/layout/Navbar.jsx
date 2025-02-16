@@ -64,6 +64,10 @@ const Navbar = () => {
           </Link>
         </div>
         <div className="hidden sm:flex items-center space-x-4">
+          {user?.role === "admin" && <Link to={"/admin/dashboard"} className="text-white hover:text-[#00FF7F]">
+            Admin Panel
+          </Link> }
+
           <Link to={"/"} className="text-white hover:text-[#00FF7F]">
             Home
           </Link>

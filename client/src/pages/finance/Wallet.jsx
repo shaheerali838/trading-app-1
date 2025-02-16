@@ -4,8 +4,9 @@ import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
 import { getWallet } from "../../store/slices/assetsSlice";
-import { Card, CardBody, h2 } from "@material-tailwind/react";
+import { Card, CardBody } from "@material-tailwind/react";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
+import Loader from "../../components/layout/Loader";
 
 const Wallet = () => {
   const dispatch = useDispatch();
@@ -13,14 +14,22 @@ const Wallet = () => {
   const { wallet, status, error } = useSelector((state) => state.assets);
 
   useEffect(() => {
-    dispatch(getWallet()); // Fetch user wallet
+    dispatch(getWallet());
+
+    // Auto-refresh every 30 seconds
+    const interval = setInterval(() => {
+      dispatch(getWallet());
+    }, 30000);
+
+    return () => clearInterval(interval);
   }, [dispatch]);
 
-  if (status === "loading") return <p className="text-white">Loading...</p>;
+  if (status === "loading") return <Loader />;
   if (error) {
     toast.error("Failed to fetch wallet data");
     return <p className="text-red-500">Error loading wallet</p>;
   }
+  console.log(wallet);
 
   return (
     <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
@@ -39,7 +48,7 @@ const Wallet = () => {
           <CardBody className="flex justify-between items-center">
             <div>
               <p className="text-3xl font-bold text-white">
-                ${wallet?.balanceUSDT?.toFixed(2) || "0.00"}{" "}
+                ${wallet?.balanceUSDT || "0.00"}{" "}
                 <span className="text-gray-400 text-sm">USDT</span>
               </p>
               <p className="text-xl font-semibold text-gray-400">
@@ -86,7 +95,7 @@ const Wallet = () => {
                     >
                       <td className="py-2">{holding.asset}</td>
                       <td className="py-2">{holding.quantity}</td>
-                      <td className="py-2">${holding.value.toFixed(2)}</td>
+                      {/* <td className="py-2">${holding.value.toFixed(2)}</td> */}
                     </tr>
                   ))}
                 </tbody>

@@ -7,6 +7,7 @@ import OrderForm from "../components/trade/OrderForm";
 import RecentTrades from "../components/trade/RecentTrades";
 import OrderBook from "../components/trade/OrderBook";
 import io from "socket.io-client";
+import AnimatedHeading from "../components/animation/AnimateHeading";
 
 function Trade() {
   const [marketData, setMarketData] = useState([]);
@@ -70,7 +71,7 @@ function Trade() {
         volume: parseFloat(kline.v),
       };
 
-      setMarketData((prevData) => [...prevData.slice(-99), newCandle]);
+      setMarketData((prevData) => [...prevData, newCandle]);
     };
 
     return () => ws.close();
@@ -91,7 +92,6 @@ function Trade() {
     };
   }, []);
 
-  // Extract the current market price from the market data
   const currentMarketPrice =
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
@@ -102,6 +102,9 @@ function Trade() {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
+        <AnimatedHeading>
+          <h3>Spot</h3>
+        </AnimatedHeading>
         <div className="flex flex-col lg:flex-row">
           <div className="w-full lg:w-3/5bg-transparent border-y border-[#2f2f2f] lg:border-r  p-4">
             <div>

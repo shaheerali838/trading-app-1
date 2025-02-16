@@ -16,10 +16,10 @@ const WalletSchema = new mongoose.Schema(
         }
       ],
     depositHistory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
+      { type: mongoose.Schema.Types.ObjectId, ref: "DepositWithdrawRequest" },
     ],
     withdrawalHistory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
+      { type: mongoose.Schema.Types.ObjectId, ref: "DepositWithdrawRequest" },
     ],
     createdAt: { type: Date, default: Date.now },
   },

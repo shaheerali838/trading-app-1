@@ -1,18 +1,25 @@
 import { useState, useEffect } from "react";
+import { useDispatch, useSelector } from "react-redux";
 import { Card, Button } from "@material-tailwind/react";
 import io from "socket.io-client";
-import axios from "axios";
 import { toast } from "react-toastify";
-import API from "../../utils/api";
+import { placeOrder } from "../../store/slices/tradeSlice";
 
-const socket = io("http://localhost:5000");
+const socket = io("http://localhost:5000/");
 
-const OrderForm = ({ marketPrice }) => {
+const OrderForm = ({ marketPrice, selectedPair }) => {
+  const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("market");
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
   const [amount, setAmount] = useState("");
-  const [trades, setTrades] = useState([]);
+  const { status, error } = useSelector((state) => state.trade);
+
+  const extractBase = (pair) => {
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3); 
+    return `${base}`;
+  };
 
   useEffect(() => {
     if (orderType === "market") {
@@ -23,7 +30,7 @@ const OrderForm = ({ marketPrice }) => {
   useEffect(() => {
     // Listen for real-time trade updates
     socket.on("tradeUpdate", (trade) => {
-      setTrades((prevTrades) => [trade, ...prevTrades]);
+      // Handle trade updates
     });
 
     return () => {
@@ -36,29 +43,28 @@ const OrderForm = ({ marketPrice }) => {
     if (orderType === "limit" && (!price || price <= 0)) {
       return alert("Enter a valid price");
     }
-
+    console.log(selectedPair);
+    
     const orderData = {
       type: side,
       orderType,
       price: orderType === "market" ? marketPrice : price,
       amount,
+      coin: extractBase(selectedPair),
     };
 
-    try {
-      const response = await API.post("/trade/placeOrder", orderData, {
-        withCredentials: true,
+    dispatch(placeOrder(orderData))
+      .unwrap()
+      .then((response) => {
+        socket.emit("placeOrder", response.trade);
+        toast.success("Order placed successfully!");
+      })
+      .catch((error) => {
+        console.error("Order placement failed:", error);
+        toast.error(error.message);
       });
-
-      socket.emit("placeOrder", response.data.trade);
-
-      toast.success("Order placed successfully!");
-    } catch (error) {
-      console.error("Order placement failed:", error);
-      toast.error(error.response.data.message);
-    }
   };
-
-  return (
+return (
     <Card className="p-4 bg-transparent text-white w-full max-w-md">
       <div className="mb-4">
         <div className="bg-gray-800 p-1 rounded-md flex">

@@ -13,7 +13,7 @@ const TradingChart = ({
   selectedInterval,
   setSelectedInterval,
   setSelectedPair,
-  selectedPair
+  selectedPair,
 }) => {
   const chartContainerRef = useRef(null);
   const chartInstance = useRef(null);
@@ -24,6 +24,7 @@ const TradingChart = ({
   const macdHistogramRef = useRef(null);
   const rsiSeriesRef = useRef(null);
   const [ohlc, setOhlc] = useState(null);
+  const [savedRange, setSavedRange] = useState(null); // To save the visible range
 
   const timeIntervals = ["1m", "5m", "15m", "1h", "24h", "1d"];
 
@@ -39,48 +40,98 @@ const TradingChart = ({
     "DOTUSDT",
     "LTCUSDT",
   ];
+  const formatTradingPair = (pair) => {
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
+    const quote = pair.slice(3); // Extract quote currency (e.g., USDT)
+    return `${base}/${quote}`; // Format as BTC/USDT
+  };
 
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
     // Create chart instance only once
-    chartInstance.current = createChart(chartContainerRef.current, {
-      width: chartContainerRef.current.clientWidth,
-      height: 400,
-      layout: {
-        background: { color: "transparent" },
-        textColor: "#EAEAEA",
-      },
-      grid: {
-        vertLines: { color: "#333333" },
-        horzLines: { color: "#333333" },
-      },
-    });
+    if (!chartInstance.current) {
+      chartInstance.current = createChart(chartContainerRef.current, {
+        width: chartContainerRef.current.clientWidth,
+        height: 400,
+        layout: {
+          background: { color: "transparent" },
+          textColor: "#EAEAEA",
+        },
+        grid: {
+          vertLines: { color: "#333333" },
+          horzLines: { color: "#333333" },
+        },
+      });
 
-    // Add candlestick series
-    candleSeriesRef.current = chartInstance.current.addSeries(
-      CandlestickSeries,
-      {
-        upColor: "#00C853",
-        downColor: "#D32F2F",
-        borderUpColor: "#00C853",
-        borderDownColor: "#D32F2F",
-        wickUpColor: "#00C853",
-        wickDownColor: "#D32F2F",
-      }
-    );
+      // Add candlestick series
+      candleSeriesRef.current = chartInstance.current.addSeries(
+        CandlestickSeries,
+        {
+          upColor: "#00C853",
+          downColor: "#D32F2F",
+          borderUpColor: "#00C853",
+          borderDownColor: "#D32F2F",
+          wickUpColor: "#00C853",
+          wickDownColor: "#D32F2F",
+          priceScaleId: 'right',
+        }
+      );
+      volumeSeriesRef.current = chartInstance.current.addSeries(
+              HistogramSeries,
+              {
+                color: "#26a69a",
+                priceFormat: { type: "volume" },
+                priceScaleId: "",
+              }
+            );
+      
+            // Add MACD line series
+            macdLineSeriesRef.current = chartInstance.current.addSeries(LineSeries, {
+              height: 20,
+              color: "#FFEB3B",
+              priceScaleId: 'macd', // Separate price scale for MACD
+            });
+      
+            // Add MACD signal series
+            macdSignalSeriesRef.current = chartInstance.current.addSeries(
+              LineSeries,
+              {
+                color: "#FF5722",
+                priceScaleId: 'macd', // Separate price scale for MACD
+              }
+            );
+      
+            // Add MACD histogram series
+            macdHistogramRef.current = chartInstance.current.addSeries(
+              HistogramSeries,
+              {
+                color: "#9C27B0",
+                priceScaleId: 'macd', // Separate price scale for MACD
+              }
+            );
+      
+            // Add RSI series
+            rsiSeriesRef.current = chartInstance.current.addSeries(LineSeries, {
+              color: "#03A9F4",
+              priceScaleId: 'rsi', // Separate price scale for RSI
+            });
+          }
+          
+      // Subscribe to visible range changes to save the current zoom level
+      chartInstance.current.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+        setSavedRange(range);
+      });
 
-    // Ensure marketData is sorted and unique by time
-    if (marketData.length > 0) {
-      const sortedData = [...marketData]
-        .sort((a, b) => a.time - b.time) // Sort by time
-        .filter(
-          (item, index, array) =>
-            index === 0 || item.time !== array[index - 1].time
-        ); // Remove duplicates
-
-      candleSeriesRef.current.setData(sortedData);
-    }
+      // Track mouse move on chart to update OHLC values
+      chartInstance.current.subscribeCrosshairMove((param) => {
+        if (!param || !param.seriesData || !candleSeriesRef.current) return;
+        const data = param.seriesData.get(candleSeriesRef.current);
+        if (data) {
+          setOhlc(data);
+        }
+      });
 
     // Handle chart resize
     const handleResize = () => {
@@ -92,105 +143,34 @@ const TradingChart = ({
     };
     window.addEventListener("resize", handleResize);
 
-    // Track mouse move on chart to update OHLC values
-    chartInstance.current.subscribeCrosshairMove((param) => {
-      if (!param || !param.seriesData || !candleSeriesRef.current) return;
-      const data = param.seriesData.get(candleSeriesRef.current);
-      if (data) {
-        setOhlc(data);
-      }
-    });
-
     return () => {
       window.removeEventListener("resize", handleResize);
-      if (chartInstance.current) {
-        chartInstance.current.remove();
-      }
     };
+  }, []);
+
+  useEffect(() => {
+    if (!chartInstance.current || !candleSeriesRef.current || !marketData.length) return;
+
+    // Save the current visible range before updating data
+    const currentRange = chartInstance.current.timeScale().getVisibleLogicalRange();
+
+    // Ensure marketData is sorted and unique by time
+    const sortedData = [...marketData]
+      .sort((a, b) => a.time - b.time) // Sort by time
+      .filter(
+        (item, index, array) =>
+          index === 0 || item.time !== array[index - 1].time
+      ); // Remove duplicates
+
+    // Update candlestick data
+    candleSeriesRef.current.setData(sortedData);
+
+    // Restore the visible range after updating data
+    if (currentRange) {
+      chartInstance.current.timeScale().setVisibleLogicalRange(currentRange);
+    }
   }, [marketData]);
-
-  // Calculate MACD
-  const calculateMACD = (
-    data,
-    shortPeriod = 12,
-    longPeriod = 26,
-    signalPeriod = 9
-  ) => {
-    let shortEMA = [];
-    let longEMA = [];
-    let macdLine = [];
-    let signalLine = [];
-    let histogram = [];
-
-    for (let i = 0; i < data.length; i++) {
-      if (i >= shortPeriod - 1) {
-        let shortSum = data
-          .slice(i - shortPeriod + 1, i + 1)
-          .reduce((acc, val) => acc + val.close, 0);
-        shortEMA.push(shortSum / shortPeriod);
-      } else {
-        shortEMA.push(data[i].close);
-      }
-
-      if (i >= longPeriod - 1) {
-        let longSum = data
-          .slice(i - longPeriod + 1, i + 1)
-          .reduce((acc, val) => acc + val.close, 0);
-        longEMA.push(longSum / longPeriod);
-      } else {
-        longEMA.push(data[i].close);
-      }
-
-      macdLine.push({ time: data[i].time, value: shortEMA[i] - longEMA[i] });
-
-      if (i >= signalPeriod - 1) {
-        let signalSum = macdLine
-          .slice(i - signalPeriod + 1, i + 1)
-          .reduce((acc, val) => acc + val.value, 0);
-        signalLine.push({
-          time: data[i].time,
-          value: signalSum / signalPeriod,
-        });
-      } else {
-        signalLine.push({ time: data[i].time, value: macdLine[i].value });
-      }
-
-      histogram.push({
-        time: data[i].time,
-        value: macdLine[i].value - signalLine[i].value,
-      });
-    }
-
-    return { macd: macdLine, signal: signalLine, histogram };
-  };
-
-  // Calculate RSI
-  const calculateRSI = (data, period = 14) => {
-    let gains = [];
-    let losses = [];
-    let rsi = [];
-
-    for (let i = 1; i < data.length; i++) {
-      let change = data[i].close - data[i - 1].close;
-      gains.push(change > 0 ? change : 0);
-      losses.push(change < 0 ? -change : 0);
-
-      if (i >= period) {
-        let avgGain =
-          gains.slice(i - period, i).reduce((acc, val) => acc + val, 0) /
-          period;
-        let avgLoss =
-          losses.slice(i - period, i).reduce((acc, val) => acc + val, 0) /
-          period;
-        let rs = avgLoss === 0 ? 100 : avgGain / avgLoss;
-        rsi.push({ time: data[i].time, value: 100 - 100 / (1 + rs) });
-      } else {
-        rsi.push({ time: data[i].time, value: 50 });
-      }
-    }
-
-    return rsi;
-  };
+  
 
   return (
     <div>
@@ -205,7 +185,7 @@ const TradingChart = ({
             >
               {tradingPairs.map((pair, index) => (
                 <option key={index} value={pair}>
-                  {pair}
+                  {formatTradingPair(pair)}
                 </option>
               ))}
             </select>
@@ -235,9 +215,7 @@ const TradingChart = ({
         )}
       </div>
       <div className="w-full text-gray-400 border-b-[.3px] border-gray-600 ">
-        <h3>
-          Chart
-        </h3>
+        <h3>Chart</h3>
       </div>
       <div className="flex justify-evenly border-b-[.3px] border-gray-600 ">
         {timeIntervals.map((timeInterval, index) => (
@@ -255,25 +233,23 @@ const TradingChart = ({
         ))}
       </div>
       {ohlc && (
-          <div className="w-full py-1 flex justify-evenly">
-            <p className="text-secondary font-semibold text-[.8rem] ">
-              <span className="text-gray-600 text-[.7rem]">O: </span>{" "}
-              {ohlc.open}
-            </p>
-            <p className="text-secondary font-semibold text-[.8rem] ">
-              <span className="text-gray-600 text-[.7rem]">H: </span>{" "}
-              {ohlc.high}
-            </p>
-            <p className="text-secondary font-semibold text-[.8rem] ">
-              <span className="text-gray-600 text-[.7rem]">L: </span>
-              {ohlc.low}
-            </p>
-            <p className="text-secondary font-semibold text-[.8rem] ">
-              <span className="text-gray-600 text-[.7rem]">C: </span>
-              {ohlc.close}
-            </p>
-          </div>
-        )}
+        <div className="w-full py-1 flex justify-evenly">
+          <p className="text-secondary font-semibold text-[.8rem] ">
+            <span className="text-gray-600 text-[.7rem]">O: </span> {ohlc.open}
+          </p>
+          <p className="text-secondary font-semibold text-[.8rem] ">
+            <span className="text-gray-600 text-[.7rem]">H: </span> {ohlc.high}
+          </p>
+          <p className="text-secondary font-semibold text-[.8rem] ">
+            <span className="text-gray-600 text-[.7rem]">L: </span>
+            {ohlc.low}
+          </p>
+          <p className="text-secondary font-semibold text-[.8rem] ">
+            <span className="text-gray-600 text-[.7rem]">C: </span>
+            {ohlc.close}
+          </p>
+        </div>
+      )}
 
       <div ref={chartContainerRef} style={{ width: "100%", height: "400px" }} />
     </div>
