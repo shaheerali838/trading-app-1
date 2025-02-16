@@ -20,6 +20,7 @@ import { logoutUser } from "../../store/slices/userSlice";
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
   const [openMenu, setOpenMenu] = useState(false);
+  const [openTradeMenu, setOpenTradeMenu] = useState(false);
   const [isScrolled, setIsScrolled] = useState(false);
   const [openDialog, setOpenDialog] = useState(false);
   const dispatch = useDispatch((state) => state.user);
@@ -74,9 +75,38 @@ const Navbar = () => {
           <Link to={"/market"} className="text-white hover:text-[#00FF7F]">
             Market
           </Link>
-          <Link to={"/trade"} className="text-white hover:text-[#00FF7F]">
-            Trade
-          </Link>
+          <Menu
+              open={openTradeMenu}
+              handler={setOpenTradeMenu}
+              allowHover
+              className="relative px-2"
+            >
+              <MenuHandler>
+                <Button
+                  variant="text"
+                  className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
+                >
+                  <span className="text-[16px]">Trade</span>
+                  <VscChevronDown
+                    strokeWidth={2.5}
+                    className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
+                      openMenu ? "rotate-180" : ""
+                    }`}
+                  />
+                </Button>
+              </MenuHandler>
+              <MenuList className="absolute w-20 rounded-md shadow-lg bg-white ring-1 ring-black ring-opacity-5 p-0">
+                
+                <MenuItem>
+                  <Link
+                    to={"/trade"}
+                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                  >
+                    Spot
+                  </Link>
+                </MenuItem>
+              </MenuList>
+            </Menu>
           <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
             Wallet
           </Link>
