@@ -22,7 +22,6 @@ import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
-import ManualPrice from "./pages/admin/ManualPrice.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -49,7 +48,6 @@ const App = () => {
             <Route element={<AdminProtectedRoute />}>
               <Route path="/admin/dashboard" element={<AdminDashboard />} />
               <Route path="/admin/users/manage" element={<ManageUser />} />
-              <Route path="/admin/manual-price" element={<ManualPrice />} />
               <Route
                 path="/admin/transaction/manage"
                 element={<ManageTransactions />}

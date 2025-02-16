@@ -126,14 +126,21 @@ export const updateProfile = async (req, res) => {
  */
 export const getWallet = async (req, res) => {
   try {
+    console.log('got a wallet request');
+    
     const wallet = await Wallet.findOne({ userId: req.user._id })
       .populate("withdrawalHistory")
       .populate("depositHistory")
       .exec();
 
+
+
     if (!wallet) {
+      console.log('wallet not found');
+      
       return res.status(404).json({ message: "Wallet not found" });
     }
+    console.log('wallet found: \n'+wallet);
     res.status(200).json(wallet);
   } catch (error) {
     res.status(500).json({ message: "Error fetching wallet data", error });
