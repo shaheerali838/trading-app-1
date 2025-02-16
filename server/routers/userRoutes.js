@@ -18,7 +18,7 @@ router.post("/login", login);
 router.get("/logout", isUserAuthenticated, logoutUser);
 router.get("/profile", isUserAuthenticated, getProfile);
 router.put("/profile", isUserAuthenticated, updateProfile);
-router.get("/getwallet", isUserAuthenticated, getWallet);
+router.get("/getwallet", getWallet);
 router.post("/deposit", isUserAuthenticated, requestDeposit);
 router.post("/withdraw", isUserAuthenticated, requestWithdraw);
 router.get("/transactions", isUserAuthenticated, getTransactions);
