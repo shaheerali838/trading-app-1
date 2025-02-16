@@ -8,7 +8,7 @@ import AnimatedHeading from "../../components/animation/AnimateHeading";
 
 const CryptoCarousel = () => {
   return (
-    <section className="cryptoCarousel min-h-screen pt-[30vh] bg-gradient text-white text-center">
+    <section className="cryptoCarousel min-h-screen px-4 md:px-0 pt-[30vh] bg-gradient text-white text-center">
       <div>
         <AnimatedHeading>
           <h2 className="text-4xl font-bold mb-24 text-white ">

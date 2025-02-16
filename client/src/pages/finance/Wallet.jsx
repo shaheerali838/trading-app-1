@@ -45,7 +45,7 @@ const Wallet = () => {
           <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
             Total Balance
           </h2>
-          <CardBody className="flex justify-between items-center">
+          <CardBody className="flex flex-col md:flex-row justify-between items-center">
             <div>
               <p className="text-3xl font-bold text-white">
                 ${wallet?.balanceUSDT || "0.00"}{" "}
@@ -84,7 +84,6 @@ const Wallet = () => {
                   <tr className="text-gray-400 border-b border-gray-700">
                     <th className="py-2">Asset</th>
                     <th className="py-2">Quantity</th>
-                    <th className="py-2">Value (USDT)</th>
                   </tr>
                 </thead>
                 <tbody>

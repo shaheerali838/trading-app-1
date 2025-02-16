@@ -4,6 +4,7 @@ import { Card, Button } from "@material-tailwind/react";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
 import { placeOrder } from "../../store/slices/tradeSlice";
+import AnimatedHeading from "../animation/AnimateHeading";
 
 const socket = io("http://localhost:5000/");
 
@@ -65,7 +66,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       });
   };
 return (
-    <Card className="p-4 bg-transparent text-white w-full max-w-md">
+    <Card className="p-4 bg-transparent text-white w-full max-w-md ">
+      <AnimatedHeading>
+        <h2>Spot</h2>
+      </AnimatedHeading>
       <div className="mb-4">
         <div className="bg-gray-800 p-1 rounded-md flex">
           <button

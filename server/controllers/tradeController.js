@@ -28,17 +28,21 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         return res.status(400).json({ message: "Insufficient balance" });
       }
 
-      // Deduct USDT and add crypto
-      wallet.balanceUSDT -= totalCost;
-      const holding = wallet.holdings.find((h) => h.asset === coin);
-      if (holding) {
-        holding.quantity += amount;
-      } else {
-        wallet.holdings.push({ asset: coin, quantity: amount });
-      }
+      
+      const trade = await Trade.create({
+        userId: req.user._id,
+        type,
+        orderType,
+        price,
+        quantity: amount, // This is the quantity being traded
+        totalCost,
+        asset: coin, // Add the asset (coin) being traded
+        status: "pending",
+      });
+      await trade.save()
+      io.emit("tradeUpdate", trade);
+
     } else {
-      // Sell Crypto
-      console.log(wallet.holdings);
 
       // Use the `coin` from the request to find the correct holding
       const holding = wallet.holdings.find((h) => h.asset === coin);
@@ -46,31 +50,25 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         return res.status(400).json({ message: "Insufficient crypto balance" });
       }
 
-      // Deduct Crypto and add USDT
-      holding.quantity -= amount;
-      if (holding.quantity === 0) {
-        wallet.holdings = wallet.holdings.filter((h) => h.asset !== coin);
-      }
-      wallet.balanceUSDT += totalCost;
+      const trade = await Trade.create({
+        userId: req.user._id,
+        type,
+        orderType,
+        price,
+        quantity: amount, // This is the quantity being traded
+        totalCost,
+        asset: coin, // Add the asset (coin) being traded
+        status: "pending",
+      });
+      await trade.save()
+      io.emit("tradeUpdate", trade);
     }
 
-    await wallet.save();
 
-    // Record the trade
-    const trade = await Trade.create({
-      userId: req.user._id,
-      type,
-      orderType,
-      price,
-      quantity: amount, // This is the quantity being traded
-      totalCost,
-      asset: coin, // Add the asset (coin) being traded
-    });
 
     // Emit real-time trade update
-    io.emit("tradeUpdate", trade);
 
-    res.status(200).json({ message: "Trade successful", trade });
+    res.status(200).json({ message: "Order Successful" });
   } catch (error) {
     console.error(error);
     res.status(500).json({ message: "Server error", error });
@@ -98,5 +96,17 @@ export const getWallet = async (req, res) => {
     res.json(wallet);
   } catch (error) {
     res.status(500).json({ message: "Error fetching wallet details", error });
+  }
+};
+
+export const fetchPendingOrders = async (req, res, next) => {
+  try {
+    const transactions = await Trade.find({ status: "pending" });
+    res.json({
+      success: true,
+      data: transactions,
+    });
+  } catch (error) {
+    next(error);
   }
 };

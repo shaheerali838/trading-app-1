@@ -42,7 +42,7 @@ const LogIn = () => {
         <h1 className="text-4xl font-bold">Login</h1>
       </AnimatedHeading>
       <div className="flex justify-evenly">
-        <div className="w-[40vw] mt-20">
+        <div className="px-8 md:w-[40vw] mt-20">
           <form onSubmit={handleSubmit}>
             <input
               type="email"
@@ -75,7 +75,7 @@ const LogIn = () => {
             </a>
           </p>
         </div>
-        <div className="img w-[40vw]">
+        <div className="hidden md:inline img w-[40vw]">
           <img src={ImgSrc} alt="" />
         </div>
       </div>

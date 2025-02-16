@@ -81,12 +81,13 @@ const Testimonials = () => {
         }}
       >
         {testimonials.map((testimonial) => (
-        <SwiperSlide key={testimonial.id} className="swiper-slide">
+        <SwiperSlide key={testimonial.id} className="swiper-slide ">
           <div
             style={{
               paddingRight: 20,
               paddingLeft: 20,
             }}
+            className="w-[80vw] md:w-full"
           >
             <div className="testimonials-profile-circle">
               <img

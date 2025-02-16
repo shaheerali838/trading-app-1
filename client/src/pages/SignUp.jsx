@@ -30,10 +30,10 @@ const Signup = () => {
         <h1 className="text-4xl font-bold">SignUp</h1>
       </AnimatedHeading>
       <div className="flex flex-col md:flex-row justify-evenly">
-        <div className="hidden md:block  img w-[40vw] ">
+        <div className="hidden md:inline  img w-[40vw] ">
           <img src={ImgSrc} alt="" />
         </div>
-        <form onSubmit={handleSubmit} className="w-[40vw] mt-20">
+        <form onSubmit={handleSubmit} className="px-8 md:w-[40vw] mt-20">
           <input
             type="text"
             placeholder="Enter your First Name..."

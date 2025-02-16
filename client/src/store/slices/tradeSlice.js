@@ -1,20 +1,24 @@
-import { createSlice, createAsyncThunk } from '@reduxjs/toolkit';
-import axios from 'axios';
-import API from '../../utils/api';
+import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
+import axios from "axios";
+import API from "../../utils/api";
+import { toast } from "react-toastify";
 
+// Fetch coin market data
 export const fetchCoinData = createAsyncThunk(
-  'trade/fetchCoinData',
+  "trade/fetchCoinData",
   async (coinId) => {
     const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`, {
       params: {
-        vs_currency: 'usd',
-        days: '1',
-        interval: 'hourly'
-      }
+        vs_currency: "usd",
+        days: "1",
+        interval: "hourly",
+      },
     });
     return response.data;
   }
 );
+
+// Place a new order (User Side)
 export const placeOrder = createAsyncThunk(
   "trade/placeOrder",
   async (orderData, { rejectWithValue }) => {
@@ -29,14 +33,64 @@ export const placeOrder = createAsyncThunk(
   }
 );
 
+// Fetch pending orders for Admin Approval
+export const fetchPendingOrders = createAsyncThunk(
+  "trade/fetchPendingOrders",
+  async (_, { rejectWithValue }) => {
+    try {
+      const response = await API.get("/trade/pending-orders", {
+        withCredentials: true,
+      });
+      console.log(response.data.data);
+      
+      return response.data.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Admin Approves an Order
+export const approveOrder = createAsyncThunk(
+  "trade/approveOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.put(`/admin/approve-order/${orderId}`, {}, {
+        withCredentials: true,
+      });
+      toast.success(response.data.message)
+      return response.data;
+    } catch (error) {
+      toast.success(error.response.data.message)
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
+// Admin Rejects an Order
+export const rejectOrder = createAsyncThunk(
+  "trade/rejectOrder",
+  async (orderId, { rejectWithValue }) => {
+    try {
+      const response = await API.put(`/admin/reject-order/${orderId}`, {}, {
+        withCredentials: true,
+      });
+      return response.data;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    }
+  }
+);
+
 const tradeSlice = createSlice({
-  name: 'trade',
+  name: "trade",
   initialState: {
     selectedCoin: null,
     chartData: [],
     recentTrades: [],
     trades: [],
-    status: 'idle',
+    pendingOrders: [],
+    status: "idle",
     error: null,
   },
   reducers: {
@@ -50,14 +104,14 @@ const tradeSlice = createSlice({
   extraReducers: (builder) => {
     builder
       .addCase(fetchCoinData.pending, (state) => {
-        state.status = 'loading';
+        state.status = "loading";
       })
       .addCase(fetchCoinData.fulfilled, (state, action) => {
-        state.status = 'succeeded';
+        state.status = "succeeded";
         state.chartData = action.payload.prices;
       })
       .addCase(fetchCoinData.rejected, (state, action) => {
-        state.status = 'failed';
+        state.status = "failed";
         state.error = action.error.message;
       })
       .addCase(placeOrder.pending, (state) => {
@@ -68,6 +122,46 @@ const tradeSlice = createSlice({
         state.trades.push(action.payload.trade);
       })
       .addCase(placeOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Fetch Pending Orders
+      .addCase(fetchPendingOrders.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchPendingOrders.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.pendingOrders = action.payload;
+      })
+      .addCase(fetchPendingOrders.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Approve Order
+      .addCase(approveOrder.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(approveOrder.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.pendingOrders = state.pendingOrders.filter(
+          (order) => order._id !== action.payload.trade._id
+        );
+      })
+      .addCase(approveOrder.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      // Reject Order
+      .addCase(rejectOrder.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(rejectOrder.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.pendingOrders = state.pendingOrders.filter(
+          (order) => order._id !== action.payload.trade._id
+        );
+      })
+      .addCase(rejectOrder.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });

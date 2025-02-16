@@ -21,6 +21,7 @@ import AdminDashboard from "./pages/admin/AdminDashboard.jsx";
 import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
+import ManageOrders from "./pages/admin/ManageOrders.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -50,6 +51,15 @@ const App = () => {
               <Route
                 path="/admin/transaction/manage"
                 element={<ManageTransactions />}
+              />
+            <Route path="/admin/orders/manage" element={<ManageOrders/>} />
+            </Route>
+            <Route element={<ProtectedRoute />}>
+              <Route path="/wallet" element={<Wallet />} />
+              <Route path="/wallet/deposit" element={<Deposit />} />
+              <Route
+                path="/wallet/withdraw"
+                element={<Withdraw />}
               />
             </Route>
             <Route element={<ProtectedRoute />}>

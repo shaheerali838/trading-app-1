@@ -122,7 +122,7 @@ function Trade() {
           <div className="bg-transparent border border-[#2f2f2f] p-4">
             <OrderBook selectedPair={selectedPair} />
           </div>
-          <div className=" bg-transparent  border-y border-[#2f2f2f]  p-4">
+          <div className=" bg-transparent  border-y border-[#2f2f2f] flex justify-center  p-4">
             <OrderForm
               marketPrice={currentMarketPrice}
               selectedPair={selectedPair}
@@ -131,7 +131,7 @@ function Trade() {
         </div>
 
         <div className="mt-6">
-          <div className="bg-transparent border border-[#2f2f2f] p-4">
+          <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
             <RecentTrades trades={recentTrades} />
           </div>
         </div>
