@@ -1,26 +1,22 @@
 export const generateToken = (user, message, statusCode, res) => {
   const token = user.generateJWTToken();
 
-  let cookieName;
-  if (user.role === "admin") {
-    cookieName = "adminToken";
-  } else if (user.role === "user") {
-    cookieName = "userToken";
-  }
+  let cookieName = user.role === "admin" ? "adminToken" : "userToken";
+
   res.cookie(cookieName, token, {
-    httpOnly: true, // Prevent client-side access
-    secure: true, // Required for HTTPS
-    sameSite: "None", // Allow cross-origin cookie sharing
-    domain: ".hostingersite.com",
-    expires: new Date(
-      Date.now() + process.env.COOKIE_EXPIRY * 24 * 60 * 60 * 1000
-    ),
+    httpOnly: true,
+    secure: process.env.NODE_ENV === "production", // Secure only in production
+    sameSite: "None",
+    domain: process.env.NODE_ENV === "production" ? ".hostingersite.com" : undefined,
+    expires: new Date(Date.now() + process.env.COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
   });
+
+  console.log("Set-Cookie Header:", res.getHeaders()["set-cookie"]);
 
   res.status(statusCode).json({
     success: true,
     message,
     user,
-    token, // Include token in the response for debugging purposes
+    token, // Debugging
   });
 };
