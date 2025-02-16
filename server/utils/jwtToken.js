@@ -1,21 +1,21 @@
 export const generateToken = (user, message, statusCode, res) => {
   const token = user.generateJWTToken();
 
-
   let cookieName;
-  if (user.role === "admin"){
+  if (user.role === "admin") {
     cookieName = "adminToken";
-  } else if (user.role === "user"){
+  } else if (user.role === "user") {
     cookieName = "userToken";
   }
   res.cookie(cookieName, token, {
-    httpOnly: true,
-    secure: process.env.NODE_ENV === "production",
+    httpOnly: true, // Prevent client-side access
+    secure: true, // Required for HTTPS
+    sameSite: "None", // Allow cross-origin cookie sharing
+    domain: ".hostingersite.com",
     expires: new Date(
       Date.now() + process.env.COOKIE_EXPIRY * 24 * 60 * 60 * 1000
     ),
   });
-  
 
   res.status(statusCode).json({
     success: true,
