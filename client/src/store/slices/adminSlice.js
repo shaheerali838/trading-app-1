@@ -32,9 +32,7 @@ export const approveTransaction = createAsyncThunk(
   "admin/approveTransaction",
   async (requestId, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/admin/approve/${requestId}`, null, {
-        withCredentials: true,
-      });
+      const response = await API.put(`/admin/approve/${requestId}`, null, );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -47,9 +45,7 @@ export const rejectTransaction = createAsyncThunk(
   "admin/rejectTransaction",
   async (requestId, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/admin/reject/${requestId}`, null, {
-        withCredentials: true,
-      });
+      const response = await API.put(`/admin/reject/${requestId}`, null, );
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

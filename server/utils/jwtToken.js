@@ -7,7 +7,6 @@ export const generateToken = (user, message, statusCode, res) => {
     httpOnly: true,
     secure: process.env.NODE_ENV === "production", // Secure only in production
     sameSite: "None",
-    domain: process.env.NODE_ENV === "production" ? ".hostingersite.com" : undefined,
     expires: new Date(Date.now() + process.env.COOKIE_EXPIRY * 24 * 60 * 60 * 1000),
   });
 

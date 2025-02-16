@@ -7,13 +7,16 @@ import { toast } from "react-toastify";
 export const fetchCoinData = createAsyncThunk(
   "trade/fetchCoinData",
   async (coinId) => {
-    const response = await axios.get(`https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`, {
-      params: {
-        vs_currency: "usd",
-        days: "1",
-        interval: "hourly",
-      },
-    });
+    const response = await axios.get(
+      `https://api.coingecko.com/api/v3/coins/${coinId}/market_chart`,
+      {
+        params: {
+          vs_currency: "usd",
+          days: "1",
+          interval: "hourly",
+        },
+      }
+    );
     return response.data;
   }
 );
@@ -42,7 +45,7 @@ export const fetchPendingOrders = createAsyncThunk(
         withCredentials: true,
       });
       console.log(response.data.data);
-      
+
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -55,13 +58,11 @@ export const approveOrder = createAsyncThunk(
   "trade/approveOrder",
   async (orderId, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/admin/approve-order/${orderId}`, {}, {
-        withCredentials: true,
-      });
-      toast.success(response.data.message)
+      const response = await API.put(`/admin/approve-order/${orderId}`, {});
+      toast.success(response.data.message);
       return response.data;
     } catch (error) {
-      toast.success(error.response.data.message)
+      toast.success(error.response.data.message);
       return rejectWithValue(error.response.data);
     }
   }
@@ -72,9 +73,7 @@ export const rejectOrder = createAsyncThunk(
   "trade/rejectOrder",
   async (orderId, { rejectWithValue }) => {
     try {
-      const response = await API.put(`/admin/reject-order/${orderId}`, {}, {
-        withCredentials: true,
-      });
+      const response = await API.put(`/admin/reject-order/${orderId}`, {});
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);

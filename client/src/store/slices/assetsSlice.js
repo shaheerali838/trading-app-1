@@ -5,7 +5,10 @@ import API from "../../utils/api";
 
 export const fundsRequest = createAsyncThunk(
   "funds/requeset",
-  async ({ amount, currency, accountName, accountNumber,type }, { rejectWithValue }) => {
+  async (
+    { amount, currency, accountName, accountNumber, type },
+    { rejectWithValue }
+  ) => {
     try {
       const response = await API.post("/funds/request", {
         amount,
@@ -13,10 +16,7 @@ export const fundsRequest = createAsyncThunk(
         type,
         accountName,
         accountNumber,
-      }, {
-        withCredentials: true, 
-      }
-      );
+      });
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
@@ -30,7 +30,6 @@ export const getWallet = createAsyncThunk(
   async (_, { rejectWithValue }) => {
     try {
       const response = await API.get("/user/getwallet", {
-        withCredentials: true,
         headers: {
           "Content-Type": "application/json",
         },
@@ -42,7 +41,6 @@ export const getWallet = createAsyncThunk(
     }
   }
 );
-
 
 const assetsSlice = createSlice({
   name: "assets",

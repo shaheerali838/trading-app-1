@@ -8,13 +8,7 @@ export const loginUser = createAsyncThunk(
   "user/loginUser",
   async ({ email, password }, { rejectWithValue }) => {
     try {
-      const response = await API.post(
-        "/user/login",
-        { email, password },
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await API.post("/user/login", { email, password });
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
       toast.success("User Logged In Successfully");
@@ -34,13 +28,12 @@ export const registerUser = createAsyncThunk(
   "user/registerUser",
   async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
     try {
-      const response = await API.post(
-        "/user/register",
-        { email, password, firstName, lastName },
-        {
-          withCredentials: true,
-        }
-      );
+      const response = await API.post("/user/register", {
+        email,
+        password,
+        firstName,
+        lastName,
+      });
       toast.success("User Registered Successfully");
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -57,13 +50,7 @@ export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await API.post(
-        "/user/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      await API.post("/user/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
       return {};
@@ -76,13 +63,7 @@ export const logoutAdmin = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await API.post(
-        "/admin/logout",
-        {},
-        {
-          withCredentials: true,
-        }
-      );
+      await API.post("/admin/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
       return {};
