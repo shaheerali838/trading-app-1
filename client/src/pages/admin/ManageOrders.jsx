@@ -10,7 +10,7 @@ import {
 import { useDispatch, useSelector } from "react-redux";
 import { Link } from "react-router-dom";
 
-const socket = io("http://localhost:5000");
+const socket = io("https://trading-app-t6qp.onrender.com");
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);
