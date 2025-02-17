@@ -13,7 +13,7 @@ import { approveOrder, rejectOrder } from "../controllers/adminController.js";
 
 const router = express.Router();
 
-router.get('/logout', isAdminAuthenticated, logoutAdmin);
+router.post('/logout', isAdminAuthenticated, logoutAdmin);
 router.get("/user-requests", getUserRequests);
 router.get("/all-requests", getAllRequests);
 router.get('/all-users', getAllUsers);

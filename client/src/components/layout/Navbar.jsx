@@ -15,7 +15,7 @@ import {
 } from "@material-tailwind/react";
 import { VscChevronDown } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
-import { logoutUser } from "../../store/slices/userSlice";
+import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
