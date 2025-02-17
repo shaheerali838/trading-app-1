@@ -24,14 +24,9 @@ const Wallet = () => {
     return () => clearInterval(interval);
   }, [dispatch]);
 
-  if (status === "loading") return <Loader />;
-  if (error) {
-    return <p className="text-red-500">Error loading wallet</p>;
-  }
-  console.log(wallet);
-
   return (
     <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
+      {error && <p className="text-red-500">Got a problem while getting your wallet reload to try again</p>}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
