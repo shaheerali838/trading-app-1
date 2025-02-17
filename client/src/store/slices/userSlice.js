@@ -2,12 +2,15 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import API from "../../utils/api.js";
 import { toast } from "react-toastify";
+import { setLoading } from "./globalSlice.js";
 
 // Async thunk for logging in
 export const loginUser = createAsyncThunk(
   "user/loginUser",
-  async ({ email, password }, { rejectWithValue }) => {
+  async ({ email, password }, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/user/login", { email, password });
       // Store user data in local storage
       localStorage.setItem("user", JSON.stringify(response.data.user));
@@ -17,6 +20,8 @@ export const loginUser = createAsyncThunk(
     } catch (error) {
       toast.error(JSON.stringify(error.response.data.message));
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -24,8 +29,13 @@ export const loginUser = createAsyncThunk(
 // Async thunk for registering
 export const registerUser = createAsyncThunk(
   "user/registerUser",
-  async ({ email, password, firstName, lastName }, { rejectWithValue }) => {
+  async (
+    { email, password, firstName, lastName },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/user/register", {
         email,
         password,
@@ -39,6 +49,8 @@ export const registerUser = createAsyncThunk(
     } catch (error) {
       toast.error(JSON.stringify(error.response.data.message));
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -46,30 +58,38 @@ export const registerUser = createAsyncThunk(
 // Async thunk for logging out
 export const logoutUser = createAsyncThunk(
   "user/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       await API.post("/user/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
-      toast.success("User logged out successfully")
+      toast.success("User logged out successfully");
       return {};
     } catch (error) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
 export const logoutAdmin = createAsyncThunk(
   "user/logoutUser",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       await API.post("/admin/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
-      toast.success("Admin logged out successfully")
+      toast.success("Admin logged out successfully");
       return {};
     } catch (error) {
-      toast.error(error.response.data.message)
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );

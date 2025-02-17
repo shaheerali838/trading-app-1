@@ -1,14 +1,14 @@
-import { ImSpinner2 } from "react-icons/im";
-import React from "react";
+import { motion } from "framer-motion";
 
 const Loader = () => {
   return (
-    <>
-      {/* position absolute kr k full screen pr phela do or bg opacity bohot km ker do. or loader internet se utha lo. */}
-      <div className="min-w-screen min-h-screen opacity-0.5 top-0 relative flex items-center justify-center">
-      <ImSpinner2 className="text-5xl text-white animate-spin text-primary" />
-      </div>
-    </>
+    <div className="fixed inset-0 flex items-center justify-center bg-black bg-opacity-60 z-50">
+      <motion.div
+        className="w-16 h-16 border-4 border-t-transparent border-blue-500 rounded-full animate-spin"
+        animate={{ rotate: 360 }}
+        transition={{ repeat: Infinity, duration: 1, ease: "linear" }}
+      />
+    </div>
   );
 };
 

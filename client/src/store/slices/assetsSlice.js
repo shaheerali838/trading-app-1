@@ -2,14 +2,17 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import { toast } from "react-toastify";
 import API from "../../utils/api";
+import { setLoading } from "./globalSlice";
 
 export const fundsRequest = createAsyncThunk(
   "funds/requeset",
   async (
     { amount, currency, accountName, accountNumber, type },
-    { rejectWithValue }
+    { dispatch, rejectWithValue }
   ) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/funds/request", {
         amount,
         currency,
@@ -22,13 +25,17 @@ export const fundsRequest = createAsyncThunk(
     } catch (error) {
       toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
 export const getWallet = createAsyncThunk(
   "user/wallet",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.get("/user/getwallet", {
         headers: {
           "Content-Type": "application/json",
@@ -38,6 +45,8 @@ export const getWallet = createAsyncThunk(
     } catch (error) {
       toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );

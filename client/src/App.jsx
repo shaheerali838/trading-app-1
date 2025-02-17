@@ -22,9 +22,11 @@ import ManageUser from "./pages/admin/ManageUser.jsx";
 import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
+import Loader from "./components/layout/Loader.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
+  const { loading } = useSelector((state) => state.global);
 
   useEffect(() => {
     const user = JSON.parse(localStorage.getItem("user"));
@@ -39,6 +41,7 @@ const App = () => {
       <Router>
         <Navbar />
         <main>
+          {loading && <Loader />}
           <Routes>
             <Route path="/" element={<Home />} />
             <Route path="/login" element={<LogIn />} />
@@ -52,15 +55,12 @@ const App = () => {
                 path="/admin/transaction/manage"
                 element={<ManageTransactions />}
               />
-            <Route path="/admin/orders/manage" element={<ManageOrders/>} />
+              <Route path="/admin/orders/manage" element={<ManageOrders />} />
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />
               <Route path="/wallet/deposit" element={<Deposit />} />
-              <Route
-                path="/wallet/withdraw"
-                element={<Withdraw />}
-              />
+              <Route path="/wallet/withdraw" element={<Withdraw />} />
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />

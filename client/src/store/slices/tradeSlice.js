@@ -2,6 +2,7 @@ import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import axios from "axios";
 import API from "../../utils/api";
 import { toast } from "react-toastify";
+import { setLoading } from "./globalSlice";
 
 // Fetch coin market data
 export const fetchCoinData = createAsyncThunk(
@@ -24,14 +25,18 @@ export const fetchCoinData = createAsyncThunk(
 // Place a new order (User Side)
 export const placeOrder = createAsyncThunk(
   "trade/placeOrder",
-  async (orderData, { rejectWithValue }) => {
+  async (orderData, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/trade/placeOrder", orderData, {
         withCredentials: true,
       });
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -39,8 +44,10 @@ export const placeOrder = createAsyncThunk(
 // Fetch pending orders for Admin Approval
 export const fetchPendingOrders = createAsyncThunk(
   "trade/fetchPendingOrders",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.get("/trade/pending-orders", {
         withCredentials: true,
       });
@@ -49,6 +56,8 @@ export const fetchPendingOrders = createAsyncThunk(
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -56,14 +65,18 @@ export const fetchPendingOrders = createAsyncThunk(
 // Admin Approves an Order
 export const approveOrder = createAsyncThunk(
   "trade/approveOrder",
-  async (orderId, { rejectWithValue }) => {
+  async (orderId, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.put(`/admin/approve-order/${orderId}`, {});
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
       toast.error(error.response.data.message);
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -71,8 +84,10 @@ export const approveOrder = createAsyncThunk(
 // Admin Rejects an Order
 export const rejectOrder = createAsyncThunk(
   "trade/rejectOrder",
-  async (orderId, { rejectWithValue }) => {
+  async (orderId, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.put(`/admin/reject-order/${orderId}`, {});
       toast.success(response.data.message);
 
@@ -81,6 +96,8 @@ export const rejectOrder = createAsyncThunk(
       toast.success(error.response.data.message);
 
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );

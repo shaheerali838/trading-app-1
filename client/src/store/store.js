@@ -6,6 +6,8 @@ import assetsReducer from './slices/assetsSlice';
 import userReducer from './slices/userSlice';
 import adminReducer from './slices/adminSlice';
 
+import globalReducer from './slices/globalSlice';
+
 const store = configureStore({
   reducer: {
     user: userReducer,
@@ -14,6 +16,7 @@ const store = configureStore({
     finance: financeReducer,
     assets: assetsReducer,
     admin: adminReducer,
+    global: globalReducer,
   },
 });
 
