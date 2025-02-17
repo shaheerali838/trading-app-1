@@ -48,7 +48,7 @@ export const logoutUser = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await API.post("/user/logout", {});
+      await API.get("/user/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
       toast.success("User logged out successfully")
@@ -62,7 +62,7 @@ export const logoutAdmin = createAsyncThunk(
   "user/logoutUser",
   async (_, { rejectWithValue }) => {
     try {
-      await API.post("/admin/logout", {});
+      await API.get("/admin/logout", {});
       // Remove user data from local storage
       localStorage.removeItem("user");
       toast.success("Admin logged out successfully")

@@ -23,7 +23,7 @@ export const isAdminAuthenticated = catchAsyncErrors(async (req, res, next) => {
 
 export const isUserAuthenticated = catchAsyncErrors(
   async (req, res, next) => {
-    const token = req.cookies.userToken;
+    const token = req.cookies.userToken || req.cookies.adminToken;
     if (!token) {
       return next(new ErrorHandler("You need to Sign In First", 503));
     }

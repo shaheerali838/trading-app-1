@@ -68,13 +68,13 @@ export const logoutUser = catchAsyncErrors(async (req, res, next) => {
 export const logoutAdmin = catchAsyncErrors(async (req, res, next) => {
   res
     .status(200)
-    .cookie("userToken", "", {
+    .cookie("adminToken", "", {
       httpOnly: true,
       expires: new Date(Date.now()),
     })
     .json({
       success: true,
-      message: "User Logout successfully",
+      message: "Admin Logout successfully",
     });
 });
 /**
