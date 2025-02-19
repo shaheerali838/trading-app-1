@@ -49,7 +49,7 @@ const GraphCard = ({ coin }) => {
   };
 
   return (
-    <div className="bg-[#2A2A2A] p-4 rounded-lg shadow-md">
+    <div className="bg-[#141414] bg-opacity-5 p-4 rounded-lg shadow-md">
       <Line data={data} options={options} />
     </div>
   );
