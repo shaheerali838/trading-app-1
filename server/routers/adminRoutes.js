@@ -16,7 +16,7 @@ const router = express.Router();
 router.post('/logout', isAdminAuthenticated, logoutAdmin);
 router.get("/user-requests", getUserRequests);
 router.get("/all-requests", getAllRequests);
-router.get('/all-users', getAllUsers);
+router.get('/all-users', isAdminAuthenticated, getAllUsers);
 router.put("/approve/:requestId", isAdminAuthenticated, approveRequest);
 router.put("/reject/:requestId", isAdminAuthenticated, rejectRequest);
 router.put("/approve-order/:orderId", isAdminAuthenticated, approveOrder);

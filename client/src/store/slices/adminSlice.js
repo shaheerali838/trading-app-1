@@ -10,7 +10,7 @@ export const fetchUsers = createAsyncThunk(
     try {
       dispatch(setLoading(true));
       const response = await API.get("/admin/all-users");
-      return response.data;
+      return response.data.users;
     } catch (error) {
       return rejectWithValue(error.response.data);
     } finally {

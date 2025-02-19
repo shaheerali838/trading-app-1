@@ -26,8 +26,8 @@ function Deposit() {
 
   return (
     <div className="w-full min-h-screen p-6 bg-gradient">
-      <div className="flex justify-evenly">
-        <form onSubmit={handleSubmit} className="space-y-6 w-[40vw]">
+      <div className="flex flex-col sm:flex-row gap-4 justify-evenly">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:w-[40vw]">
           <div className="flex justify-between items-center mb-6">
             <AnimatedHeading>
               <h2 className="text-2xl font-bold">Deposit Funds</h2>
@@ -55,23 +55,19 @@ function Deposit() {
             </select>
           </div>
           <div>
-            <div>
-              <label className="block text-sm font-medium mb-2">
-                Deposit Method
-              </label>
-              <select
-                value={method}
-                onChange={(e) => setMethod(e.target.value)}
-                className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
-              >
-                <option className="text-black hover:bg-tertiary3" value="bank">
-                  Bank Transfer
-                </option>
-                <option className="text-black hover:bg-tertiary3" value="card">
-                  Easypaisa/Jazzcash
-                </option>
-              </select>
-            </div>
+            <label className="block text-sm font-medium mb-2">Network</label>
+            <select
+              value={currency}
+              onChange={(e) => setCurrency(e.target.value)}
+              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
+            >
+              <option className="text-black hover:bg-tertiary3" value="USDT">
+                ERC20
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="USDC">
+                TRC20
+              </option>
+            </select>
           </div>
           <div className="qrCode">
             <img
@@ -90,7 +86,7 @@ function Deposit() {
           <div className="w-full max-w-[16rem]">
             <div className="relative">
               <label htmlFor="account-number" className="sr-only">
-                Label
+                Wallet Address
               </label>
               <input
                 id="account-number"
@@ -152,7 +148,7 @@ function Deposit() {
             Already made a transaction? Send a request to release funds.
           </Link>
         </form>
-        <div className="warning rounded-md px-8 py-8 bg-[#242424] w-[40vw] max-h-fit text-start">
+        <div className="warning rounded-md px-8 py-8 bg-[#242424] sm:w-[40vw] max-h-fit text-start">
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>

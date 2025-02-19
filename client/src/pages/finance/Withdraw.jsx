@@ -31,8 +31,8 @@ function Withdraw() {
 
   return (
     <div className="w-full min-h-screen p-6 bg-gradient ">
-      <div className="flex justify-evenly">
-        <form onSubmit={handleSubmit} className="space-y-6 w-[40vw]">
+      <div className="w-full flex flex-col sm:flex-row justify-evenly gap-4">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:w-[40vw]">
           <div className="flex justify-between items-center mb-6">
             <AnimatedHeading>
               <h2 className="text-2xl font-bold">Withdraw</h2>
@@ -70,7 +70,7 @@ function Withdraw() {
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">
-              Account Name
+              Wallet Address
             </label>
             <input
               type="text"
@@ -79,17 +79,7 @@ function Withdraw() {
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Account Number
-            </label>
-            <input
-              type="text"
-              value={accountNumber}
-              onChange={(e) => setAccountNumber(e.target.value)}
-              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
-            />
-          </div>
+          
           <button
             type="submit"
             className="btn btn-primary w-full bg-primary py-1 rounded-sm cursor-pointer"
@@ -97,7 +87,7 @@ function Withdraw() {
             Send Request
           </button>
         </form>
-        <div className="warning rounded-md px-8 py-8 bg-[#242424] w-[40vw] max-h-fit text-start">
+        <div className="warning rounded-md px-8 py-8 bg-[#242424] sm:w-[40vw] max-h-fit text-start">
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>

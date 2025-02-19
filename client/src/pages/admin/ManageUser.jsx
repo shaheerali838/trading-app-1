@@ -3,9 +3,11 @@ import { Button, Card } from "flowbite-react";
 import React, { useEffect, useState } from "react";
 import { fetchUsers } from "../../store/slices/adminSlice";
 import { useDispatch, useSelector } from "react-redux";
+import { useNavigate } from "react-router-dom";
 
 const ManageUser = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { users } = useSelector((state) => state.admin);
 
   useEffect(() => {
@@ -13,6 +15,10 @@ const ManageUser = () => {
     console.log(users);
     
   }, []);
+
+  const handleAddToken = () => {
+    navigate('/admin/users/add-tokens')
+  }
 
   return (
     <div>
@@ -23,7 +29,6 @@ const ManageUser = () => {
             <tr>
               <th className="border-b p-2">User ID</th>
               <th className="border-b p-2">Email</th>
-              <th className="border-b p-2">Role</th>
               <th className="border-b p-2">Actions</th>
             </tr>
           </thead>
@@ -33,13 +38,9 @@ const ManageUser = () => {
                 <tr key={user._id}>
                   <td className="border-b p-2">{user._id}</td>
                   <td className="border-b p-2">{user.email}</td>
-                  <td className="border-b p-2">{user.role}</td>
                   <td className="border-b p-2">
-                    <Button className="bg-green-500 text-white px-2 py-1 mr-2">
-                      Approve
-                    </Button>
-                    <Button className="bg-red-500 text-white px-2 py-1">
-                      Block
+                    <Button onClick={handleAddToken} className="bg-green-500 text-white px-2 py-1 mr-2">
+                      Add Tokens
                     </Button>
                   </td>
                 </tr>
