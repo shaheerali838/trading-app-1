@@ -8,8 +8,6 @@ function RequestRelease() {
   const [requestData, setRequestData] = useState({
     amount: "",
     currency: "USDT",
-    accountName: "",
-    accountNumber: "",
     type: "deposit",
   });
   const handleSubmit = (e) => {
@@ -21,8 +19,7 @@ function RequestRelease() {
     setRequestData({
       amount: "",
       currency: "USDT",
-      accountName: "",
-      accountNumber: "",
+      walletAddress: "",
       type: "deposit",
     });
   };
@@ -59,53 +56,24 @@ function RequestRelease() {
               <option className="text-black hover:bg-tertiary3" value="USDT">
                 USDT
               </option>
-              <option className="text-black hover:bg-tertiary3" value="USDC">
-                PKR
+              <option className="text-black hover:bg-tertiary3" value="USDT">
+                USDC
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="USDT">
+                ETH
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="USDT">
+                USDT
               </option>
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Type</label>
-            <select
-              value={requestData.type}
-              onChange={(e) =>
-                setRequestData({ ...requestData, type: e.target.value })
-              }
-              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
-            >
-              <option className="text-black hover:bg-tertiary3" value="deposit">
-                deposit
-              </option>
-              <option
-                className="text-black hover:bg-tertiary3"
-                value="withdraw"
-              >
-                withdraw
-              </option>
-            </select>
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Account Name
-            </label>
+            <label className="block text-sm font-medium mb-2">Sender wallet Address</label>
             <input
               type="text"
-              value={requestData.accountName}
+              value={requestData.walletAddress}
               onChange={(e) =>
-                setRequestData({ ...requestData, accountName: e.target.value })
-              }
-              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
-            />
-          </div>
-          <div>
-            <label className="block text-sm font-medium mb-2">
-              Account Number
-            </label>
-            <input
-              type="text"
-              value={requestData.accountNumber}
-              onChange={(e) =>
-                setRequestData({...requestData, accountNumber: e.target.value })
+                setRequestData({ ...requestData, walletAddress: e.target.value })
               }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />

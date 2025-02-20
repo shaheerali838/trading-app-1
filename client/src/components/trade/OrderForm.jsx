@@ -6,7 +6,7 @@ import { toast } from "react-toastify";
 import { placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
 
-const socket = io("https://trading-app-t6qp.onrender.com");
+const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
 const OrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();

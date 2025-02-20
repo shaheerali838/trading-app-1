@@ -3,19 +3,19 @@ import { useDispatch, useSelector } from "react-redux";
 import { toast } from "react-toastify";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { fundsRequest } from "../../store/slices/assetsSlice";
+import Wallet from "../../../../server/models/Wallet";
 
 function Withdraw() {
   const dispatch = useDispatch();
   const { withdrawalHistory } = useSelector((state) => state.assets);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USDT");
-  const [accountName, setAccountName] = useState("");
-  const [accountNumber, setAccountNumber] = useState("");
+  const [walletAddress, setWalletAddress] = useState("");
 
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    if (!amount || parseFloat(amount) <= 0 || !accountName || !accountNumber) {
+    if (!amount || parseFloat(amount) <= 0 || !walletAddress) {
       toast.error("Please fill in all fields with valid information");
       return;
     }
@@ -23,8 +23,7 @@ function Withdraw() {
     dispatch(fundsRequest({
       amount,
       currency,
-      accountName,
-      accountNumber,
+      walletAddress,
       type: "withdraw",
     }));
   };
@@ -70,12 +69,12 @@ function Withdraw() {
           </div>
           <div>
             <label className="block text-sm font-medium mb-2">
-              Wallet Address
+              Reciever Wallet Address
             </label>
             <input
               type="text"
-              value={accountName}
-              onChange={(e) => setAccountName(e.target.value)}
+              value={walletAddress}
+              onChange={(e) => setWalletAddress(e.target.value)}
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>

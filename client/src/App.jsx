@@ -23,6 +23,7 @@ import ManageTransactions from "./pages/admin/ManageTransactions.jsx";
 import AdminProtectedRoute from "./components/middleware/AdminProtectedRoute.jsx";
 import ManageOrders from "./pages/admin/ManageOrders.jsx";
 import Loader from "./components/layout/Loader.jsx";
+import AddTokens from "./pages/admin/AddTokens.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -56,6 +57,7 @@ const App = () => {
                 element={<ManageTransactions />}
               />
               <Route path="/admin/orders/manage" element={<ManageOrders />} />
+              <Route path="/admin/users/add-tokens/:userId" element={<AddTokens />} />
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />

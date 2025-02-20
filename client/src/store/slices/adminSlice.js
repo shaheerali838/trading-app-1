@@ -10,12 +10,14 @@ export const fetchUsers = createAsyncThunk(
     try {
       dispatch(setLoading(true));
       const response = await API.get("/admin/all-users");
+      console.log(`the response is : ${response.data}`);
+
       return response.data.users;
     } catch (error) {
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
-    } 
+    }
   }
 );
 
@@ -27,6 +29,7 @@ export const fetchRequests = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.get("/admin/all-requests");
+
       return response.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -37,13 +40,39 @@ export const fetchRequests = createAsyncThunk(
 );
 
 // Async thunk for approving a transaction
-export const approveTransaction = createAsyncThunk(
-  "admin/approveTransaction",
+export const addTokens = createAsyncThunk(
+  "admin/addTokens",
+  async ({ amount, currency, userId }, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.post(`/admin/user/add-tokens`, {
+        amount,
+        currency,
+        userId,
+      });
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
+// Async thunk for rejecting a transaction
+export const approveWithDrawRequest = createAsyncThunk(
+  "admin/approve-withdraw",
   async (requestId, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
 
-      const response = await API.put(`/admin/approve/${requestId}`, null);
+      const response = await API.put(
+        `/admin/approve-withdraw/${requestId}`,
+        null
+      );
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
@@ -63,6 +92,25 @@ export const rejectTransaction = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.put(`/admin/reject/${requestId}`, null);
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
+// Async thunk for changing the status of a withdrawal request
+export const changeWithdrawRequestStatus = createAsyncThunk(
+  "admin/changeWithdrawRequestStatus",
+  async (requestId, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.put(`/admin/change-status/${requestId}`, null);
       toast.success(response.data.message);
       return response.data;
     } catch (error) {
@@ -109,17 +157,17 @@ const adminSlice = createSlice({
         state.loading = false;
         state.error = action.payload;
       })
-      .addCase(approveTransaction.pending, (state) => {
+      .addCase(addTokens.pending, (state) => {
         state.loading = true;
         state.error = null;
       })
-      .addCase(approveTransaction.fulfilled, (state, action) => {
+      .addCase(addTokens.fulfilled, (state, action) => {
         state.loading = false;
         state.transactions = state.transactions.filter(
           (tx) => tx._id !== action.meta.arg
         );
       })
-      .addCase(approveTransaction.rejected, (state, action) => {
+      .addCase(addTokens.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       })
@@ -134,6 +182,20 @@ const adminSlice = createSlice({
         );
       })
       .addCase(rejectTransaction.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(changeWithdrawRequestStatus.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(changeWithdrawRequestStatus.fulfilled, (state, action) => {
+        state.loading = false;
+        state.transactions = state.transactions.map((tx) =>
+          tx._id === action.meta.arg ? { ...tx, status: "approved" } : tx
+        );
+      })
+      .addCase(changeWithdrawRequestStatus.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

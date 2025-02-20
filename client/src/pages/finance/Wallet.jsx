@@ -26,7 +26,11 @@ const Wallet = () => {
 
   return (
     <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
-      {error && <p className="text-red-500">Got a problem while getting your wallet reload to try again</p>}
+      {error && (
+        <p className="text-red-500">
+          Got a problem while getting your wallet reload to try again
+        </p>
+      )}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -35,36 +39,75 @@ const Wallet = () => {
         <h1 className="text-4xl font-bold text-white mb-6">My Wallet</h1>
 
         {/* Total Balance Section */}
-        <Card className="bg-[#242424] p-6 rounded-lg mb-6">
-          <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-            Total Balance
-          </h2>
-          <CardBody className="flex flex-col md:flex-row justify-between items-center">
-            <div>
-              <p className="text-3xl font-bold text-white">
-                ${wallet?.balanceUSDT || "0.00"}{" "}
-                <span className="text-gray-400 text-sm">USDT</span>
-              </p>
-              <p className="text-xl font-semibold text-gray-400">
-                PKR {wallet?.balancePKR?.toFixed(2) || "0.00"}
-              </p>
+        <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+          <div className="bg-[#242424] p-6 rounded-lg mb-6">
+            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+              Total USDT
+            </h2>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  ${wallet?.balanceUSDT || "0.00"}{" "}
+                  <span className="text-gray-400 text-sm">USDT</span>
+                </p>
+              </div>
             </div>
-            <div className="flex gap-4">
-              <button
-                onClick={() => navigate("/wallet/deposit")}
-                className="btn bg-[#1E90FF] px-4 py-2 text-white rounded-md hover:bg-[#1C86EE] transition duration-300"
-              >
-                Deposit
-              </button>
-              <button
-                onClick={() => navigate("/wallet/withdraw")}
-                className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
-              >
-                Withdraw
-              </button>
+          </div>
+          <div className="bg-[#242424] p-6 rounded-lg mb-6">
+            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+              Total ETH
+            </h2>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  ${wallet?.balanceETH || "0.00"}{" "}
+                  <span className="text-gray-400 text-sm">ETH</span>
+                </p>
+              </div>
             </div>
-          </CardBody>
-        </Card>
+          </div>
+          <div className="bg-[#242424] p-6 rounded-lg mb-6">
+            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+              Total USDC
+            </h2>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  ${wallet?.balanceUSDC || "0.00"}{" "}
+                  <span className="text-gray-400 text-sm">USDC</span>
+                </p>
+              </div>
+            </div>
+          </div>
+          <div className="bg-[#242424] p-6 rounded-lg mb-6">
+            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+              Total BTC
+            </h2>
+            <div className="flex flex-col md:flex-row justify-between items-center">
+              <div>
+                <p className="text-3xl font-bold text-white">
+                  ${wallet?.balanceBTC || "0.00"}{" "}
+                  <span className="text-gray-400 text-sm">BTC</span>
+                </p>
+              </div>
+            </div>
+          </div>
+        </div>
+
+        <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+          <button
+            onClick={() => navigate("/wallet/deposit")}
+            className="btn bg-[#1E90FF] px-4 py-2 text-white rounded-md hover:bg-[#1C86EE] transition duration-300"
+          >
+            Deposit
+          </button>
+          <button
+            onClick={() => navigate("/wallet/withdraw")}
+            className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
+          >
+            Withdraw
+          </button>
+        </div>
 
         {/* Holdings Section */}
         <Card className="bg-[#242424] p-6 rounded-lg mb-6">
@@ -100,7 +143,7 @@ const Wallet = () => {
         </Card>
 
         {/* Deposit & Withdrawal History */}
-        <div className="grid md:grid-cols-2 gap-4">
+        <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
           {/* Deposit History */}
           <Card className="bg-[#242424] p-6 rounded-lg">
             <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
@@ -114,7 +157,8 @@ const Wallet = () => {
                       key={index}
                       className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
                     >
-                      <span>{new Date(tx.date).toLocaleString()}</span>
+                      <span>{new Date(tx.createdAt).toLocaleString()}</span>
+                      <span>{tx.currency}</span>
                       <span className="text-green-500">
                         <AiOutlineArrowDown className="inline-block" /> $
                         {tx.amount.toFixed(2)}
@@ -141,7 +185,7 @@ const Wallet = () => {
                       key={index}
                       className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
                     >
-                      <span>{new Date(tx.date).toLocaleString()}</span>
+                      <span>{new Date(tx.createdAt).toLocaleString()}</span>
                       <span className="text-red-500">
                         <AiOutlineArrowUp className="inline-block" /> $
                         {tx.amount.toFixed(2)}

@@ -16,9 +16,6 @@ const ManageUser = () => {
     
   }, []);
 
-  const handleAddToken = () => {
-    navigate('/admin/users/add-tokens')
-  }
 
   return (
     <div>
@@ -39,7 +36,7 @@ const ManageUser = () => {
                   <td className="border-b p-2">{user._id}</td>
                   <td className="border-b p-2">{user.email}</td>
                   <td className="border-b p-2">
-                    <Button onClick={handleAddToken} className="bg-green-500 text-white px-2 py-1 mr-2">
+                    <Button onClick={() => { navigate(`/admin/users/add-tokens/${user._id}`)}} className="bg-green-500 text-white px-2 py-1 mr-2">
                       Add Tokens
                     </Button>
                   </td>

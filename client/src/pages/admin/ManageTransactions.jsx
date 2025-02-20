@@ -2,14 +2,16 @@ import React, { useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
   fetchRequests,
-  approveTransaction,
   rejectTransaction,
+  approveWithDrawRequest,
+  changeWithdrawRequestStatus,
 } from "../../store/slices/adminSlice";
-import { Link } from "react-router-dom";
+import { Link, useNavigate } from "react-router-dom";
 import { Button } from "flowbite-react";
 
 const ManageTransactions = () => {
   const dispatch = useDispatch();
+  const navigate = useNavigate();
   const { transactions } = useSelector((state) => state.admin);
 
   useEffect(() => {
@@ -17,11 +19,17 @@ const ManageTransactions = () => {
   }, [dispatch]);
 
   const handleApprove = (requestId) => {
-    dispatch(approveTransaction(requestId));
+    dispatch(approveWithDrawRequest(requestId));
   };
 
   const handleReject = (requestId) => {
     dispatch(rejectTransaction(requestId));
+  };
+
+  const handleTokens = (userId, requestId) => {
+    navigate(`/admin/users/add-tokens/${userId}`);
+    dispatch(changeWithdrawRequestStatus(requestId));
+
   };
 
   return (
@@ -42,28 +50,45 @@ const ManageTransactions = () => {
               key={tx._id}
               className="p-4 bg-[#2A2A2A] rounded-lg text-gray-400"
             >
-              <h3 className="text-xl font-semibold mb-2">
-                Transaction ID: {tx._id}
-              </h3>
+              {tx.type === "deposit" ? (
+                <h3 className=" text-white w-fit px-2 font-semibold mb-2 bg-blue-500">
+                  Deposit
+                </h3>
+              ) : (
+                <h3 className=" text-white w-fit px-2 font-semibold mb-2 bg-red-500">
+                  Withdraw
+                </h3>
+              )}
               <p className="mb-2 text-gray-500">
-                <strong>Account Name:</strong> {tx.accountName}
-              </p>
-              <p className="mb-2 text-gray-500">
-                <strong>Account Number:</strong> {tx.accountNumber}
+                <strong>
+                  {tx.type === "deposit"
+                    ? "Sender Wallet Address"
+                    : "Recieving Wallet Address"}{" "}
+                </strong>{" "}
+                {tx.walletAddress}
               </p>
               <p className="mb-2 text-gray-500">
                 <strong>Currency Type:</strong> {tx.currency}
               </p>
               <p className="mb-2 text-gray-500">
-                <strong>Amount:</strong> ${tx.amount}
+                <strong>Amount:</strong> {tx.amount}
               </p>
               <div className="flex justify-end mt-4">
-                <Button
-                  onClick={() => handleApprove(tx._id)}
-                  className="bg-primary text-white px-4 py-2 mr-2"
-                >
-                  Approve
-                </Button>
+                {tx.type === "deposit" ? (
+                  <Button
+                    onClick={() => handleTokens(tx.userId._id, tx._id)}
+                    className="bg-primary text-white px-4 py-2 mr-2"
+                  >
+                    Send Tokens
+                  </Button>
+                ) : (
+                  <Button
+                    onClick={() => handleApprove(tx._id)}
+                    className="bg-primary text-white px-4 py-2 mr-2"
+                  >
+                    Approve
+                  </Button>
+                )}
                 <Button
                   onClick={() => handleReject(tx._id)}
                   className="bg-tertiary1 text-white px-4 py-2"

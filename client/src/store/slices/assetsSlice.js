@@ -7,7 +7,7 @@ import { setLoading } from "./globalSlice";
 export const fundsRequest = createAsyncThunk(
   "funds/requeset",
   async (
-    { amount, currency, accountName, accountNumber, type },
+    { amount, currency, walletAddress, type },
     { dispatch, rejectWithValue }
   ) => {
     try {
@@ -17,8 +17,7 @@ export const fundsRequest = createAsyncThunk(
         amount,
         currency,
         type,
-        accountName,
-        accountNumber,
+        walletAddress,
       });
       toast.success(response.data.message);
       return response.data;

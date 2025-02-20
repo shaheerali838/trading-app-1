@@ -8,18 +8,20 @@ const WalletSchema = new mongoose.Schema(
       required: true,
     },
     balanceUSDT: { type: Number, default: 0 },
-    balancePKR: { type: Number, default: 0 },
+    balanceETH: { type: Number, default: 0 },
+    balanceBTC: { type: Number, default: 0 },
+    balanceUSDC: { type: Number, default: 0 },
     holdings: [
-        {
-          asset: String,  // e.g., BTC, ETH
-          quantity: Number // User's holding amount
-        }
-      ],
+      {
+        asset: String, // e.g., BTC, ETH
+        quantity: Number, // User's holding amount
+      },
+    ],
     depositHistory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "DepositWithdrawRequest" },
+      { amount: Number, currency: String, createdAt: Date},
     ],
     withdrawalHistory: [
-      { type: mongoose.Schema.Types.ObjectId, ref: "DepositWithdrawRequest" },
+      { amount: Number, currency: String, createdAt: Date},
     ],
     createdAt: { type: Date, default: Date.now },
   },

@@ -12,7 +12,6 @@ const UserSchema = new mongoose.Schema(
     verificationCode: { type: String }, // OTP for email/phone verification
     role: { type: String, enum: ["user", "admin"], default: "user" },
     balanceUSDT: { type: Number, default: 0 }, // Wallet balance in USDT
-    balancePKR: { type: Number, default: 0 }, // PKR balance (if applicable)
     depositHistory: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
     ],

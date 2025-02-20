@@ -7,6 +7,10 @@ const TransactionSchema = new mongoose.Schema(
       ref: "User",
       required: true,
     },
+    email: {
+      type: mongoose.Schema.Types.ObjectId,
+      ref: "User",
+    },
     type: {
       type: String,
       enum: ["deposit", "withdrawal", "transfer"],
@@ -18,15 +22,9 @@ const TransactionSchema = new mongoose.Schema(
       default: "pending",
     },
     amount: { type: Number, required: true },
-    currency: { type: String, enum: ["PKR", "USDT"], required: true },
-    paymentMethod: {
-      type: String,
-      enum: ["Bank Transfer", "Easypaisa", "JazzCash"],
-      required: true,
-    },
+    currency: { type: String, enum: ["USDC","BTC","ETH", "USDT"], required: true },
     transactionId: { type: String, unique: true },
-    proofOfPayment: { type: String }, // Image URL for deposit proof
-    adminApproval: { type: Boolean, default: false }, // Admin must approve manual deposits
+    adminApproval: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
