@@ -5,7 +5,7 @@ import financeReducer from './slices/financeSlice';
 import assetsReducer from './slices/assetsSlice';
 import userReducer from './slices/userSlice';
 import adminReducer from './slices/adminSlice';
-
+import futuresTradeReducer from './slices/futuresTradeSlice';
 import globalReducer from './slices/globalSlice';
 
 const store = configureStore({
@@ -17,6 +17,7 @@ const store = configureStore({
     assets: assetsReducer,
     admin: adminReducer,
     global: globalReducer,
+    futures: futuresTradeReducer,
   },
 });
 

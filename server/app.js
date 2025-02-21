@@ -11,6 +11,7 @@
   import tradeRouter from "./routers/tradeRoutes.js";
   import adminRouter from "./routers/adminRoutes.js";
   import depositWithdrawRouter from "./routers/depositWithdrawRoutes.js";
+  import futuresTradeRouter from "./routers/futuresTradeRoutes.js";
 
   const app = express();
 
@@ -38,6 +39,7 @@
   app.use("/api/trade", tradeRouter);
   app.use("/api/admin", adminRouter);
   app.use("/api/funds/", depositWithdrawRouter)
+  app.use("/api/futures/", futuresTradeRouter)
 
 
   dbConnection();

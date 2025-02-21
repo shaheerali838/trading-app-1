@@ -117,6 +117,14 @@ const Navbar = () => {
                     Spot
                   </Link>
                 </MenuItem>
+                <MenuItem>
+                  <Link
+                    to={"/futures"}
+                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                  >
+                    Futures
+                  </Link>
+                </MenuItem>
               </MenuList>
             </Menu>
             <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
