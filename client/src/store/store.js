@@ -7,6 +7,7 @@ import userReducer from './slices/userSlice';
 import adminReducer from './slices/adminSlice';
 import futuresTradeReducer from './slices/futuresTradeSlice';
 import globalReducer from './slices/globalSlice';
+import perpetualTradeReducer from './slices/perpetualSlice'
 
 const store = configureStore({
   reducer: {
@@ -18,6 +19,7 @@ const store = configureStore({
     admin: adminReducer,
     global: globalReducer,
     futures: futuresTradeReducer,
+    perpetual: perpetualTradeReducer,
   },
 });
 

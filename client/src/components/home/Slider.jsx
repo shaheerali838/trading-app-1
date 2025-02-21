@@ -8,7 +8,8 @@ const Slider = () => {
         <div className="heading flex justify-center">
           <AnimatedHeading>
             <h2 className="w-[60vw] text-center text-4xl py-20 font-bold">
-              The Only Crypto Exchange To Buy , Sell, and Trade Cryptocurrency
+            Trade Cryptocurrency Safely and Securely
+            Your Assets, Our Top Priority
             </h2>
           </AnimatedHeading>
         </div>

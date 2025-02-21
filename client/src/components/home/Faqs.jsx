@@ -16,33 +16,78 @@ const Faqs = () => {
   const faqs = [
     {
       id: 1,
-      question: "What is this platform?",
-      answer:
-        "Our platform is a crypto trading exchange where users can buy, sell, deposit, withdraw, and manage their crypto assets in a secure environment.This website is designed to provide information and resources for individuals interested in learning about the history and culture of the African diaspora in the United States.",
+      question: "What products does BitEx provide?",
+      answer: (
+        <>
+          <p>
+            Our platform is an innovative cryptocurrency exchange with advanced
+            financial offerings. We offer cutting-edge crypto trading services
+            to millions of users globally in more than 180 regions.{" "}
+          </p>
+          <p>
+            Military-Grade Encryption: BitEx use AES-256 encryption for all
+            transactions and data storage, ensuring your assets and information
+            are protected by the same standards as global financial
+            institutions.
+          </p>
+          <p>
+            Cold Storage Safeguards: BitEx 95% of funds are stored in offline,
+            hardware-secured wallets, making them immune to online threats like
+            hacking or phishing{" "}
+          </p>
+          <p>
+            24/7 Threat Monitoring: BitEx AI-driven security system detects and
+            blocks suspicious activity in real time, with zero false positives
+            in the past year.{" "}
+          </p>
+          <p>
+            Third-Party Audits: BitEx undergo quarterly security audits by
+            leading firms like [Example Firm] to maintain transparency and
+            compliance with ISO 27001 standards.{" "}
+          </p>
+          <p>
+            User Education: BitEx provide free tools and guides to help users
+            enable hardware 2FA, set up biometric authentication, and avoid
+            common scams.
+          </p>
+          <p>
+            With BitEx, you can: Trade a wide variety of tokens and trading
+            pairs. Connect to the world-famous TradingView Platform and trade
+            crypto directly with their supercharged charts
+          </p>
+        </>
+      ),
     },
     {
       id: 2,
-      question: "Is this platform safe?",
+      question: "What is crypto?",
       answer:
-        "Yes! We use secure authentication, encrypted data, and admin controls to ensure the safety of user funds and transactions.",
+        "Cryptocurrency is a decentralized digital currency that operates on blockchain technology. Its key features include transparency, borderless transactions and immutability. Some of the most popular cryptocurrencies, by market capitalization , include Bitcoin, Ethereum, Tether, which can be traded on this platform.",
     },
     {
       id: 3,
-      question: "How do I create an account?",
+      question: "  What is a cryptocurrency exchange?",
       answer:
-        "Click on Register, provide your email, set a password, and verify your email to start trading.",
+        "Cryptocurrency exchanges are digital marketplaces that enable users to buy and sell cryptocurrencies like Bitcoin, Ethereum, and Tether. The BitEx exchange is the largest crypto exchange by trade volume.",
     },
     {
       id: 4,
-      question: "What is the difference between Market and Limit orders?",
+      question:
+        " How do I buy Bitcoin and other crypto currencies on this platform?",
       answer:
-        "Market Orders → Buy/Sell instantly at the current market price.\nLimit Orders → Buy/Sell at a specific price set by you.",
+        "Easily buy Bitcoin or other crypto currencies within minutes with  USDT. BitEx supports payments through USDT Deposite . Want to buy, sell, or hold other coins that are gaining traction in the crypto ecosystem? Kickstart your journey with BitEx and explore prices and other information for cryptos such as Bitcoin (BTC), Ethereum (ETH) and more!",
     },
     {
       id: 5,
-      question: "How do I place an order?",
+      question: "How to track cryptocurrency prices?",
       answer:
-        "Select the crypto pair, choose the order type (market/limit), enter the amount, and confirm your order.",
+        "The easiest way to track the latest cryptocurrency prices, trading volumes, trending altcoins, and market cap is the BitEx Cryptocurrency Directory. Click on the coins to know historical coin prices, 24-hour trading volume, and the price of cryptocurrencies like Bitcoin, Ethereum, BNB and others in real-time.",
+    },
+    {
+      id: 6,
+      question: " How to trade cryptocurrencies on BitEx",
+      answer:
+        "You can trade hundreds of cryptocurrencies on BitEx via the Spot, Futures, and Options markets. To begin trading, users need to register an account, complete identity verification, buy/deposit crypto, and start trading.",
     },
   ];
 

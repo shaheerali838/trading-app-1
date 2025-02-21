@@ -32,7 +32,7 @@ function Market() {
   };
 
   return (
-    <div className="max-w-7xl mx-8">
+    <div className="min-h-screen max-w-7xl mx-8">
       <AnimateSection>
         <AnimatedHeading>
           <h1 className="text-4xl font-bold mb-4">Cryptocurrency Market</h1>
@@ -105,7 +105,7 @@ function Market() {
         )}
 
         {status === "failed" && (
-          <div className="text-danger text-center">
+          <div className="w-full h-full text-red-500 flex justify-center items-center">
             Failed to load market data. Please try again later.
           </div>
         )}

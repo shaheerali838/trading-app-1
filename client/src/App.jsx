@@ -25,6 +25,7 @@ import ManageOrders from "./pages/admin/ManageOrders.jsx";
 import Loader from "./components/layout/Loader.jsx";
 import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
+import PerpetualTrade from "./pages/PerpetualTrade.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -74,6 +75,7 @@ const App = () => {
               <Route path="/wallet/withdraw" element={<Withdraw />} />
               <Route path="/trade" element={<Trade />} />
               <Route path="/futures" element={<FuturesTrade />} />
+              <Route path="/perpetual" element={<PerpetualTrade />} />
             </Route>
           </Routes>
         </main>

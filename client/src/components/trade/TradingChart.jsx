@@ -26,7 +26,7 @@ const TradingChart = ({
   const [ohlc, setOhlc] = useState(null);
   const [savedRange, setSavedRange] = useState(null); // To save the visible range
 
-  const timeIntervals = ["1m", "5m", "15m", "1h", "24h", "1d"];
+  const timeIntervals = ["1m", "5m", "15m", "1h", "1d", "1w"];
 
   const tradingPairs = [
     "BTCUSDT",

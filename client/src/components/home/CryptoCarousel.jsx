@@ -5,8 +5,10 @@ import "swiper/css/pagination";
 import "swiper/css/navigation";
 import { Autoplay, Pagination, Navigation } from "swiper/modules";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import { useNavigate } from "react-router-dom";
 
 const CryptoCarousel = () => {
+  const navigate = useNavigate()
   return (
     <section className="cryptoCarousel min-h-screen px-4 md:px-0 pt-[30vh] bg-gradient text-white text-center">
       <div>
@@ -51,7 +53,7 @@ const CryptoCarousel = () => {
               <p className="mt-2 text-[#00FF7F]">+2.5%</p>
               <p className="mt-2 text-[#F5F5F5]">24h Volume: $50M</p>
               <div className="mt-4">
-                <button className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
+                <button onClick={()=> {navigate('/trade')}} className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
                   Trade Now
                 </button>
               </div>
@@ -68,7 +70,7 @@ const CryptoCarousel = () => {
               <p className="mt-2 text-[#D32F2F]">-1.2%</p>
               <p className="mt-2 text-[#F5F5F5]">24h Volume: $30M</p>
               <div className="mt-4">
-                <button className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
+                <button onClick={()=> {navigate('/trade')}} className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
                   Trade Now
                 </button>
               </div>
@@ -85,7 +87,7 @@ const CryptoCarousel = () => {
               <p className="mt-2 text-[#00FF7F]">+3.8%</p>
               <p className="mt-2 text-[#F5F5F5]">24h Volume: $20M</p>
               <div className="mt-4">
-                <button className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
+                <button onClick={()=> {navigate('/trade')}} className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
                   Trade Now
                 </button>
               </div>
@@ -102,7 +104,7 @@ const CryptoCarousel = () => {
               <p className="mt-2 text-[#D32F2F]">-0.5%</p>
               <p className="mt-2 text-[#F5F5F5]">24h Volume: $10M</p>
               <div className="mt-4">
-                <button className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
+                <button onClick={()=> {navigate('/trade')}} className="px-4 py-2 bg-[#1E90FF] text-white rounded-full hover:bg-[#00FF7F] transition-colors duration-300">
                   Trade Now
                 </button>
               </div>

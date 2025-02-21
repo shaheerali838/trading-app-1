@@ -125,6 +125,14 @@ const Navbar = () => {
                     Futures
                   </Link>
                 </MenuItem>
+                <MenuItem>
+                  <Link
+                    to={"/perpetual"}
+                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                  >
+                    Perpetual
+                  </Link>
+                </MenuItem>
               </MenuList>
             </Menu>
             <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
@@ -235,6 +243,12 @@ const Navbar = () => {
             </Link>
             <Link to={"/trade"} className="py-3" onClick={toggleMenu}>
               Spot Trading
+            </Link>
+            <Link to={"/futures"} className="py-3" onClick={toggleMenu}>
+              Future Trading
+            </Link>
+            <Link to={"/perpetual"} className="py-3" onClick={toggleMenu}>
+              Perpetual Trading
             </Link>
             <Link to={"/wallet"} className="py-3" onClick={toggleMenu}>
               Wallet
