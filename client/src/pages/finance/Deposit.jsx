@@ -10,6 +10,7 @@ import { Link } from "react-router-dom";
 
 function Deposit() {
   const dispatch = useDispatch();
+  const [network, setNetwork] = useState("Tron (TRC20)");
   const { status, depositHistory } = useSelector((state) => state.assets);
   const [amount, setAmount] = useState("");
   const [method, setMethod] = useState("bank");
@@ -22,6 +23,60 @@ function Deposit() {
       toast.error("Please enter a valid amount");
       return;
     }
+
+    // Add your form submission logic here
+  };
+
+  const handleCopyToClipboard = (e) => {
+    e.preventDefault();
+    const walletAddress = getWalletAddress();
+    navigator.clipboard.writeText(walletAddress).then(() => {
+      toast.success("Wallet address copied to clipboard");
+    });
+  };
+
+  const getWalletAddress = () => {
+    if (currency === "USDT") {
+      switch (network) {
+        case "Tron (TRC20)":
+          return "TDuXRdKfexXUY8Cx6ohNTVSwovpW8CiCs7";
+        case "Arbitrum One":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Aptos":
+          return "0xcbc936f8a5c694c2218cd5f6690d4d7d8a4a9892d5ca6e4bff5cd44d2d7467c4";
+        case "Polygon POS":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Ethereum (ERC20)":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        default:
+          return "";
+      }
+    } else if (currency === "USDC") {
+      switch (network) {
+        case "Ethereum (ERC20)":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Polygon POS":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Solana":
+          return "HXCrdd3hitq5tf64m6q5o6YCABrNxkRFRHm4tEdG5D8u";
+        case "Arbitrum One":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        default:
+          return "";
+      }
+    } else if (currency === "ETH") {
+      switch (network) {
+        case "Ethereum (ERC20)":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Arbitrum One":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        default:
+          return "";
+      }
+    } else if (currency === "BTC") {
+      return "bc1qmyx7nmyn76xm67umkydhyt4s2ynuen89cm8w83";
+    }
+    return "";
   };
 
   return (
@@ -57,49 +112,114 @@ function Deposit() {
           <div>
             <label className="block text-sm font-medium mb-2">Network</label>
             <select
-              value={currency}
-              onChange={(e) => setCurrency(e.target.value)}
+              value={network}
+              onChange={(e) => setNetwork(e.target.value)}
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             >
-              <option className="text-black hover:bg-tertiary3" value="USDT">
-                ERC20
-              </option>
-              <option className="text-black hover:bg-tertiary3" value="USDC">
-                TRC20
-              </option>
+              {currency === "USDT" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Tron (TRC20)"
+                  >
+                    Tron (TRC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Aptos"
+                  >
+                    Aptos
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                </>
+              )}
+              {currency === "USDC" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Solana"
+                  >
+                    Solana
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                </>
+              )}
+              {currency === "ETH" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                </>
+              )}
+              {currency === "BTC" && (
+                <option
+                  className="text-black hover:bg-tertiary3"
+                  value="Bitcoin"
+                >
+                  Bitcoin
+                </option>
+              )}
             </select>
           </div>
-          <div className="qrCode">
-            <img
-              src={
-                method === "bank"
-                  ? bankQr
-                  : method === "Easypaisa"
-                  ? easypaisaQr
-                  : jazzcashQr
-              }
-              alt="qr code"
-              className="w-[10vw]"
-            />
-          </div>
 
-          <div className="w-full max-w-[16rem]">
+          <div className="w-full ">
             <div className="relative">
-              <label htmlFor="account-number" className="sr-only">
+              <label htmlFor="wallet-address" className="sr-only">
                 Wallet Address
               </label>
               <input
-                id="account-number"
+                id="wallet-address"
                 type="text"
-                className="col-span-6 bg-transparent
-         border border-gray-300 text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5 "
-                value="1479857fhkjhfiy954945794"
+                className="col-span-6 bg-transparent border border-primary text-gray-500 text-sm rounded-lg focus:ring-blue-500 focus:border-blue-500 block w-full p-2.5"
+                value={getWalletAddress()}
                 disabled
                 readOnly
               />
               <button
-                data-copy-to-clipboard-target="npm-install-copy-button"
-                data-tooltip-target="tooltip-copy-npm-install-copy-button"
+                onClick={handleCopyToClipboard}
                 className="absolute end-2 top-1/2 -translate-y-1/2 text-gray-500 dark:text-gray-400 hover:bg-gray-100 dark:hover:bg-gray-800 rounded-lg p-2 inline-flex items-center justify-center"
               >
                 <span id="default-icon">
@@ -110,7 +230,7 @@ function Deposit() {
                     fill="currentColor"
                     viewBox="0 0 18 20"
                   >
-                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V3a2 2 0 0 0-2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
+                    <path d="M16 1h-3.278A1.992 1.992 0 0 0 11 0H7a1.993 1.993 0 0 0-1.722 1H2a2 2 0 0 0-2 2v15a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2Zm-3 14H5a1 1 0 0 1 0-2h8a1 1 0 0 1 0 2Zm0-4H5a1 1 0 0 1 0-2h8a1 1 0 1 1 0 2Zm0-5H5a1 1 0 0 1 0-2h2V2h4v2h2a1 1 0 1 1 0 2Z" />
                   </svg>
                 </span>
                 <span id="success-icon" className="hidden">
@@ -128,7 +248,7 @@ function Deposit() {
                       strokeWidth="2"
                       d="M1 5.917 5.724 10.5 15 1.5"
                     />
-                  </svg>  
+                  </svg>
                 </span>
               </button>
               <div
@@ -152,10 +272,10 @@ function Deposit() {
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>
-              1. The above deposit address is the official payment address of the
-              platform. Please ensure you use the official deposit address of the
-              platform. Any loss of funds caused by incorrect charging shall be
-              borne by yourself.
+              1. The above deposit address is the official payment address of
+              the platform. Please ensure you use the official deposit address
+              of the platform. Any loss of funds caused by incorrect charging
+              shall be borne by yourself.
             </li>
             <li>
               2. Please make sure that your computer and browser are safe to
@@ -166,10 +286,10 @@ function Deposit() {
               entire network node for it to be credited.
             </li>
             <li>
-              4. Please select the above-mentioned token system and currency type
-              and transfer the corresponding amount for deposit. Please do not
-              transfer any other irrelevant assets, otherwise, they will not be
-              retrieved.
+              4. Please select the above-mentioned token system and currency
+              type and transfer the corresponding amount for deposit. Please do
+              not transfer any other irrelevant assets, otherwise, they will not
+              be retrieved.
             </li>
           </ol>
         </div>
@@ -177,7 +297,9 @@ function Deposit() {
 
       <div className="card mt-8">
         <AnimatedHeading>
-          <h2 className="text-xl font-bold mb-4 w-full text-center">Deposit History</h2>
+          <h2 className="text-xl font-bold mb-4 w-full text-center">
+            Deposit History
+          </h2>
         </AnimatedHeading>
         <table className="min-w-full bg-dark/30 rounded-lg">
           <thead className="border-b-1 border-gray-700">
