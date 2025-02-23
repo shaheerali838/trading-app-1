@@ -43,7 +43,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   };
 
   return (
-    <Card className="p-4 bg-transparent text-white w-full max-w-md">
+    <Card className="p-4 bg-transparent text-lg text-white w-full max-w-md">
       <AnimatedHeading>
         <h2>Open Position</h2>
       </AnimatedHeading>

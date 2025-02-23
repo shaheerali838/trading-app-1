@@ -73,7 +73,7 @@ const PerpetualTrade = () => {
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
 
   return (
-    <div className="max-w-7xl mx-auto px-4">
+    <div className="min-h-screen max-w-7xl mx-auto px-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -82,7 +82,8 @@ const PerpetualTrade = () => {
         <h3 className="text-2xl font-semibold text-white">Futures Trading</h3>
 
         <div className="flex flex-col lg:flex-row">
-          <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4">
+          <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4 hidden lg:block">
+            {" "}
             <TradingChart
               selectedPair={selectedPair}
               setSelectedPair={setSelectedPair}
@@ -91,14 +92,16 @@ const PerpetualTrade = () => {
               marketData={marketData}
             />
           </div>
-          <div className="bg-transparent border border-[#2f2f2f] p-4">
-            <OrderBook selectedPair={selectedPair} />
-          </div>
-          <div className="bg-transparent border border-[#2f2f2f] p-4">
-            <PerpetualOrderForm
-              selectedPair={selectedPair}
-              marketPrice={currentMarketPrice}
-            />
+          <div className="flex flex-row-reverse lg:flex-row w-full lg:w-2/5">
+            <div className="w-1/2 bg-transparent border border-[#2f2f2f] p-4">
+              <OrderBook selectedPair={selectedPair} />
+            </div>
+            <div className="w-1/2 bg-transparent border border-[#2f2f2f] p-4">
+              <PerpetualOrderForm
+                selectedPair={selectedPair}
+                marketPrice={currentMarketPrice}
+              />
+            </div>
           </div>
         </div>
       </motion.div>

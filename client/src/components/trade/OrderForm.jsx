@@ -66,7 +66,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       });
   };
 return (
-    <Card className="p-4 bg-transparent text-white w-full max-w-md ">
+    <Card className="md:p-4 bg-transparent text-white w-full text-lg ">
       <AnimatedHeading>
         <h2>Spot</h2>
       </AnimatedHeading>
@@ -122,7 +122,7 @@ return (
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
+          className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
         />
       </div>
 

@@ -26,6 +26,7 @@ import Loader from "./components/layout/Loader.jsx";
 import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
 import PerpetualTrade from "./pages/PerpetualTrade.jsx";
+import BottomNavbar from "./components/layout/BottomNavbar.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -80,6 +81,7 @@ const App = () => {
           </Routes>
         </main>
         <Footer />
+        <BottomNavbar />
         <ToastContainer
           position="top-right"
           autoClose={5000}
