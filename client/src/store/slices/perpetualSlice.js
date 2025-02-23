@@ -1,18 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api";
 import { toast } from "react-toastify";
+import { setLoading } from "./globalSlice";
 
 // ✅ Open Perpetual Trade
 export const openPerpetualTrade = createAsyncThunk(
   "perpetual/openTrade",
-  async (tradeData, { rejectWithValue }) => {
+  async (tradeData, { dispatch, rejectWithValue }) => {
     try {
-      const response = await API.post("/perpetual/open", tradeData, { withCredentials: true });
+      dispatch(setLoading(true));
+
+      const response = await API.post("/perpetual/open", tradeData, {
+        withCredentials: true,
+      });
       toast.success("Perpetual trade opened successfully!");
       return response.data.trade;
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -20,14 +27,22 @@ export const openPerpetualTrade = createAsyncThunk(
 // ✅ Close Perpetual Trade
 export const closePerpetualTrade = createAsyncThunk(
   "perpetual/closeTrade",
-  async ({ tradeId, closePrice }, { rejectWithValue }) => {
+  async ({ tradeId, closePrice }, { dispatch, rejectWithValue }) => {
     try {
-      const response = await API.post("/perpetual/close", { tradeId, closePrice }, { withCredentials: true });
+      dispatch(setLoading(true));
+
+      const response = await API.post(
+        "/perpetual/close",
+        { tradeId, closePrice },
+        { withCredentials: true }
+      );
       toast.success("Perpetual trade closed successfully!");
       return response.data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to close trade");
       return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -35,19 +50,23 @@ export const closePerpetualTrade = createAsyncThunk(
 // ✅ Get Open Positions
 export const fetchOpenPerpetualTrades = createAsyncThunk(
   "perpetual/fetchOpenTrades",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
-      const response = await API.get("/perpetual/open-positions", { withCredentials: true });
+      dispatch(setLoading(true));
+
+      const response = await API.get("/perpetual/open-positions", {
+        withCredentials: true,
+      });
       console.log(response.data);
-      
+
       return response.data.trades;
     } catch (error) {
       return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
-
-// ✅ Slice Definition
 const perpetualSlice = createSlice({
   name: "perpetual",
   initialState: {
@@ -75,7 +94,9 @@ const perpetualSlice = createSlice({
       })
       .addCase(closePerpetualTrade.fulfilled, (state, action) => {
         state.loading = false;
-        state.openTrades = state.openTrades.filter((trade) => trade._id !== action.payload.tradeId);
+        state.openTrades = state.openTrades.filter(
+          (trade) => trade._id !== action.payload.tradeId
+        );
       })
       .addCase(closePerpetualTrade.rejected, (state, action) => {
         state.loading = false;

@@ -6,7 +6,8 @@ import API from "../utils/api";
 import { fetchMarketData } from "../store/slices/marketSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
-
+import io from "socket.io-client";
+const socket = io(import.meta.env.VITE_API_URL);
 
 const PerpetualTrade = () => {
   const [marketData, setMarketData] = useState([]);
@@ -68,6 +69,9 @@ const PerpetualTrade = () => {
     return () => ws.close();
   }, [selectedPair, selectedInterval]);
 
+  const currentMarketPrice =
+    marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4">
       <motion.div
@@ -79,23 +83,25 @@ const PerpetualTrade = () => {
 
         <div className="flex flex-col lg:flex-row">
           <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4">
-
-      <TradingChart
-        selectedPair={selectedPair}
-        setSelectedPair={setSelectedPair}
-        selectedInterval={selectedInterval}
-        setSelectedInterval={setSelectedInterval}
-        marketData={marketData}
-      />
-      </div>
-      <div className="bg-transparent border border-[#2f2f2f] p-4">
+            <TradingChart
+              selectedPair={selectedPair}
+              setSelectedPair={setSelectedPair}
+              selectedInterval={selectedInterval}
+              setSelectedInterval={setSelectedInterval}
+              marketData={marketData}
+            />
+          </div>
+          <div className="bg-transparent border border-[#2f2f2f] p-4">
             <OrderBook selectedPair={selectedPair} />
           </div>
           <div className="bg-transparent border border-[#2f2f2f] p-4">
-            <PerpetualOrderForm selectedPair={selectedPair} />
+            <PerpetualOrderForm
+              selectedPair={selectedPair}
+              marketPrice={currentMarketPrice}
+            />
           </div>
         </div>
-    </motion.div>
+      </motion.div>
     </div>
   );
 };

@@ -1,36 +1,63 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import { toast } from "react-toastify";
 import { useNavigate } from "react-router-dom";
-import { getWallet } from "../../store/slices/assetsSlice";
-import { Card, CardBody } from "@material-tailwind/react";
+import {
+  fetchExchangeRate,
+  getWallet,
+  swapAssets,
+} from "../../store/slices/assetsSlice";
+import {
+  Card,
+  CardBody,
+  Dialog,
+  DialogBody,
+  DialogHeader,
+} from "@material-tailwind/react";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import Loader from "../../components/layout/Loader";
+import API from "../../utils/api";
 
 const Wallet = () => {
+  const [open, setOpen] = useState(false);
+  const [fromAsset, setFromAsset] = useState("USDT");
+  const [toAsset, setToAsset] = useState("ETH");
   const dispatch = useDispatch();
   const navigate = useNavigate();
-  const { wallet, status, error } = useSelector((state) => state.assets);
+  const [amount, setAmount] = useState(1);
+  const { wallet, status, error, exchangeRate } = useSelector((state) => state.assets);
 
   useEffect(() => {
     dispatch(getWallet());
-
     // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
       dispatch(getWallet());
-    }, 30000);
+      dispatch(fetchExchangeRate({fromAsset, toAsset}));
+    }, 10000);
+  
 
     return () => clearInterval(interval);
-  }, [dispatch]);
+  }, [dispatch,fromAsset, toAsset]);
+
+    
+
+  const handleSwap = async () => {
+    if (!amount) {
+      toast.error("Please enter an amount");
+      return;
+    }
+
+    try {
+      dispatch(swapAssets({ fromAsset, toAsset, amount, exchangeRate })).unwrap();
+      setOpen(false);
+    } catch (error) {
+      toast.error(error.message || "Swap failed");
+    }
+  };
 
   return (
     <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
-      {error && (
-        <p className="text-red-500">
-          Got a problem while getting your wallet reload to try again
-        </p>
-      )}
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -47,7 +74,7 @@ const Wallet = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <p className="text-3xl font-bold text-white">
-                  ${wallet?.balanceUSDT || "0.00"}{" "}
+                  ${wallet?.balanceUSDT?.toFixed(2) || "0.00"}{" "}
                   <span className="text-gray-400 text-sm">USDT</span>
                 </p>
               </div>
@@ -60,7 +87,7 @@ const Wallet = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <p className="text-3xl font-bold text-white">
-                  ${wallet?.balanceETH || "0.00"}{" "}
+                  ${wallet?.balanceETH?.toFixed(2) || "0.00"}{" "}
                   <span className="text-gray-400 text-sm">ETH</span>
                 </p>
               </div>
@@ -73,7 +100,7 @@ const Wallet = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <p className="text-3xl font-bold text-white">
-                  ${wallet?.balanceUSDC || "0.00"}{" "}
+                  ${wallet?.balanceUSDC?.toFixed(2) || "0.00"}{" "}
                   <span className="text-gray-400 text-sm">USDC</span>
                 </p>
               </div>
@@ -86,7 +113,7 @@ const Wallet = () => {
             <div className="flex flex-col md:flex-row justify-between items-center">
               <div>
                 <p className="text-3xl font-bold text-white">
-                  ${wallet?.balanceBTC || "0.00"}{" "}
+                  ${wallet?.balanceBTC?.toFixed(2) || "0.00"}{" "}
                   <span className="text-gray-400 text-sm">BTC</span>
                 </p>
               </div>
@@ -106,6 +133,12 @@ const Wallet = () => {
             className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
           >
             Withdraw
+          </button>
+          <button
+            className="bg-green-500 text-white px-4 py-2 rounded"
+            onClick={() => setOpen(true)}
+          >
+            Swap
           </button>
         </div>
 
@@ -199,6 +232,66 @@ const Wallet = () => {
             </CardBody>
           </Card>
         </div>
+        <Dialog open={open} handler={() => setOpen(false)} size="sm">
+          <DialogHeader className="text-white bg-gray-900 flex justify-between">
+            <span>Swap</span>
+            <button onClick={() => setOpen(false)}>✖</button>
+          </DialogHeader>
+          <DialogBody className="bg-gray-900 text-white p-6">
+            {/* From Currency */}
+            <div className="mb-4">
+              <label className="block mb-1">From</label>
+              <select
+                className="w-full bg-gray-800 p-2 rounded"
+                value={fromAsset}
+                onChange={(e) => setFromAsset(e.target.value)}
+              >
+                <option value="USDT">USDT</option>
+                <option value="BTC">BTC</option>
+                <option value="ETH">ETH</option>
+              </select>
+            </div>
+
+            {/* To Currency */}
+            <div className="mb-4">
+              <label className="block mb-1">To</label>
+              <select
+                className="w-full bg-gray-800 p-2 rounded"
+                value={toAsset}
+                onChange={(e) => setToAsset(e.target.value)}
+              >
+                <option value="ETH">ETH</option>
+                <option value="BTC">BTC</option>
+                <option value="USDT">USDT</option>
+              </select>
+            </div>
+
+            {/* Amount Input */}
+            <div className="mb-4">
+              <label className="block mb-1">Exchange Amount</label>
+              <input
+                type="number"
+                className="w-full bg-gray-800 p-2 rounded"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
+
+            {/* Exchange Rate Display */}
+            <p className="text-sm mb-4">
+              Current Exchange Rate: {amount} {fromAsset} = {amount *  exchangeRate} {toAsset}
+            </p>
+
+            {/* Swap Button */}
+            <button
+              onClick={handleSwap}
+              className="bg-blue-500 w-full py-2 rounded"
+            >
+              Exchange
+            </button>
+          </DialogBody>
+        </Dialog>
       </motion.div>
     </div>
   );

@@ -21,8 +21,6 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate required margin
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  console.log(wallet.balanceUSDT, marginUsed);
-
   if (wallet.balanceUSDT < marginUsed) {
     return res.status(400).json({ message: "Insufficient margin balance" });
   }
@@ -30,9 +28,9 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate liquidation price (approximate formula)
   let liquidationPrice;
   if (type === "long") {
-    liquidationPrice = entryPrice * (1 - 1 / leverage);
+    liquidationPrice = entryPrice * (entryPrice * leverage / leverage + 1);
   } else {
-    liquidationPrice = entryPrice * (1 + 1 / leverage);
+    liquidationPrice = entryPrice * (entryPrice * leverage / leverage - 1);
   }
 
   // Deduct margin from user's wallet
@@ -130,12 +128,14 @@ export const checkLiquidations = async (marketPrices) => {
       // Liquidate the trade
       const wallet = await Wallet.findOne({ userId: trade.userId });
       if (wallet) {
-        wallet.marginBalance -= trade.marginUsed;
+        wallet.balanceUSDT -= trade.marginUsed;
         await wallet.save();
       }
-
+      
       trade.status = "liquidated";
+      trade.closedAt = new Date();
       await trade.save();
+      io.emit("liquidationUpdate", trade);
     }
   }
 };

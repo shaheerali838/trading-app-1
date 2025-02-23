@@ -5,7 +5,7 @@ import API from "../../utils/api";
 import { setLoading } from "./globalSlice";
 
 export const fundsRequest = createAsyncThunk(
-  "funds/requeset",
+  "funds/request",
   async (
     { amount, currency, walletAddress, type },
     { dispatch, rejectWithValue }
@@ -29,6 +29,7 @@ export const fundsRequest = createAsyncThunk(
     }
   }
 );
+
 export const getWallet = createAsyncThunk(
   "user/wallet",
   async (_, { dispatch, rejectWithValue }) => {
@@ -46,6 +47,52 @@ export const getWallet = createAsyncThunk(
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
+export const swapAssets = createAsyncThunk(
+  "wallet/swapAssets",
+  async ({ fromAsset, toAsset, amount, exchangeRate }, { rejectWithValue }) => {
+    try {
+      const response = await API.post("/user/swap", {
+        fromAsset,
+        toAsset,
+        amount,
+        exchangeRate,
+      });
+      console.log(response.data);
+
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      toast.error(error.response?.data?.message);
+      return rejectWithValue(error.response?.data);
+    }
+  }
+);
+
+export const fetchExchangeRate = createAsyncThunk(
+  "wallet/fetchExchangeRate",
+  async ({ fromAsset, toAsset }, { rejectWithValue }) => {
+    try {
+      const exchangeRateResponse = await axios.get(
+        `https://api.binance.com/api/v3/ticker/price?symbol=${toAsset}${fromAsset}`
+      );
+
+      const exchangeRate = parseFloat(exchangeRateResponse.data.price);
+      console.log("Exchange Rate:", exchangeRate);
+
+      if (!exchangeRate) {
+        console.log("Exchange rate not found");
+        return rejectWithValue({ message: "Invalid currency pair" });
+      }
+
+      return exchangeRate;
+    } catch (error) {
+      toast.error(error.response?.data?.message);
+      console.error("Error fetching exchange rate:", error);
+      return rejectWithValue(error.response?.data);
     }
   }
 );
@@ -104,6 +151,18 @@ const assetsSlice = createSlice({
       .addCase(getWallet.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload?.message || "Failed to fetch wallet data";
+      })
+      .addCase(fetchExchangeRate.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchExchangeRate.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.exchangeRate = action.payload;
+      })
+      .addCase(fetchExchangeRate.rejected, (state, action) => {
+        state.status = "failed";
+        state.error =
+          action.payload?.message || "Failed to fetch exchange rate";
       });
   },
 });

@@ -10,6 +10,7 @@ function RequestRelease() {
     currency: "USDT",
     type: "deposit",
   });
+
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -26,7 +27,7 @@ function RequestRelease() {
 
   return (
     <div className="w-full min-h-screen p-6 bg-gradient flex justify-center items-center">
-      <div className="flex justify-center">
+      <div className="flex justify-evenly gap-4">
         <form onSubmit={handleSubmit} className="space-y-6 w-[40vw]">
           <div className="flex justify-between items-center mb-6">
             <AnimatedHeading>
@@ -68,12 +69,17 @@ function RequestRelease() {
             </select>
           </div>
           <div>
-            <label className="block text-sm font-medium mb-2">Sender wallet Address</label>
+            <label className="block text-sm font-medium mb-2">
+              Sender wallet Address
+            </label>
             <input
               type="text"
               value={requestData.walletAddress}
               onChange={(e) =>
-                setRequestData({ ...requestData, walletAddress: e.target.value })
+                setRequestData({
+                  ...requestData,
+                  walletAddress: e.target.value,
+                })
               }
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
@@ -85,6 +91,35 @@ function RequestRelease() {
             Send Request
           </button>
         </form>
+        <div className="warning rounded-md px-8 py-8 bg-[#242424] sm:w-[40vw] max-h-fit text-start">
+          <h3 className="text-yellow-200">⚠️Important Notice</h3>
+          <ol className="text-gray-500 ">
+            <li>
+              1. The above deposit address is the official payment address of
+              the platform. Please ensure you use the official deposit address
+              of the platform. Any loss of funds caused by incorrect charging
+              shall be borne by yourself.
+            </li>
+            <li>
+              2. Please make sure that your computer and browser are safe to
+              prevent information from being tampered with or leaked.
+            </li>
+            <li>
+              3. After you recharge the above address, you need to confirm the
+              entire network node for it to be credited.
+            </li>
+            <li>
+              4. Please select the above-mentioned currency
+              type and network and transfer the corresponding amount for deposit. Please do
+              not transfer any other irrelevant assets, otherwise, they will not
+              be retrieved.
+            </li>
+            <li>
+              5. Your request will be reviewed, and if it is authentic, your
+              wallet will be updated within 24 hours.
+            </li>
+          </ol>
+        </div>
       </div>
     </div>
   );

@@ -5,6 +5,8 @@ import TradingChart from "../components/trade/TradingChart";
 import OrderBook from "../components/trade/OrderBook";
 import FuturesOrderForm from "../components/trade/FuturesOrderForm";
 import { fetchOpenPositions } from "../store/slices/futuresTradeSlice";
+import io from "socket.io-client";
+const socket = io(import.meta.env.VITE_API_URL);
 
 function FuturesTrade() {
   const [marketData, setMarketData] = useState([]);
@@ -17,6 +19,21 @@ function FuturesTrade() {
     dispatch(fetchOpenPositions());
   }, [dispatch]);
 
+  // WebSocket for Live Liquidation Tracking
+  useEffect(() => {
+    socket.on("liquidationUpdate", (liquidatedTrade) => {
+      console.log("Liquidation Detected:", liquidatedTrade);
+
+      // Remove liquidated trade from UI
+      dispatch(fetchOpenPositions());
+    });
+
+    return () => {
+      socket.off("liquidationUpdate"); // Cleanup on unmount
+    };
+  }, [dispatch]);
+
+  // Fetch Market Data from Binance API
   useEffect(() => {
     const fetchMarketData = async () => {
       try {
@@ -46,7 +63,7 @@ function FuturesTrade() {
     return () => clearInterval(interval);
   }, [selectedPair, selectedInterval]);
 
-  // WebSocket for real-time updates
+  // ✅ WebSocket for Real-Time Market Data
   useEffect(() => {
     const ws = new WebSocket(
       `wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
@@ -70,6 +87,9 @@ function FuturesTrade() {
     return () => ws.close();
   }, [selectedPair, selectedInterval]);
 
+  const currentMarketPrice =
+    marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
+
   return (
     <div className="max-w-7xl mx-auto px-4">
       <motion.div
@@ -89,11 +109,16 @@ function FuturesTrade() {
               marketData={marketData}
             />
           </div>
-          <div className="bg-transparent border border-[#2f2f2f] p-4">
-            <OrderBook selectedPair={selectedPair} />
-          </div>
-          <div className="bg-transparent border border-[#2f2f2f] p-4">
-            <FuturesOrderForm selectedPair={selectedPair} />
+          <div className="flex flex-row flex-row-reverse md:flex-row lg:w-2/5">
+            <div className="w-1/2 bg-transparent border border-[#2f2f2f] p-4">
+              <OrderBook selectedPair={selectedPair} />
+            </div>
+            <div className="w-full lg:w-1/2 bg-transparent border border-[#2f2f2f] p-4">
+              <FuturesOrderForm
+                selectedPair={selectedPair}
+                marketPrice={currentMarketPrice}
+              />
+            </div>
           </div>
         </div>
 

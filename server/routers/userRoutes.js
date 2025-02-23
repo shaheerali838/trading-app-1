@@ -9,6 +9,8 @@ import {
   requestWithdraw,
   getTransactions,
   logoutUser,
+  swapCrypto,
+ 
 } from "../controllers/userController.js";
 import { isUserAuthenticated } from "../middlewares/auth.js";
 const router = express.Router();
@@ -22,5 +24,6 @@ router.get("/getwallet", isUserAuthenticated, getWallet);
 router.post("/deposit", isUserAuthenticated, requestDeposit);
 router.post("/withdraw", isUserAuthenticated, requestWithdraw);
 router.get("/transactions", isUserAuthenticated, getTransactions);
+router.post("/swap", isUserAuthenticated, swapCrypto);
 
 export default router;

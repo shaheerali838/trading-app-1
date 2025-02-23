@@ -286,10 +286,16 @@ function Deposit() {
               entire network node for it to be credited.
             </li>
             <li>
-              4. Please select the above-mentioned token system and currency
-              type and transfer the corresponding amount for deposit. Please do
-              not transfer any other irrelevant assets, otherwise, they will not
-              be retrieved.
+              4. Please select the above-mentioned currency type and network and
+              transfer the corresponding amount for deposit. Please do not
+              transfer any other irrelevant assets, otherwise, they will not be
+              retrieved.
+            </li>
+            <li>
+              5. If you have already deposited the selected amount in the given
+              wallet address but your wallet is not updated yet, then kindly
+              click on the given link at the end of the page for request and
+              your wallet will be updated within 24 hours.
             </li>
           </ol>
         </div>

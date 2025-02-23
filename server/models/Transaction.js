@@ -13,7 +13,7 @@ const TransactionSchema = new mongoose.Schema(
     },
     type: {
       type: String,
-      enum: ["deposit", "withdrawal", "transfer"],
+      enum: ["deposit", "withdrawal", "transfer", "swap"],
       required: true,
     },
     status: {
@@ -21,12 +21,21 @@ const TransactionSchema = new mongoose.Schema(
       enum: ["pending", "completed", "failed"],
       default: "pending",
     },
-    amount: { type: Number, required: true },
-    currency: { type: String, enum: ["USDC","BTC","ETH", "USDT"], required: true },
+    amount: { type: Number }, // Used for deposits/withdrawals
+    currency: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] }, // For deposits/withdrawals
+
+    // Swap-specific fields
+    fromAsset: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] },
+    toAsset: { type: String, enum: ["USDC", "BTC", "ETH", "USDT"] },
+    fromAmount: { type: Number },
+    toAmount: { type: Number },
+    exchangeRate: { type: Number },
+
     transactionId: { type: String, unique: true },
     adminApproval: { type: Boolean, default: false },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }
 );
+
 export default mongoose.model("Transaction", TransactionSchema);

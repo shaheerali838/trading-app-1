@@ -13,8 +13,8 @@ const WalletSchema = new mongoose.Schema({
   marginBalance: { type: Number, default: 0 },
   holdings: [
     {
-      asset: String, // e.g., BTC, ETH
-      quantity: Number, // User's holding amount
+      asset: String, 
+      quantity: Number,
     },
   ],
   depositHistory: [{ amount: Number, currency: String, createdAt: Date }],

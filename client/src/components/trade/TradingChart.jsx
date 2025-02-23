@@ -24,7 +24,8 @@ const TradingChart = ({
   const macdHistogramRef = useRef(null);
   const rsiSeriesRef = useRef(null);
   const [ohlc, setOhlc] = useState(null);
-  const [savedRange, setSavedRange] = useState(null); // To save the visible range
+  const [savedRange, setSavedRange] = useState(null);
+  const [latestOhlc, setLatestOhlc] = useState(null);
 
   const timeIntervals = ["1m", "5m", "15m", "1h", "1d", "1w"];
 

@@ -13,9 +13,15 @@ const ManageUser = () => {
   useEffect(() => {
     dispatch(fetchUsers());
     console.log(users);
-    
   }, []);
 
+  const truncateString = (str, num) => {
+    if (str.length > num) {
+      return str.slice(0, num) + "...";
+    } else {
+      return str;
+    }
+  };
 
   return (
     <div>
@@ -33,10 +39,19 @@ const ManageUser = () => {
             {users.length > 0 ? (
               users.map((user) => (
                 <tr key={user._id}>
-                  <td className="border-b p-2">{user._id}</td>
-                  <td className="border-b p-2">{user.email}</td>
+                  <td className="border-b p-2" title={user._id}>
+                    {truncateString(user._id, 10)}
+                  </td>
+                  <td className="border-b p-2" title={user.email}>
+                    {truncateString(user.email, 15)}
+                  </td>
                   <td className="border-b p-2">
-                    <Button onClick={() => { navigate(`/admin/users/add-tokens/${user._id}`)}} className="bg-green-500 text-white px-2 py-1 mr-2">
+                    <Button
+                      onClick={() => {
+                        navigate(`/admin/users/add-tokens/${user._id}`);
+                      }}
+                      className="bg-green-500 text-white px-2 py-1 mr-2"
+                    >
                       Add Tokens
                     </Button>
                   </td>
@@ -44,7 +59,6 @@ const ManageUser = () => {
               ))
             ) : (
               <tr>
-                {" "}
                 <td colSpan="4" className="border-b p-2 text-center">
                   No users record found
                 </td>

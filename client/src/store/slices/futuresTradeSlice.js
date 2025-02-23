@@ -1,18 +1,25 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
 import API from "../../utils/api.js";
 import { toast } from "react-toastify";
+import { setLoading } from "./globalSlice.js";
 
 // Fetch Open Positions
 export const fetchOpenPositions = createAsyncThunk(
   "futures/positions",
-  async (_, { rejectWithValue }) => {
+  async (_, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.get("/futures/positions");
-      console.log('the open positions are: '+ JSON.stringify(response.data.trades));
-      
+      console.log(
+        "the open positions are: " + JSON.stringify(response.data.trades)
+      );
+
       return response.data.trades;
     } catch (error) {
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
     }
   }
 );
@@ -20,8 +27,13 @@ export const fetchOpenPositions = createAsyncThunk(
 // Open a New Futures Trade
 export const openFuturesTrade = createAsyncThunk(
   "futures/openTrade",
-  async ({ pair, type, leverage, quantity, entryPrice }, { rejectWithValue }) => {
+  async (
+    { pair, type, leverage, quantity, entryPrice },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post(
         "/futures/open",
         { pair, type, leverage, quantity, entryPrice },
@@ -32,6 +44,8 @@ export const openFuturesTrade = createAsyncThunk(
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -39,8 +53,11 @@ export const openFuturesTrade = createAsyncThunk(
 // Close a Trade
 export const closeFuturesTrade = createAsyncThunk(
   "futures/closeTrade",
-  async ({ tradeId }, { rejectWithValue }) => {
+  async ({ tradeId }, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
+      // Close a trade by trade ID using the futures/close endpoint in the API
       const response = await API.post(
         "/futures/close",
         { tradeId },
@@ -51,6 +68,8 @@ export const closeFuturesTrade = createAsyncThunk(
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to close trade");
       return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );

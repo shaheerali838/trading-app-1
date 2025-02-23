@@ -9,7 +9,7 @@ import { Card, Button } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 import AnimatedHeading from "../animation/AnimateHeading";
 
-const PerpetualOrderForm = ({ selectedPair }) => {
+const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const dispatch = useDispatch();
   const { loading, openTrades } = useSelector((state) => state.perpetual);
 
@@ -19,8 +19,10 @@ const PerpetualOrderForm = ({ selectedPair }) => {
   const [entryPrice, setEntryPrice] = useState("");
   const [closeTradeId, setCloseTradeId] = useState("");
   const [closePrice, setClosePrice] = useState("");
+  const { wallet } = useSelector((state) => state.assets);
+
   useEffect(() => {
-    dispatch(fetchOpenPerpetualTrades())
+    dispatch(fetchOpenPerpetualTrades());
   }, [dispatch]);
   const handleOpenTrade = () => {
     if (!quantity || !entryPrice) {
@@ -69,6 +71,15 @@ const PerpetualOrderForm = ({ selectedPair }) => {
         >
           Short
         </button>
+      </div>
+      <div className="flex justify-between items-center ">
+        <p>
+          Available Amount:{" "}
+          <span className="pl-2 pr-1 text-white">
+            {wallet?.balanceUSDT?.toFixed(2) || "0.0"}
+          </span>
+          USDT
+        </p>
       </div>
 
       <div className="mb-4">
@@ -138,7 +149,10 @@ const PerpetualOrderForm = ({ selectedPair }) => {
           onChange={(e) => setClosePrice(e.target.value)}
         />
       </div>
-
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Market Price:</span>
+        <span className="text-white">${marketPrice}</span>
+      </div>
       <Button
         onClick={handleCloseTrade}
         className="w-full py-2 rounded-md bg-red-500 hover:bg-red-700"
