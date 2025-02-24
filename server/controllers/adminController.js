@@ -118,9 +118,13 @@ export const fetchOpenTrades = async (req, res) => {
 export const liquidateTrade = async (req, res) => {
   try {
     const { tradeId } = req.params;
+    const { marketPrice } = req.body; // Receive market price from frontend
+
+    if (!marketPrice) {
+      return res.status(400).json({ message: "Market price is required" });
+    }
 
     let trade = await FuturesTrade.findById(tradeId);
-
     if (!trade) {
       trade = await PerpetualTrade.findById(tradeId);
       if (!trade) {
@@ -132,23 +136,15 @@ export const liquidateTrade = async (req, res) => {
       return res.status(400).json({ message: "Trade is already closed" });
     }
 
-    // **Fetch Current Market Price from Binance API**
-    const marketResponse = await axios.get(
-      `https://api.binance.com/api/v3/ticker/price?symbol=${trade.pair}`
-    );
-    const closePrice = parseFloat(marketResponse.data.price);
+    // Use the market price received from the frontend
+    const closePrice = parseFloat(marketPrice);
 
-    // Find the user associated with this trade
+    // Find the user and wallet
     const user = await User.findById(trade.userId);
-    if (!user) {
-      return res.status(404).json({ message: "User not found" });
-    }
+    if (!user) return res.status(404).json({ message: "User not found" });
 
-    // Find the user's wallet
     const wallet = await Wallet.findOne({ userId: user._id });
-    if (!wallet) {
-      return res.status(404).json({ message: "Wallet not found" });
-    }
+    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
     // **Calculate Profit/Loss**
     let profitLoss;
@@ -157,7 +153,6 @@ export const liquidateTrade = async (req, res) => {
     } else {
       profitLoss = (trade.entryPrice - closePrice) * trade.quantity;
     }
-
 
     // **Update User Wallet Balance**
     wallet.balanceUSDT += profitLoss;

@@ -6,7 +6,7 @@ import { fetchOpenTrades, liquidateTrade } from "../../store/slices/adminSlice";
 
 const LiquidateOpenTrades = () => {
   const dispatch = useDispatch();
-  const {openTrades} = useSelector((state) => state.admin)
+  const { openTrades } = useSelector((state) => state.admin);
 
   useEffect(() => {
     fetchTrades();
@@ -16,16 +16,32 @@ const LiquidateOpenTrades = () => {
     dispatch(fetchOpenTrades());
   };
 
-  const handleLiquidateTrade = async (tradeId) => {
-    dispatch(liquidateTrade(tradeId));
+  const fetchMarketPrice = async (pair) => {
+    try {
+      const response = await axios.get(
+        `https://api.binance.com/api/v3/ticker/price?symbol=${pair}`
+      );
+      return parseFloat(response.data.price);
+    } catch (error) {
+      console.error("Error fetching market price:", error);
+      return null;
+    }
+  };
+
+  const handleLiquidateTrade = async (trade) => {
+    const marketPrice = await fetchMarketPrice(trade.pair);
+    if (marketPrice === null) {
+      alert("Failed to fetch market price. Please try again.");
+      return;
+    }
+
+    dispatch(liquidateTrade({ tradeId: trade._id, marketPrice }));
     fetchTrades();
   };
 
   return (
     <Card className="min-h-screen p-4 bg-transparent text-white w-full">
-      <h2 className="text-xl font-bold mb-4">
-        Open Perpetual & Futures Trades
-      </h2>
+      <h2 className="text-xl font-bold mb-4">Open Perpetual & Futures Trades</h2>
 
       {openTrades.length === 0 ? (
         <p className="text-gray-400">No open trades</p>
@@ -49,7 +65,7 @@ const LiquidateOpenTrades = () => {
                 <td className="p-2">${trade.entryPrice}</td>
                 <td className="p-2">
                   <Button
-                    onClick={() => handleLiquidateTrade(trade._id)}
+                    onClick={() => handleLiquidateTrade(trade)}
                     className="bg-red-500 hover:bg-red-700 text-white px-3 py-1 rounded-md"
                   >
                     Liquidate
