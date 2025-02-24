@@ -13,7 +13,7 @@ export const openPerpetualTrade = createAsyncThunk(
       const response = await API.post("/perpetual/open", tradeData, {
         withCredentials: true,
       });
-      toast.success("Perpetual trade opened successfully!");
+      toast.success(response.data.message);
       return response.data.trade;
     } catch (error) {
       toast.error(error.response?.data?.message || "Failed to open trade");

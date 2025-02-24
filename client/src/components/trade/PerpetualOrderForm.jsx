@@ -16,16 +16,14 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const [type, setType] = useState("long");
   const [leverage, setLeverage] = useState(10);
   const [quantity, setQuantity] = useState("");
-  const [entryPrice, setEntryPrice] = useState("");
   const [closeTradeId, setCloseTradeId] = useState("");
-  const [closePrice, setClosePrice] = useState("");
   const { wallet } = useSelector((state) => state.assets);
 
   useEffect(() => {
     dispatch(fetchOpenPerpetualTrades());
   }, [dispatch]);
   const handleOpenTrade = () => {
-    if (!quantity || !entryPrice) {
+    if (!quantity) {
       toast.error("Please enter all fields!");
       return;
     }
@@ -35,17 +33,21 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         type,
         leverage,
         quantity,
-        entryPrice,
+        entryPrice: marketPrice,
       })
     );
   };
 
   const handleCloseTrade = () => {
-    if (!closeTradeId || !closePrice) {
+    
+    if (!closeTradeId ) {
       toast.error("Please select a trade and enter close price!");
       return;
     }
-    dispatch(closePerpetualTrade({ tradeId: closeTradeId, closePrice }));
+    dispatch(
+      closePerpetualTrade({ tradeId: closeTradeId, closePrice: marketPrice })
+    );
+    dispatch(fetchOpenPerpetualTrades());    
   };
 
   return (
@@ -104,16 +106,6 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         />
       </div>
 
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Entry Price</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full"
-          value={entryPrice}
-          onChange={(e) => setEntryPrice(e.target.value)}
-        />
-      </div>
-
       <Button
         onClick={handleOpenTrade}
         className="w-full py-2 rounded-md bg-blue-500 hover:bg-blue-700"
@@ -132,6 +124,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           value={closeTradeId}
           onChange={(e) => setCloseTradeId(e.target.value)}
         >
+          <option value="" disabled>Select an Open Position</option>
           {openTrades?.map((trade) => (
             <option key={trade._id} value={trade._id} className="bg-black">
               {trade.pair} ({trade.type}) - {trade.entryPrice}
@@ -140,15 +133,6 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         </select>
       </div>
 
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Close Price</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full"
-          value={closePrice}
-          onChange={(e) => setClosePrice(e.target.value)}
-        />
-      </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Market Price:</span>
         <span className="text-white">${marketPrice}</span>

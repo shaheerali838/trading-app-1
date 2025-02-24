@@ -35,13 +35,6 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     );
   };
 
-  const formatTradingPair = (pair) => {
-    if (pair.length <= 3) return pair; // Handle edge cases
-    const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
-    const quote = pair.slice(3); // Extract quote currency (e.g., USDT)
-    return `${base}/${quote}`; // Format as BTC/USDT
-  };
-
   return (
     <Card className="p-4 bg-transparent text-lg text-white w-full max-w-md">
       <AnimatedHeading>
