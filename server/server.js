@@ -65,6 +65,11 @@ const connectWebSocket = () => {
     console.error("WebSocket error:", error);
     ws.close();
   };
+
+  ws.on("unexpected-response", (req, res) => {
+    console.error(`Unexpected server response: ${res.statusCode}`);
+    ws.close();
+  });
 };
 
 connectWebSocket();
