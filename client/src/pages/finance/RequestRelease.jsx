@@ -15,7 +15,6 @@ function RequestRelease() {
     e.preventDefault();
 
     dispatch(fundsRequest(requestData));
-    console.log(`type : ${requestData.type}`);
 
     setRequestData({
       amount: "",
@@ -27,8 +26,8 @@ function RequestRelease() {
 
   return (
     <div className="w-full min-h-screen p-6 bg-gradient flex justify-center items-center">
-      <div className="flex justify-evenly gap-4">
-        <form onSubmit={handleSubmit} className="space-y-6 w-[40vw]">
+      <div className="flex flex-col sm:flex-row gap-4 justify-evenly">
+        <form onSubmit={handleSubmit} className="space-y-6 sm:w-[40vw]">
           <div className="flex justify-between items-center mb-6">
             <AnimatedHeading>
               <h2 className="text-2xl font-bold">Request Release of Funds</h2>
@@ -109,10 +108,10 @@ function RequestRelease() {
               entire network node for it to be credited.
             </li>
             <li>
-              4. Please select the above-mentioned currency
-              type and network and transfer the corresponding amount for deposit. Please do
-              not transfer any other irrelevant assets, otherwise, they will not
-              be retrieved.
+              4. Please select the above-mentioned currency type and network and
+              transfer the corresponding amount for deposit. Please do not
+              transfer any other irrelevant assets, otherwise, they will not be
+              retrieved.
             </li>
             <li>
               5. Your request will be reviewed, and if it is authentic, your

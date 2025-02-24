@@ -11,9 +11,6 @@ export const fetchOpenPositions = createAsyncThunk(
       dispatch(setLoading(true));
 
       const response = await API.get("/futures/positions");
-      console.log(
-        "the open positions are: " + JSON.stringify(response.data.trades)
-      );
 
       return response.data.trades;
     } catch (error) {

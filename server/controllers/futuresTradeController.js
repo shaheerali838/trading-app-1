@@ -2,6 +2,7 @@ import Wallet from "../models/Wallet.js";
 import FuturesTrade from "../models/FuturesTrade.js";
 import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+import PerpetualTrade from "../models/PerpetualTrade.js";
 
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const { pair, type, leverage, quantity, entryPrice } = req.body;
@@ -28,9 +29,9 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate liquidation price (approximate formula)
   let liquidationPrice;
   if (type === "long") {
-    liquidationPrice = entryPrice * (entryPrice * leverage / leverage + 1);
-  } else {
     liquidationPrice = entryPrice * (entryPrice * leverage / leverage - 1);
+  } else {
+    liquidationPrice = entryPrice * (entryPrice * leverage / leverage + 1);
   }
 
   // Deduct margin from user's wallet
@@ -116,8 +117,9 @@ export const getFundingRates = catchAsyncErrors(async (req, res) => {
 });
 
 export const checkLiquidations = async (marketPrices) => {
-  const openTrades = await FuturesTrade.find({ status: "open" });
-
+  const futureTrades = await FuturesTrade.find({ status: "open" });
+  const perpetualTrades = await PerpetualTrade.find({ status: "open" });
+  const openTrades = [...futureTrades, ...perpetualTrades];
   for (const trade of openTrades) {
     const marketPrice = marketPrices[trade.pair];
 

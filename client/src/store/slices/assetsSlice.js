@@ -61,7 +61,6 @@ export const swapAssets = createAsyncThunk(
         amount,
         exchangeRate,
       });
-      console.log(response.data);
 
       toast.success(response.data.message);
       return response.data;
@@ -81,17 +80,14 @@ export const fetchExchangeRate = createAsyncThunk(
       );
 
       const exchangeRate = parseFloat(exchangeRateResponse.data.price);
-      console.log("Exchange Rate:", exchangeRate);
 
       if (!exchangeRate) {
-        console.log("Exchange rate not found");
         return rejectWithValue({ message: "Invalid currency pair" });
       }
 
       return exchangeRate;
     } catch (error) {
       toast.error(error.response?.data?.message);
-      console.error("Error fetching exchange rate:", error);
       return rejectWithValue(error.response?.data);
     }
   }

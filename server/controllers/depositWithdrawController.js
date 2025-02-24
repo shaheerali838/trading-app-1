@@ -107,7 +107,6 @@ export const approveWithDrawRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
-    console.log('the reqID is ' + requestId);
     
 
     const request = await DepositWithdrawRequest.findById(requestId);

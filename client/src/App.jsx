@@ -27,6 +27,7 @@ import AddTokens from "./pages/admin/AddTokens.jsx";
 import FuturesTrade from "./pages/FuturesTrade.jsx";
 import PerpetualTrade from "./pages/PerpetualTrade.jsx";
 import BottomNavbar from "./components/layout/BottomNavbar.jsx";
+import LiquidateOpenTrades from "./pages/admin/LiquidateOpenTrades.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -37,8 +38,6 @@ const App = () => {
     if (user) {
       dispatch(setUser(user));
     }
-    const apiUrl = import.meta.env.VITE_API_URL;
-    console.log(apiUrl);
   }, [dispatch]);
   return (
     <div className="bg-gradient text-white overflow-hidden">
@@ -64,6 +63,7 @@ const App = () => {
                 path="/admin/users/add-tokens/:userId"
                 element={<AddTokens />}
               />
+              <Route path="/admin/liquidate/open-trades" element={<LiquidateOpenTrades />} />
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />

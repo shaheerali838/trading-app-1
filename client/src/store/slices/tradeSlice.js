@@ -51,7 +51,6 @@ export const fetchPendingOrders = createAsyncThunk(
       const response = await API.get("/trade/pending-orders", {
         withCredentials: true,
       });
-      console.log(response.data.data);
 
       return response.data.data;
     } catch (error) {

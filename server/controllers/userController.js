@@ -246,18 +246,13 @@ export const getTransactions = async (req, res) => {
 export const swapCrypto = async (req, res) => {
   try {
     const { fromAsset, toAsset, amount, exchangeRate } = req.body;
-    console.log(
-      `got a swap request with data in the body:\n from: ${fromAsset} to: ${toAsset} and amount in the body: ${amount} and the exchange rate: ${exchangeRate}`
-    );
 
     const userId = req.user._id;
-    console.log("User ID:", userId); // Log the user ID
 
     if (!fromAsset || !toAsset || !amount) {
       return res.status(400).json({ message: "All fields are required" });
     }
     if (!exchangeRate) {
-      console.log("Exchange rate not found");
       return res.status(400).json({ message: "Invalid currency pair" });
     }
 
@@ -266,7 +261,6 @@ export const swapCrypto = async (req, res) => {
     // Fetch user's wallet
     const userWallet = await Wallet.findOne({ userId });
     if (!userWallet) {
-      console.log("Wallet not found for user ID:", userId);
       return res.status(404).json({ message: "Wallet not found" });
     }
 
@@ -274,11 +268,7 @@ export const swapCrypto = async (req, res) => {
     const fromBalance = userWallet[`balance${fromAsset}`];
     const toBalance = userWallet[`balance${toAsset}`] || 0;
 
-    console.log(`User's ${fromAsset} balance:`, fromBalance);
-    console.log(`User's ${toAsset} balance:`, toBalance);
-
     if (fromBalance < amount) {
-      console.log("Insufficient balance");
       return res.status(400).json({ message: "Insufficient balance" });
     }
 
@@ -307,7 +297,6 @@ export const swapCrypto = async (req, res) => {
       .status(200)
       .json({ message: "Swap successful", fromAmount: amount, toAmount });
   } catch (error) {
-    console.error("Swap Error:", error);
     return res.status(500).json({ message: "Internal server error" });
   }
 };

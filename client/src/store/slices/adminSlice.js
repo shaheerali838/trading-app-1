@@ -10,7 +10,6 @@ export const fetchUsers = createAsyncThunk(
     try {
       dispatch(setLoading(true));
       const response = await API.get("/admin/all-users");
-      console.log(`the response is : ${response.data}`);
 
       return response.data.users;
     } catch (error) {
@@ -121,12 +120,49 @@ export const changeWithdrawRequestStatus = createAsyncThunk(
     }
   }
 );
+export const fetchOpenTrades = createAsyncThunk(
+  "admin/fetchOpenTrades",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await API.get("/admin/open-trades");
+      
+      return response.data.trades;
+    } catch (error) {
+      toast.error(error.response.data.message);
+      return rejectWithValue(
+        error.response?.data || "Failed to fetch open trades"
+      );
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
+// Liquidate a trade
+export const liquidateTrade = createAsyncThunk(
+  "admin/liquidateTrade",
+  async (tradeId, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+      const response = await API.post(`/admin/liquidate-trade/${tradeId}`);
+      toast.success(response.data.message);
+      return { tradeId };
+    } catch (error) {
+      toast.error(error.response?.data?.message || "Failed to liquidate trade");
+      return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
 
 const adminSlice = createSlice({
   name: "admin",
   initialState: {
     users: [],
     transactions: [],
+    openTrades: [],
     loading: false,
     error: null,
   },
@@ -196,6 +232,33 @@ const adminSlice = createSlice({
         );
       })
       .addCase(changeWithdrawRequestStatus.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(fetchOpenTrades.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(fetchOpenTrades.fulfilled, (state, action) => {
+        state.loading = false;
+        state.openTrades = action.payload;
+      })
+      .addCase(fetchOpenTrades.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload;
+      })
+      .addCase(liquidateTrade.pending, (state) => {
+        state.loading = true;
+        state.error = null;
+      })
+      .addCase(liquidateTrade.fulfilled, (state, action) => {
+        state.loading = false;
+        // Remove the liquidated trade from state
+        state.openTrades = state.openTrades.filter(
+          (trade) => trade._id !== action.payload.tradeId
+        );
+      })
+      .addCase(liquidateTrade.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload;
       });

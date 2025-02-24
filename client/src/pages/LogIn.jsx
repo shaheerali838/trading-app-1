@@ -65,9 +65,6 @@ const LogIn = () => {
             >
               Login
             </button>
-            <p className="w-full px-2 py-1 my-4 bg-primary rounded-md text-tertiary3  font-medium hover:scale- cursor-pointer text-center">
-              Continue With Google
-            </p>
           </form>
           <p className="w-full text-center text-gray-500">
             Don't Have an account?{" "}

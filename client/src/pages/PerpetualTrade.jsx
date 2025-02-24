@@ -7,6 +7,7 @@ import { fetchMarketData } from "../store/slices/marketSlice";
 import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import io from "socket.io-client";
+import AnimatedHeading from "../components/animation/AnimateHeading";
 const socket = io(import.meta.env.VITE_API_URL);
 
 const PerpetualTrade = () => {
@@ -15,6 +16,24 @@ const PerpetualTrade = () => {
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const { openPositions } = useSelector((state) => state.futures);
   const dispatch = useDispatch();
+  const tradingPairs = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "MATICUSDT",
+    "DOTUSDT",
+    "LTCUSDT",
+  ];
+  const formatTradingPair = (pair) => {
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
+    const quote = pair.slice(3); // Extract quote currency (e.g., USDT)
+    return `${base}/${quote}`; // Format as BTC/USDT
+  };
 
   useEffect(() => {
     const fetchMarketData = async () => {
@@ -79,7 +98,27 @@ const PerpetualTrade = () => {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <h3 className="text-2xl font-semibold text-white">Futures Trading</h3>
+        <div className="flex justify-between">
+          <AnimatedHeading>
+            <h3 className="text-2xl font-semibold text-white">
+              Perpetual Trading
+            </h3>
+          </AnimatedHeading>
+          <div className="md:hidden">
+            <select
+              id="tradingPair"
+              value={selectedPair}
+              onChange={(e) => setSelectedPair(e.target.value)}
+              className="bg-black text-tertiary3 p-2 focus:outline-none"
+            >
+              {tradingPairs.map((pair, index) => (
+                <option key={index} value={pair}>
+                  {formatTradingPair(pair)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         <div className="flex flex-col lg:flex-row">
           <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4 hidden lg:block">

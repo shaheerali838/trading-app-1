@@ -44,7 +44,6 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     if (orderType === "limit" && (!price || price <= 0)) {
       return alert("Enter a valid price");
     }
-    console.log(selectedPair);
     
     const orderData = {
       type: side,
@@ -61,7 +60,6 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         toast.success("Order placed successfully!");
       })
       .catch((error) => {
-        console.error("Order placement failed:", error);
         toast.error(error.message);
       });
   };

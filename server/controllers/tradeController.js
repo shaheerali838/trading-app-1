@@ -7,7 +7,6 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
     const { type, orderType, price, amount, coin } = req.body;
 
-    console.log(req.body);
 
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
@@ -70,7 +69,6 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({ message: "Order Successful" });
   } catch (error) {
-    console.error(error);
     res.status(500).json({ message: "Server error", error });
   }
 });

@@ -12,8 +12,6 @@ import { Link } from "react-router-dom";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
-console.log("the socket url is " + import.meta.env.VITE_WEB_SOCKET_URL);
-
 
 const ManageOrders = () => {
   const [orders, setOrders] = useState([]);

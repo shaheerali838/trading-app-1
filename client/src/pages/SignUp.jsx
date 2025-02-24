@@ -68,10 +68,6 @@ const Signup = () => {
           >
             Register
           </button>
-          <p className="px-2 py-1 my-4 bg-primary rounded-md text-tertiary3  font-medium hover:scale- cursor-pointer text-center">
-            Continue With Google
-          </p>
-
           <p className="w-full text-center text-gray-500">
             Already Have an account?{" "}
             <a href="" className="text-white">

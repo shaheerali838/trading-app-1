@@ -1,21 +1,23 @@
+import axios from "axios";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+import FuturesTrade from "../models/FuturesTrade.js";
+import PerpetualTrade from "../models/PerpetualTrade.js";
 import Trade from "../models/Trade.js";
 import Transaction from "../models/Transaction.js"; // Ensure you import the Transaction model
 import User from "../models/User.js";
 import Wallet from "../models/Wallet.js";
-import {io} from "../server.js";
+import { io } from "../server.js";
 
-export const fetchUsers = async(req, res, next) => {
-    try{
-
-        const users = await User.find();
-        res.json({
-          success: true,
-          data: users,
-        });
-    } catch (error) {
-        next(error); 
-    }
+export const fetchUsers = async (req, res, next) => {
+  try {
+    const users = await User.find();
+    res.json({
+      success: true,
+      data: users,
+    });
+  } catch (error) {
+    next(error);
+  }
 };
 
 export const fetchTransactions = async (req, res, next) => {
@@ -32,11 +34,9 @@ export const fetchTransactions = async (req, res, next) => {
 
 export const approveOrder = catchAsyncErrors(async (req, res) => {
   try {
-    console.log("got an approve order request");
-    
+
     const { orderId } = req.params;
-    console.log("Order ID:", orderId);
-    
+
     const trade = await Trade.findById(orderId);
     if (!trade) return res.status(404).json({ message: "Order not found" });
 
@@ -60,7 +60,9 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
       }
       holding.quantity -= trade.quantity;
       if (holding.quantity === 0) {
-        wallet.holdings = wallet.holdings.filter((h) => h.asset !== trade.asset);
+        wallet.holdings = wallet.holdings.filter(
+          (h) => h.asset !== trade.asset
+        );
       }
       wallet.balanceUSDT += totalCost;
     }
@@ -73,7 +75,6 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({ message: "Order approved successfully", trade });
   } catch (error) {
-    console.error("Error approving order:", error);
     res.status(500).json({ message: "Error approving order", error });
   }
 });
@@ -91,8 +92,90 @@ export const rejectOrder = catchAsyncErrors(async (req, res) => {
 
     res.status(200).json({ message: "Order rejected successfully", trade });
   } catch (error) {
-    console.error("Error rejecting order:", error);
     res.status(500).json({ message: "Error rejecting order", error });
   }
 });
 
+export const fetchOpenTrades = async (req, res) => {
+  try {
+    const futuresTrades = await FuturesTrade.find({ status: "open" });
+    const perpetualTrades = await PerpetualTrade.find({
+      status: "open",
+    });
+
+    const openTrades = [...futuresTrades, ...perpetualTrades];
+
+    res.status(200).json({
+      message: "successfully found the open trades",
+      trades: openTrades,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching open trades" });
+  }
+};
+
+
+export const liquidateTrade = async (req, res) => {
+  try {
+    const { tradeId } = req.params;
+
+    let trade = await FuturesTrade.findById(tradeId);
+
+    if (!trade) {
+      trade = await PerpetualTrade.findById(tradeId);
+      if (!trade) {
+        return res.status(404).json({ message: "Trade not found" });
+      }
+    }
+
+    if (trade.status !== "open") {
+      return res.status(400).json({ message: "Trade is already closed" });
+    }
+
+    // **Fetch Current Market Price from Binance API**
+    const marketResponse = await axios.get(
+      `https://api.binance.com/api/v3/ticker/price?symbol=${trade.pair}`
+    );
+    const closePrice = parseFloat(marketResponse.data.price);
+
+    // Find the user associated with this trade
+    const user = await User.findById(trade.userId);
+    if (!user) {
+      return res.status(404).json({ message: "User not found" });
+    }
+
+    // Find the user's wallet
+    const wallet = await Wallet.findOne({ userId: user._id });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
+    // **Calculate Profit/Loss**
+    let profitLoss;
+    if (trade.type === "long") {
+      profitLoss = (closePrice - trade.entryPrice) * trade.quantity;
+    } else {
+      profitLoss = (trade.entryPrice - closePrice) * trade.quantity;
+    }
+
+
+    // **Update User Wallet Balance**
+    wallet.balanceUSDT += profitLoss;
+    if (wallet.balanceUSDT < 0) {
+      wallet.balanceUSDT = 0;
+    }
+    await wallet.save();
+
+    // **Update trade status to "liquidated"**
+    trade.status = "liquidated";
+    await trade.save();
+
+    res.status(200).json({
+      message: "Trade liquidated successfully",
+      profitLoss,
+      newBalance: wallet.balanceUSDT,
+    });
+  } catch (error) {
+    res.status(500).json({ message: "Error liquidating trade", error: error.message });
+  }
+};

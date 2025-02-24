@@ -15,6 +15,24 @@ function FuturesTrade() {
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const { openPositions } = useSelector((state) => state.futures);
   const dispatch = useDispatch();
+  const tradingPairs = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "MATICUSDT",
+    "DOTUSDT",
+    "LTCUSDT",
+  ];
+  const formatTradingPair = (pair) => {
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
+    const quote = pair.slice(3); // Extract quote currency (e.g., USDT)
+    return `${base}/${quote}`; // Format as BTC/USDT
+  };
 
   useEffect(() => {
     dispatch(fetchOpenPositions());
@@ -62,9 +80,27 @@ function FuturesTrade() {
         animate={{ opacity: 1, y: 0 }}
         className="space-y-6"
       >
-        <AnimatedHeading>
-          <h3 className="text-2xl font-semibold text-white">Futures Trading</h3>
-        </AnimatedHeading>
+        <div className="flex justify-between">
+          <AnimatedHeading>
+            <h3 className="text-2xl font-semibold text-white">
+              Futures Trading
+            </h3>
+          </AnimatedHeading>
+          <div className="md:hidden">
+            <select
+              id="tradingPair"
+              value={selectedPair}
+              onChange={(e) => setSelectedPair(e.target.value)}
+              className="bg-black text-tertiary3 p-2 focus:outline-none"
+            >
+              {tradingPairs.map((pair, index) => (
+                <option key={index} value={pair}>
+                  {formatTradingPair(pair)}
+                </option>
+              ))}
+            </select>
+          </div>
+        </div>
 
         {/* Responsive Layout */}
         <div className="flex flex-col lg:flex-row">
@@ -118,7 +154,7 @@ function FuturesTrade() {
                       <td className="py-2">{trade.leverage}x</td>
                       <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
                       <td className="py-2 text-red-500 hidden md:table-cell">
-                        ${trade.liquidationPrice.toFixed(2)}
+                        ${trade?.liquidationPrice?.toFixed(2)}
                       </td>
                     </tr>
                   ))}

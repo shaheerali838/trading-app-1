@@ -57,7 +57,6 @@ export const fetchOpenPerpetualTrades = createAsyncThunk(
       const response = await API.get("/perpetual/open-positions", {
         withCredentials: true,
       });
-      console.log(response.data);
 
       return response.data.trades;
     } catch (error) {

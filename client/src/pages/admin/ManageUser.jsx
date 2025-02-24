@@ -12,7 +12,6 @@ const ManageUser = () => {
 
   useEffect(() => {
     dispatch(fetchUsers());
-    console.log(users);
   }, []);
 
   const truncateString = (str, num) => {

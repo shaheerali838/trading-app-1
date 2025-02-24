@@ -7,10 +7,8 @@ class ErrorHandler extends Error {
 }
 
 export const errorMiddleware = (err, req, res, next) => {
-  console.log('Reached error middleware');
   
   if (!(err instanceof ErrorHandler)) {
-    console.error("Unhandled Error:", err);
     err = new ErrorHandler("Internal Server Error", 500);
   }
   

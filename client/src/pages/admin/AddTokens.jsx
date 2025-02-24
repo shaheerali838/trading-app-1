@@ -6,7 +6,6 @@ import { addTokens } from "../../store/slices/adminSlice";
 
 const AddTokens = () => {
   const {userId} = useParams();
-  console.log('the user id is '+ userId);
   
   const [tokenData, setTokenData] = useState({
     userId ,
