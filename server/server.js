@@ -1,6 +1,6 @@
 import http from "http";
 import { Server } from "socket.io";
-import WebSocket from "ws";
+import axios from "axios";
 import app from "./app.js";
 import { checkLiquidations } from "./controllers/futuresTradeController.js";
 
@@ -37,42 +37,26 @@ export const emitTradeUpdate = (trade) => {
 
 const marketPrices = {};
 
-const connectWebSocket = () => {
-  const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
+const fetchMarketPrices = async () => {
+  try {
+    const response = await axios.get(
+      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
+    );
+    const data = response.data;
+    if (data && data.bitcoin && data.bitcoin.usd) {
+      const pair = "BTCUSDT"; // Example: BTCUSDT
+      const price = parseFloat(data.bitcoin.usd); // Latest price
 
-  ws.onmessage = async (event) => {
-    try {
-      const data = JSON.parse(event.data);
-      if (data && data.s && data.c) {
-        const pair = data.s; // Example: BTCUSDT
-        const price = parseFloat(data.c); // Latest price
+      marketPrices[pair] = price;
 
-        marketPrices[pair] = price;
-
-        await checkLiquidations(marketPrices);
-      }
-    } catch (error) {
-      console.error("Error processing WebSocket message:", error);
+      await checkLiquidations(marketPrices);
     }
-  };
-
-  ws.onclose = () => {
-    console.log("WebSocket connection closed. Reconnecting...");
-    setTimeout(connectWebSocket, 5000); // Retry connection after 5 seconds
-  };
-
-  ws.onerror = (error) => {
-    console.error("WebSocket error:", error);
-    ws.close();
-  };
-
-  ws.on("unexpected-response", (req, res) => {
-    console.error(`Unexpected server response: ${res.statusCode}`);
-    ws.close();
-  });
+  } catch (error) {
+    console.error("Error fetching market prices:", error);
+  }
 };
 
-connectWebSocket();
+setInterval(fetchMarketPrices, 10000); // Fetch market prices every 10 seconds
 
 setInterval(async () => {
   console.log("Running periodic liquidation check...");
