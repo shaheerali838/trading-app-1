@@ -37,23 +37,37 @@ export const emitTradeUpdate = (trade) => {
 
 const marketPrices = {};
 
-const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
+const connectWebSocket = () => {
+  const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
 
-ws.onmessage = async (event) => {
-  try {
-    const data = JSON.parse(event.data);
-    if (data && data.s && data.c) {
-      const pair = data.s; // Example: BTCUSDT
-      const price = parseFloat(data.c); // Latest price
+  ws.onmessage = async (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data && data.s && data.c) {
+        const pair = data.s; // Example: BTCUSDT
+        const price = parseFloat(data.c); // Latest price
 
-      marketPrices[pair] = price;
+        marketPrices[pair] = price;
 
-      await checkLiquidations(marketPrices);
+        await checkLiquidations(marketPrices);
+      }
+    } catch (error) {
+      console.error("Error processing WebSocket message:", error);
     }
-  } catch (error) {
-    console.error("Error processing WebSocket message:", error);
-  }
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket connection closed. Reconnecting...");
+    setTimeout(connectWebSocket, 5000); // Retry connection after 5 seconds
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    ws.close();
+  };
 };
+
+connectWebSocket();
 
 setInterval(async () => {
   console.log("Running periodic liquidation check...");
@@ -63,5 +77,7 @@ setInterval(async () => {
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT} and will get requests from ${process.env.FRONTEND_URL}`);
+  console.log(
+    `🚀 Server running on port ${PORT} and will get requests from ${process.env.FRONTEND_URL}`
+  );
 });
