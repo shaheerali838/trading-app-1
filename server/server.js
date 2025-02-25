@@ -21,6 +21,7 @@ const io = new Server(server, {
   },
 });
 
+// Handle socket connections
 io.on("connection", (socket) => {
   console.log("✅ User connected:", socket.id);
 
@@ -42,26 +43,38 @@ export const emitTradeUpdate = (trade) => {
 // Market prices storage
 const marketPrices = {};
 
-// Binance WebSocket for real-time market price updates
+// 🔥 WebSocket: Connect to CryptoCompare (Avoid Binance Rate Limits)
 let ws;
 const connectWebSocket = () => {
   try {
-    ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@trade");
+    const tradingPairs = ["BTC-USD", "ETH-USD", "BNB-USD", "SOL-USD", "XRP-USD", "ADA-USD", "DOGE-USD", "MATIC-USD", "DOT-USD", "LTC-USD"];
+    const subs = tradingPairs.map(pair => `5~CCCAGG~${pair.replace("-", "~")}~USD`);
+
+    ws = new WebSocket("wss://streamer.cryptocompare.com/v2");
 
     ws.onopen = () => {
-      console.log("🔗 Connected to Binance WebSocket");
+      console.log("🔗 Connected to CryptoCompare WebSocket");
+
+      ws.send(
+        JSON.stringify({
+          action: "SubAdd",
+          subs,
+          api_key: process.env.CRYPTOCOMPARE_API_KEY, // Use API Key for better limits
+        })
+      );
     };
 
     ws.onmessage = async (event) => {
       try {
         const data = JSON.parse(event.data);
-        if (data && data.p) {
-          const pair = "BTCUSDT";
-          const price = parseFloat(data.p);
+        if (data.TYPE === "5" && data.PRICE) {
+          const pair = `${data.FROMSYMBOL}USDT`;
+          const price = parseFloat(data.PRICE);
 
           marketPrices[pair] = price;
 
-          // Trigger liquidation check
+          io.emit("marketPriceUpdate", { pair, price });
+
           await checkLiquidations(marketPrices);
         }
       } catch (error) {
@@ -70,7 +83,7 @@ const connectWebSocket = () => {
     };
 
     ws.onerror = (error) => {
-      console.error("❌ WebSocket Error:", error.message);
+      console.error("❌ CryptoCompare WebSocket Error:", error.message);
     };
 
     ws.onclose = () => {
@@ -85,18 +98,17 @@ const connectWebSocket = () => {
 // Start WebSocket connection
 connectWebSocket();
 
-// Fallback: Periodic market price update using Binance REST API
+// 🛠️ Fallback: REST API Fetch Every 30 Seconds (In Case WebSocket Fails)
 const fetchMarketPrices = async () => {
   try {
     const response = await axios.get(
-      "https://api.binance.com/api/v3/ticker/price?symbol=BTCUSDT"
+      "https://min-api.cryptocompare.com/data/pricemulti?fsyms=BTC,ETH,BNB,SOL,XRP,ADA,DOGE,MATIC,DOT,LTC&tsyms=USDT"
     );
 
-    if (response.data && response.data.price) {
-      const pair = "BTCUSDT";
-      const price = parseFloat(response.data.price);
-
-      marketPrices[pair] = price;
+    if (response.data) {
+      Object.keys(response.data).forEach((symbol) => {
+        marketPrices[`${symbol}USDT`] = parseFloat(response.data[symbol].USDT);
+      });
 
       await checkLiquidations(marketPrices);
     }
@@ -104,8 +116,6 @@ const fetchMarketPrices = async () => {
     console.error("⚠️ Error fetching market prices:", error.message);
   }
 };
-
-// Fetch market prices every 30 seconds (fallback)
 setInterval(fetchMarketPrices, 30000);
 
 // Run liquidation checks every 30 seconds
