@@ -80,7 +80,7 @@ const Navbar = () => {
             </i>
           </Link>
           {showSelectOption && (
-            <div className="flex items-center ml-auto">
+            <div className="flex md:hidden items-center ml-auto">
               <select
                 id="tradingPair"
                 value={location.pathname.slice(1)}

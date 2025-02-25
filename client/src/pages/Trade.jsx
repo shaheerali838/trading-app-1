@@ -141,21 +141,23 @@ function Trade() {
           </div>
         </div>
         <div className="flex flex-col lg:flex-row">
-          {showChart && (
-            <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r md:p-4">
-              <div>
-                <TradingChart
-                  marketData={marketData}
-                  onPairChange={setSelectedPair}
-                  indicators={["volume", "macd", "rsi"]}
-                  selectedInterval={selectedInterval}
-                  setSelectedInterval={setSelectedInterval}
-                  setSelectedPair={setSelectedPair}
-                  selectedPair={selectedPair}
-                />
-              </div>
+          <div
+            className={`w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r md:p-4 ${
+              !showChart ? "hidden md:block" : ""
+            }`}
+          >
+            <div>
+              <TradingChart
+                marketData={marketData}
+                onPairChange={setSelectedPair}
+                indicators={["volume", "macd", "rsi"]}
+                selectedInterval={selectedInterval}
+                setSelectedInterval={setSelectedInterval}
+                setSelectedPair={setSelectedPair}
+                selectedPair={selectedPair}
+              />
             </div>
-          )}
+          </div>
           <div className="flex flex-row-reverse lg:flex-row w-full lg:w-2/5">
             <div className="w-1/2 bg-transparent border border-[#2f2f2f] p-4">
               <OrderBook selectedPair={selectedPair} />

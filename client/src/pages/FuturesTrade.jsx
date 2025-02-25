@@ -109,17 +109,23 @@ function FuturesTrade() {
 
         {/* Responsive Layout */}
         <div className="flex flex-col lg:flex-row">
-          {showChart && (
-            <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4">
+        <div
+            className={`w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r md:p-4 ${
+              !showChart ? "hidden md:block" : ""
+            }`}
+          >
+            <div>
               <TradingChart
-                selectedPair={selectedPair}
-                setSelectedPair={setSelectedPair}
+                marketData={marketData}
+                onPairChange={setSelectedPair}
+                indicators={["volume", "macd", "rsi"]}
                 selectedInterval={selectedInterval}
                 setSelectedInterval={setSelectedInterval}
-                marketData={marketData}
+                setSelectedPair={setSelectedPair}
+                selectedPair={selectedPair}
               />
             </div>
-          )}
+          </div>
 
           {/* Order Form & Order Book in a Row */}
           <div className="flex flex-row-reverse lg:flex-row w-full lg:w-2/5">

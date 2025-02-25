@@ -36,19 +36,6 @@ export const emitTradeUpdate = (trade) => {
 };
 
 const marketPrices = {};
-let retryCount = 0;
-
-process.on("uncaughtException", (err) => {
-  console.error("Uncaught Exception:", err);
-  // Optionally, you can exit the process if needed
-  // process.exit(1);
-});
-
-process.on("unhandledRejection", (reason, promise) => {
-  console.error("Unhandled Rejection at:", promise, "reason:", reason);
-  // Optionally, you can exit the process if needed
-  // process.exit(1);
-});
 
 const connectWebSocket = () => {
   const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
@@ -72,7 +59,7 @@ const connectWebSocket = () => {
   ws.onclose = () => {
     console.log("WebSocket connection closed. Reconnecting...");
     retryCount++;
-    const retryDelay = Math.min(30000, 1000 * Math.pow(2, retryCount)); // Exponential backoff with max delay of 30 seconds
+    const retryDelay = Math.min(10000, 1000 * Math.pow(2, retryCount)); // Exponential backoff with max delay of  seconds
     setTimeout(connectWebSocket, retryDelay);
   };
 
@@ -90,12 +77,8 @@ const connectWebSocket = () => {
 connectWebSocket();
 
 setInterval(async () => {
-  try {
-    console.log("Running periodic liquidation check...");
-    await checkLiquidations(marketPrices);
-  } catch (error) {
-    console.error("Error during periodic liquidation check:", error);
-  }
+  console.log("Running periodic liquidation check...");
+  await checkLiquidations(marketPrices);
 }, 30000); // Runs every 30 seconds
 
 // Start the server
