@@ -7,6 +7,9 @@ import FuturesOrderForm from "../components/trade/FuturesOrderForm";
 import { fetchOpenPositions } from "../store/slices/futuresTradeSlice";
 import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
+import { useNavigate } from "react-router-dom";
+import { MdCandlestickChart } from "react-icons/md";
+
 const socket = io(import.meta.env.VITE_API_URL);
 
 function FuturesTrade() {
@@ -14,7 +17,10 @@ function FuturesTrade() {
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const { openPositions } = useSelector((state) => state.futures);
+  const showChart = useSelector((state) => state.global.showChart);
   const dispatch = useDispatch();
+
+  const navigate = useNavigate();
   const tradingPairs = [
     "BTCUSDT",
     "ETHUSDT",
@@ -72,7 +78,6 @@ function FuturesTrade() {
 
   const currentMarketPrice =
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;
-
   return (
     <div className="min-h-screen max-w-7xl mx-auto px-4">
       <motion.div
@@ -104,16 +109,17 @@ function FuturesTrade() {
 
         {/* Responsive Layout */}
         <div className="flex flex-col lg:flex-row">
-          {/* Trading Chart - Hidden on Small Screens */}
-          <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4 hidden lg:block">
-            <TradingChart
-              selectedPair={selectedPair}
-              setSelectedPair={setSelectedPair}
-              selectedInterval={selectedInterval}
-              setSelectedInterval={setSelectedInterval}
-              marketData={marketData}
-            />
-          </div>
+          {showChart && (
+            <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4">
+              <TradingChart
+                selectedPair={selectedPair}
+                setSelectedPair={setSelectedPair}
+                selectedInterval={selectedInterval}
+                setSelectedInterval={setSelectedInterval}
+                marketData={marketData}
+              />
+            </div>
+          )}
 
           {/* Order Form & Order Book in a Row */}
           <div className="flex flex-row-reverse lg:flex-row w-full lg:w-2/5">

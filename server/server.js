@@ -1,6 +1,6 @@
 import http from "http";
 import { Server } from "socket.io";
-import axios from "axios";
+import WebSocket from "ws";
 import app from "./app.js";
 import { checkLiquidations } from "./controllers/futuresTradeController.js";
 
@@ -36,31 +36,66 @@ export const emitTradeUpdate = (trade) => {
 };
 
 const marketPrices = {};
+let retryCount = 0;
 
-const fetchMarketPrices = async () => {
-  try {
-    const response = await axios.get(
-      "https://api.coingecko.com/api/v3/simple/price?ids=bitcoin&vs_currencies=usd"
-    );
-    const data = response.data;
-    if (data && data.bitcoin && data.bitcoin.usd) {
-      const pair = "BTCUSDT"; // Example: BTCUSDT
-      const price = parseFloat(data.bitcoin.usd); // Latest price
+process.on("uncaughtException", (err) => {
+  console.error("Uncaught Exception:", err);
+  // Optionally, you can exit the process if needed
+  // process.exit(1);
+});
 
-      marketPrices[pair] = price;
+process.on("unhandledRejection", (reason, promise) => {
+  console.error("Unhandled Rejection at:", promise, "reason:", reason);
+  // Optionally, you can exit the process if needed
+  // process.exit(1);
+});
 
-      await checkLiquidations(marketPrices);
+const connectWebSocket = () => {
+  const ws = new WebSocket("wss://stream.binance.com:9443/ws/btcusdt@ticker");
+
+  ws.onmessage = async (event) => {
+    try {
+      const data = JSON.parse(event.data);
+      if (data && data.s && data.c) {
+        const pair = data.s; // Example: BTCUSDT
+        const price = parseFloat(data.c); // Latest price
+
+        marketPrices[pair] = price;
+
+        await checkLiquidations(marketPrices);
+      }
+    } catch (error) {
+      console.error("Error processing WebSocket message:", error);
     }
-  } catch (error) {
-    console.error("Error fetching market prices:", error);
-  }
+  };
+
+  ws.onclose = () => {
+    console.log("WebSocket connection closed. Reconnecting...");
+    retryCount++;
+    const retryDelay = Math.min(30000, 1000 * Math.pow(2, retryCount)); // Exponential backoff with max delay of 30 seconds
+    setTimeout(connectWebSocket, retryDelay);
+  };
+
+  ws.onerror = (error) => {
+    console.error("WebSocket error:", error);
+    ws.close();
+  };
+
+  ws.on("unexpected-response", (req, res) => {
+    console.error(`Unexpected server response: ${res.statusCode}`);
+    ws.close();
+  });
 };
 
-setInterval(fetchMarketPrices, 10000); // Fetch market prices every 10 seconds
+connectWebSocket();
 
 setInterval(async () => {
-  console.log("Running periodic liquidation check...");
-  await checkLiquidations(marketPrices);
+  try {
+    console.log("Running periodic liquidation check...");
+    await checkLiquidations(marketPrices);
+  } catch (error) {
+    console.error("Error during periodic liquidation check:", error);
+  }
 }, 30000); // Runs every 30 seconds
 
 // Start the server

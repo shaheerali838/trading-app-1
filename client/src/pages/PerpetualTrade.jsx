@@ -15,6 +15,7 @@ const PerpetualTrade = () => {
   const [selectedPair, setSelectedPair] = useState("BTCUSDT");
   const [selectedInterval, setSelectedInterval] = useState("1h");
   const { openPositions } = useSelector((state) => state.futures);
+  const showChart = useSelector((state) => state.global.showChart);
   const dispatch = useDispatch();
   const tradingPairs = [
     "BTCUSDT",
@@ -121,16 +122,17 @@ const PerpetualTrade = () => {
         </div>
 
         <div className="flex flex-col lg:flex-row">
-          <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4 hidden lg:block">
-            {" "}
-            <TradingChart
-              selectedPair={selectedPair}
-              setSelectedPair={setSelectedPair}
-              selectedInterval={selectedInterval}
-              setSelectedInterval={setSelectedInterval}
-              marketData={marketData}
-            />
-          </div>
+          {showChart && (
+            <div className="w-full lg:w-3/5 bg-transparent border-y border-[#2f2f2f] lg:border-r p-4">
+              <TradingChart
+                selectedPair={selectedPair}
+                setSelectedPair={setSelectedPair}
+                selectedInterval={selectedInterval}
+                setSelectedInterval={setSelectedInterval}
+                marketData={marketData}
+              />
+            </div>
+          )}
           <div className="flex flex-row-reverse lg:flex-row w-full lg:w-2/5">
             <div className="w-1/2 bg-transparent border border-[#2f2f2f] p-4">
               <OrderBook selectedPair={selectedPair} />

@@ -1,46 +1,21 @@
 import React, { useEffect, useRef, useState } from "react";
-import {
-  CandlestickSeries,
-  LineSeries,
-  HistogramSeries,
-  createChart,
-} from "lightweight-charts";
+import { CandlestickSeries, createChart } from "lightweight-charts";
 
 const TradingChart = ({
-  marketData,
-  tradingPair,
-  onPairChange,
-  selectedInterval,
-  setSelectedInterval,
-  setSelectedPair,
   selectedPair,
+  selectedInterval,
+  setSelectedPair,
+  setSelectedInterval,
 }) => {
   const chartContainerRef = useRef(null);
   const chartInstance = useRef(null);
   const candleSeriesRef = useRef(null);
-  const volumeSeriesRef = useRef(null);
-  const macdLineSeriesRef = useRef(null);
-  const macdSignalSeriesRef = useRef(null);
-  const macdHistogramRef = useRef(null);
-  const rsiSeriesRef = useRef(null);
+  const wsRef = useRef(null); // WebSocket reference
+  const [marketData, setMarketData] = useState([]);
   const [ohlc, setOhlc] = useState(null);
-  const [savedRange, setSavedRange] = useState(null);
-  const [latestOhlc, setLatestOhlc] = useState(null);
 
-  const timeIntervals = ["1m", "5m", "15m", "1h", "1d", "1w"];
-
-  const tradingPairs = [
-    "BTCUSDT",
-    "ETHUSDT",
-    "BNBUSDT",
-    "SOLUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "MATICUSDT",
-    "DOTUSDT",
-    "LTCUSDT",
-  ];
+  const timeIntervals = ["1m", "5m", "15m", "1h", "1d"];
+  const tradingPairs = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"];
   const formatTradingPair = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
     const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
@@ -48,91 +23,72 @@ const TradingChart = ({
     return `${base}/${quote}`; // Format as BTC/USDT
   };
 
+  // Function to fetch historical market data (initial chart load)
+  const fetchMarketData = async () => {
+    try {
+      const response = await fetch(
+        `https://api.binance.com/api/v3/klines?symbol=${selectedPair}&interval=${selectedInterval}`
+      );
+      const data = await response.json();
+
+      const formattedData = data.map((candle) => ({
+        time: Math.floor(candle[0] / 1000),
+        open: parseFloat(candle[1]),
+        high: parseFloat(candle[2]),
+        low: parseFloat(candle[3]),
+        close: parseFloat(candle[4]),
+        volume: parseFloat(candle[5]),
+      }));
+
+      setMarketData(formattedData);
+      candleSeriesRef.current.setData(formattedData);
+    } catch (error) {
+      console.error("Error fetching historical market data:", error);
+    }
+  };
+
+  // Initialize chart on first render
   useEffect(() => {
     if (!chartContainerRef.current) return;
 
-    // Create chart instance only once
-    if (!chartInstance.current) {
-      chartInstance.current = createChart(chartContainerRef.current, {
-        width: chartContainerRef.current.clientWidth,
-        height: 400,
-        layout: {
-          background: { color: "transparent" },
-          textColor: "#EAEAEA",
-        },
-        grid: {
-          vertLines: { color: "#333333" },
-          horzLines: { color: "#333333" },
-        },
-      });
+    chartInstance.current = createChart(chartContainerRef.current, {
+      width: chartContainerRef.current.clientWidth,
+      height: 400,
+      layout: { background: { color: "transparent" }, textColor: "#EAEAEA" },
+      grid: {
+        vertLines: { color: "#333333" },
+        horzLines: { color: "#333333" },
+      },
+    });
 
-      // Add candlestick series
-      candleSeriesRef.current = chartInstance.current.addSeries(
-        CandlestickSeries,
-        {
-          upColor: "#00C853",
-          downColor: "#D32F2F",
-          borderUpColor: "#00C853",
-          borderDownColor: "#D32F2F",
-          wickUpColor: "#00C853",
-          wickDownColor: "#D32F2F",
-          priceScaleId: 'right',
-        }
-      );
-      volumeSeriesRef.current = chartInstance.current.addSeries(
-              HistogramSeries,
-              {
-                color: "#26a69a",
-                priceFormat: { type: "volume" },
-                priceScaleId: "",
-              }
-            );
-      
-            // Add MACD line series
-            macdLineSeriesRef.current = chartInstance.current.addSeries(LineSeries, {
-              height: 20,
-              color: "#FFEB3B",
-              priceScaleId: 'macd', // Separate price scale for MACD
-            });
-      
-            // Add MACD signal series
-            macdSignalSeriesRef.current = chartInstance.current.addSeries(
-              LineSeries,
-              {
-                color: "#FF5722",
-                priceScaleId: 'macd', // Separate price scale for MACD
-              }
-            );
-      
-            // Add MACD histogram series
-            macdHistogramRef.current = chartInstance.current.addSeries(
-              HistogramSeries,
-              {
-                color: "#9C27B0",
-                priceScaleId: 'macd', // Separate price scale for MACD
-              }
-            );
-      
-            // Add RSI series
-            rsiSeriesRef.current = chartInstance.current.addSeries(LineSeries, {
-              color: "#03A9F4",
-              priceScaleId: 'rsi', // Separate price scale for RSI
-            });
-          }
-          
-      // Subscribe to visible range changes to save the current zoom level
-      chartInstance.current.timeScale().subscribeVisibleLogicalRangeChange((range) => {
+    candleSeriesRef.current = chartInstance.current.addSeries(
+      CandlestickSeries,
+      {
+        upColor: "#00C853",
+        downColor: "#D32F2F",
+        borderUpColor: "#00C853",
+        borderDownColor: "#D32F2F",
+        wickUpColor: "#00C853",
+        wickDownColor: "#D32F2F",
+      }
+    );
+
+    fetchMarketData(); // Fetch historical data on mount
+    // Subscribe to visible range changes to save the current zoom level
+    chartInstance.current
+      .timeScale()
+      .subscribeVisibleLogicalRangeChange((range) => {
         setSavedRange(range);
       });
 
-      // Track mouse move on chart to update OHLC values
-      chartInstance.current.subscribeCrosshairMove((param) => {
-        if (!param || !param.seriesData || !candleSeriesRef.current) return;
-        const data = param.seriesData.get(candleSeriesRef.current);
-        if (data) {
-          setOhlc(data);
-        }
-      });
+    // Track mouse move on chart to update OHLC values
+    chartInstance.current.subscribeCrosshairMove((param) => {
+      if (!param || !param.seriesData || !candleSeriesRef.current) return;
+      const data = param.seriesData.get(candleSeriesRef.current);
+      if (data) {
+        setOhlc(data);
+      }
+    });
 
     // Handle chart resize
     const handleResize = () => {
@@ -145,37 +101,52 @@ const TradingChart = ({
     window.addEventListener("resize", handleResize);
 
     return () => {
+      chartInstance.current.remove();
       window.removeEventListener("resize", handleResize);
     };
   }, []);
 
+  // Fetch new market data when pair or interval changes
   useEffect(() => {
-    if (!chartInstance.current || !candleSeriesRef.current || !marketData.length) return;
+    if (!chartInstance.current) return;
 
-    // Save the current visible range before updating data
-    const currentRange = chartInstance.current.timeScale().getVisibleLogicalRange();
+    fetchMarketData();
+  }, [selectedPair, selectedInterval]);
 
-    // Ensure marketData is sorted and unique by time
-    const sortedData = [...marketData]
-      .sort((a, b) => a.time - b.time) // Sort by time
-      .filter(
-        (item, index, array) =>
-          index === 0 || item.time !== array[index - 1].time
-      ); // Remove duplicates
+  // WebSocket for real-time updates
+  useEffect(() => {
+    if (wsRef.current) wsRef.current.close(); // Close previous WebSocket connection
 
-    // Update candlestick data
-    candleSeriesRef.current.setData(sortedData);
+    const ws = new WebSocket(
+      `wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
+    );
+    wsRef.current = ws;
 
-    // Restore the visible range after updating data
-    if (currentRange) {
-      chartInstance.current.timeScale().setVisibleLogicalRange(currentRange);
-    }
-  }, [marketData]);
-  
+    ws.onmessage = (event) => {
+      const response = JSON.parse(event.data);
+      const kline = response.k;
+
+      if (!kline) return;
+
+      const newCandle = {
+        time: Math.floor(kline.t / 1000),
+        open: parseFloat(kline.o),
+        high: parseFloat(kline.h),
+        low: parseFloat(kline.l),
+        close: parseFloat(kline.c),
+        volume: parseFloat(kline.v),
+      };
+
+      candleSeriesRef.current.update(newCandle); // Real-time update
+    };
+
+    ws.onclose = () => console.log("WebSocket closed");
+    return () => ws.close(); // Cleanup WebSocket on unmount
+  }, [selectedPair, selectedInterval]);
 
   return (
     <div>
-      <div className="flex justify-between items-center border-b-[.3px] border-[#00c853] ">
+      <div className="md:flex justify-between items-center border-b-[.3px] border-[#00c853] hidden md:block">
         <div className=" flex gap-4 w-fit">
           <div>
             <select

@@ -1,5 +1,5 @@
 import React, { useState, useEffect } from "react";
-import { Link } from "react-router-dom";
+import { Link, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "../../assets/logo.png";
 import { motion } from "framer-motion";
 import {
@@ -18,6 +18,8 @@ import { VscChevronDown } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
+import { MdCandlestickChart } from "react-icons/md";
+import { setShowChart } from "../../store/slices/globalSlice";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
@@ -27,6 +29,13 @@ const Navbar = () => {
   const [openDialog, setOpenDialog] = useState(false);
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const dispatch = useDispatch((state) => state.user);
+  const location = useLocation();
+  const navigate = useNavigate();
+  const showChart = useSelector((state) => state.global.showChart);
+
+  const showSelectOption = ["/trade", "/futures", "/perpetual"].includes(
+    location.pathname
+  );
 
   useEffect(() => {
     const handleScroll = () => {
@@ -70,6 +79,26 @@ const Navbar = () => {
               <img className="w-[50px]" src={logoSrc} alt="LOGO" />
             </i>
           </Link>
+          {showSelectOption && (
+            <div className="flex items-center ml-auto">
+              <select
+                id="tradingPair"
+                value={location.pathname.slice(1)}
+                onChange={(e) => navigate(`/${e.target.value}`)}
+                className="bg-black text-tertiary3 p-2 focus:outline-none mr-4"
+              >
+                <option value="trade">Spot</option>
+                <option value="perpetual">Perpetual</option>
+                <option value="futures">Futures</option>
+              </select>
+              <div
+                className="text-2xl text-gray-400 cursor-pointer"
+                onClick={() => dispatch(setShowChart(!showChart))}
+              >
+                <MdCandlestickChart />
+              </div>
+            </div>
+          )}
         </div>
         <div className="w-full hidden sm:flex">
           <div className="w-full flex justify-center space-x-4">
