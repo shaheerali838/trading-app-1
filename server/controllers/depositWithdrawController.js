@@ -1,3 +1,4 @@
+import { request } from "express";
 import DepositWithdrawRequest from "../models/RequestMessage.js";
 import User from "../models/User.js";
 import Wallet from "../models/Wallet.js";
@@ -31,7 +32,6 @@ export const createDepositWithdrawRequest = async (req, res) => {
 
     res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
-
     res.status(500).json({ message: "Error processing request", error });
   }
 };
@@ -75,23 +75,21 @@ export const addTokens = async (req, res) => {
     }
 
     const numericAmount = Number(amount);
-
-    switch (currency) {
-      case "USDT":
-        wallet.balanceUSDT += numericAmount;
-        break;
-      case "ETH":
-        wallet.balanceETH += numericAmount;
-        break;
-      case "BTC":
-        wallet.balanceBTC += numericAmount;
-        break;
-      case "USDC":
-        wallet.balanceUSDC += numericAmount;
-        break;
-      default:
-        return res.status(400).json({ message: "Invalid currency type" });
+    
+    if(currency === "USDT") {
+      wallet.balanceUSDT += numericAmount;
+    } else {
+      wallet.holdings.forEach((holding) => {
+        if (holding.asset === request.currency) {
+          holding.quantity += numericAmount;
+          return;
+        }
+      });
+      if (!wallet.holdings.find((holding) => holding.asset === currency)) {
+        wallet.holdings.push({ asset: currency, quantity: numericAmount });
+      }
     }
+    await wallet.save();
 
     wallet.depositHistory.push({ currency, amount, createdAt: new Date() });
 
@@ -107,8 +105,6 @@ export const approveWithDrawRequest = async (req, res) => {
   try {
     const { requestId } = req.params;
 
-    
-
     const request = await DepositWithdrawRequest.findById(requestId);
     if (!request) {
       return res.status(404).send({ message: "Request not found" });
@@ -123,12 +119,23 @@ export const approveWithDrawRequest = async (req, res) => {
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
-
-    if (wallet[`balance${request.currency}`] < request.amount) {
-      return res.status(400).json({ message: "Insufficient balance" });
+    if (request.currency !== "USDT") {
+      wallet.holdings.forEach((holding) => {
+        if (
+          holding.asset === request.currency &&
+          holding.quantity <= request.amount
+        ) {
+          return res.status(400).json({ message: "Insufficient balance" });
+        }
+        holding.quantity -= request.amount; 
+      });
+    } else {
+      if (wallet.balanceUSDT < request.amount) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+      wallet.balanceUSDT -= request.amount;
     }
 
-    wallet[`balance${request.currency}`] -= request.amount;
     wallet.withdrawalHistory.push({
       amount: request.amount,
       currency: request.currency,
@@ -139,13 +146,17 @@ export const approveWithDrawRequest = async (req, res) => {
     await request.save();
     await wallet.save();
 
-    res.status(200).json({ message: `${request.type} request approved`, request });
+    res
+      .status(200)
+      .json({ message: `${request.type} request approved`, request });
   } catch (error) {
-    res.status(500).json({ message: "Error approving withdraw request", error });
+    res
+      .status(500)
+      .json({ message: "Error approving withdraw request", error });
   }
 };
 
-export const changeWithdrawRequeststatus = async(req, res) => {
+export const changeWithdrawRequeststatus = async (req, res) => {
   try {
     const { requestId } = req.params;
     const request = await DepositWithdrawRequest.findById(requestId);
@@ -155,11 +166,13 @@ export const changeWithdrawRequeststatus = async(req, res) => {
 
     request.status = "approved";
     await request.save();
-    res.status(200).json({ message: "Request status changed to approved", request });
+    res
+      .status(200)
+      .json({ message: "Request status changed to approved", request });
   } catch (err) {
     return res.status(500).json({ message: err.message });
   }
-}
+};
 
 // Reject deposit/withdrawal request
 export const rejectRequest = async (req, res) => {

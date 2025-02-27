@@ -155,6 +155,7 @@ function Trade() {
                 setSelectedInterval={setSelectedInterval}
                 setSelectedPair={setSelectedPair}
                 selectedPair={selectedPair}
+                tradingPairs={tradingPairs}
               />
             </div>
           </div>

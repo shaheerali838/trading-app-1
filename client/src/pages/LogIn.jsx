@@ -68,7 +68,7 @@ const LogIn = () => {
           </form>
           <p className="w-full text-center text-gray-500">
             Don't Have an account?{" "}
-            <a href="/signup" className="text-white">
+            <a href="/register" className="text-white">
               Sign Up
             </a>
           </p>

@@ -7,9 +7,6 @@ const WalletSchema = new mongoose.Schema({
     required: true,
   },
   balanceUSDT: { type: Number, default: 0 },
-  balanceETH: { type: Number, default: 0 },
-  balanceBTC: { type: Number, default: 0 },
-  balanceUSDC: { type: Number, default: 0 },
   marginBalance: { type: Number, default: 0 },
   holdings: [
     {

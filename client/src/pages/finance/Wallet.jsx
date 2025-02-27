@@ -95,7 +95,9 @@ const Wallet = () => {
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.balanceETH?.toFixed(2) || "0.00"}{" "}
+                    {wallet?.holdings
+                      .find((holding) => holding.asset === "ETH")
+                      ?.quantity.toFixed(2) || "0.00"}{" "}
                     <span className="text-gray-400 text-sm">ETH</span>
                   </p>
                 </div>
@@ -108,7 +110,9 @@ const Wallet = () => {
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.balanceUSDC?.toFixed(2) || "0.00"}{" "}
+                    {wallet?.holdings
+                      .find((holding) => holding.asset === "USDC")
+                      ?.quantity.toFixed(2) || "0.00"}{" "}
                     <span className="text-gray-400 text-sm">USDC</span>
                   </p>
                 </div>
@@ -121,7 +125,9 @@ const Wallet = () => {
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.balanceBTC?.toFixed(2) || "0.00"}{" "}
+                    {wallet?.holdings
+                      .find((holding) => holding.asset === "BTC")
+                      ?.quantity.toFixed(2) || "0.00"}
                     <span className="text-gray-400 text-sm">BTC</span>
                   </p>
                 </div>
@@ -287,21 +293,27 @@ const Wallet = () => {
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
                 <p className="text-lg">ETH</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.balanceETH?.toFixed(2) || "0.00"}
+                  {wallet?.holdings
+                    .find((holding) => holding.asset === "ETH")
+                    ?.quantity.toFixed(2) || "0.00"}
                   <span className="text-sm">ETH</span>
                 </p>
               </div>
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
                 <p className="text-lg">USDC</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.balanceUSDC?.toFixed(2) || "0.00"}{" "}
+                  {wallet?.holdings
+                    .find((holding) => holding.asset === "USDC")
+                    ?.quantity.toFixed(2) || "0.00"}{" "}
                   <span className="text-sm">USDC</span>
                 </p>
               </div>
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
                 <p className="text-lg">BTC</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.balanceBTC?.toFixed(2) || "0.00"}{" "}
+                  {wallet?.holdings
+                    .find((holding) => holding.asset === "BTC")
+                    ?.quantity.toFixed(2) || "0.00"}{" "}
                   <span className="text-sm">BTC</span>
                 </p>
               </div>

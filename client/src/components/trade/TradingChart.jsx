@@ -6,6 +6,7 @@ const TradingChart = ({
   selectedInterval,
   setSelectedPair,
   setSelectedInterval,
+  tradingPairs,
 }) => {
   const chartContainerRef = useRef(null);
   const chartInstance = useRef(null);
@@ -15,7 +16,7 @@ const TradingChart = ({
   const [ohlc, setOhlc] = useState(null);
 
   const timeIntervals = ["1m", "5m", "15m", "1h", "1d"];
-  const tradingPairs = ["BTCUSDT", "ETHUSDT", "BNBUSDT", "SOLUSDT", "XRPUSDT"];
+
   const formatTradingPair = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
     const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
@@ -155,7 +156,7 @@ const TradingChart = ({
               onChange={(e) => setSelectedPair(e.target.value)}
               className="bg-black text-tertiary3 p-2 border-r-[.3px] border-[#00c853] focus:outline-none"
             >
-              {tradingPairs.map((pair, index) => (
+              {tradingPairs?.map((pair, index) => (
                 <option key={index} value={pair}>
                   {formatTradingPair(pair)}
                 </option>
