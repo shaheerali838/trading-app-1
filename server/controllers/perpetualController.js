@@ -19,8 +19,13 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
 
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  if (wallet.balanceUSDT < marginUsed) {
-    return res.status(400).json({ message: "Insufficient margin balance" });
+  if (wallet.perpetualsWallet < marginUsed) {
+    return res
+      .status(400)
+      .json({
+        message:
+          "Insufficient funds in Perpetuals Wallet. Transfer funds from Exchange Wallet.",
+      });
   }
 
   let liquidationPrice =
@@ -28,7 +33,7 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
       ? entryPrice * (1 - 1 / leverage)
       : entryPrice * (1 + 1 / leverage);
 
-  wallet.balanceUSDT -= marginUsed;
+  wallet.perpetualsWallet -= marginUsed;
   await wallet.save();
 
   const trade = await PerpetualTrade.create({
@@ -67,7 +72,7 @@ export const closePerpetualPosition = catchAsyncErrors(async (req, res) => {
       ? (closePrice - trade.entryPrice) * trade.quantity
       : (trade.entryPrice - closePrice) * trade.quantity;
 
-  wallet.balanceUSDT += trade.marginUsed + profitLoss;
+  wallet.perpetualsWallet += trade.marginUsed + profitLoss;
   if (wallet.balanceUSDT < 0) {
     wallet.balanceUSDT = 0;
   }

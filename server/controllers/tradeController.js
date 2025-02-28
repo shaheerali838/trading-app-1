@@ -5,8 +5,7 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 
 export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
-    const { type, orderType, price, amount, coin } = req.body;
-
+    const { type, orderType, price, amount, coin } = req.body; // Added tradeType to specify spot or futures
 
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
@@ -20,14 +19,17 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
     let totalCost = amount * price;
+    console.log("totalCost", totalCost);
+    console.log("wallet.spotWallet", wallet.spotWallet);
+    // Ensure user has enough Spot Wallet balance
+    if (type === "buy" && wallet.spotWallet < totalCost) {
+      return res.status(400).json({
+        message:
+          "Insufficient funds in Spot Wallet. Transfer funds from Exchange Wallet.",
+      });
+    }
 
     if (type === "buy") {
-      // Ensure user has enough USDT balance
-      if (wallet.balanceUSDT < totalCost) {
-        return res.status(400).json({ message: "Insufficient balance" });
-      }
-
-      
       const trade = await Trade.create({
         userId: req.user._id,
         type,
@@ -38,11 +40,12 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         asset: coin, // Add the asset (coin) being traded
         status: "pending",
       });
-      await trade.save()
+      await trade.save();
+
+      wallet.spotWallet -= totalCost;
+      await wallet.save();
       io.emit("tradeUpdate", trade);
-
     } else {
-
       // Use the `coin` from the request to find the correct holding
       const holding = wallet.holdings.find((h) => h.asset === coin);
       if (!holding || holding.quantity < amount) {
@@ -59,13 +62,9 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         asset: coin, // Add the asset (coin) being traded
         status: "pending",
       });
-      await trade.save()
+      await trade.save();
       io.emit("tradeUpdate", trade);
     }
-
-
-
-    // Emit real-time trade update
 
     res.status(200).json({ message: "Order Successful" });
   } catch (error) {
@@ -108,3 +107,54 @@ export const fetchPendingOrders = async (req, res, next) => {
     next(error);
   }
 };
+
+// Transfer funds from one wallet to wallet
+export const transferFunds = catchAsyncErrors(async (req, res) => {
+  const { fromWallet, toWallet, amount } = req.body;
+  const userId = req.user._id;
+
+  try {
+    // Fetch user wallet
+    const wallet = await Wallet.findOne({ userId });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
+    // Validate wallet types
+    const validWallets = [
+      "exchangeWallet",
+      "spotWallet",
+      "futuresWallet",
+      "perpetualsWallet",
+    ];
+    if (
+      !validWallets.includes(fromWallet) ||
+      !validWallets.includes(toWallet)
+    ) {
+      return res.status(400).json({ message: "Invalid wallet type" });
+    }
+
+    // Validate balance
+    const transferAmount = Number(amount); // Ensure the amount is a number
+    if (wallet[fromWallet] < transferAmount) {
+      return res.status(400).json({ message: "Insufficient funds" });
+    }
+
+    // Process transfer with proper addition
+    wallet[fromWallet] = Number(wallet[fromWallet] - transferAmount);
+    wallet[toWallet] = Number(wallet[toWallet] + transferAmount);
+
+    // Log transfer in history
+    wallet.transferHistory.push({
+      fromWallet,
+      toWallet,
+      amount: transferAmount,
+    });
+
+    await wallet.save();
+
+    res.status(200).json({ message: "Transfer successful", wallet });
+  } catch (error) {
+    res.status(500).json({ message: "Error processing transfer", error });
+  }
+});

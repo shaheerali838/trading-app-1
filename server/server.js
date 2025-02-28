@@ -47,8 +47,21 @@ const marketPrices = {};
 let ws;
 const connectWebSocket = () => {
   try {
-    const tradingPairs = ["BTC-USD", "ETH-USD", "BNB-USD", "SOL-USD", "XRP-USD", "ADA-USD", "DOGE-USD", "MATIC-USD", "DOT-USD", "LTC-USD"];
-    const subs = tradingPairs.map(pair => `5~CCCAGG~${pair.replace("-", "~")}~USD`);
+    const tradingPairs = [
+      "BTC-USD",
+      "ETH-USD",
+      "BNB-USD",
+      "SOL-USD",
+      "XRP-USD",
+      "ADA-USD",
+      "DOGE-USD",
+      "MATIC-USD",
+      "DOT-USD",
+      "LTC-USD",
+    ];
+    const subs = tradingPairs.map(
+      (pair) => `5~CCCAGG~${pair.replace("-", "~")}~USD`
+    );
 
     ws = new WebSocket("wss://streamer.cryptocompare.com/v2");
 
@@ -124,8 +137,11 @@ setInterval(async () => {
   await checkLiquidations(marketPrices);
 }, 30000);
 
+console.log("process.env.PORT----", process.env.PORT);
 // Start the server
 const PORT = process.env.PORT || 3000;
 server.listen(PORT, () => {
-  console.log(`🚀 Server running on port ${PORT}, frontend: ${process.env.FRONTEND_URL}`);
+  console.log(
+    `🚀 Server running on port ${PORT}, frontend: ${process.env.FRONTEND_URL}`
+  );
 });

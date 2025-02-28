@@ -1,49 +1,52 @@
-  import express from "express";
-  import cookieParser from "cookie-parser";
-  import cors from "cors";
-  import { config } from "dotenv";
-  import { dbConnection } from "./config/dbConnection.js";
-  import { dirname } from "node:path";
-  import { join } from "path";
-  import { fileURLToPath } from "url";
-  import fileUpload from "express-fileupload";
-  import userRouter from "./routers/userRoutes.js";
-  import tradeRouter from "./routers/tradeRoutes.js";
-  import adminRouter from "./routers/adminRoutes.js";
-  import depositWithdrawRouter from "./routers/depositWithdrawRoutes.js";
-  import futuresTradeRouter from "./routers/futuresTradeRoutes.js";
-  import perpetualTradeRouter from "./routers/perpetualRoutes.js";
+import express from "express";
+import cookieParser from "cookie-parser";
+import cors from "cors";
+import { config } from "dotenv";
+import { dbConnection } from "./config/dbConnection.js";
+import { dirname } from "node:path";
+import { join } from "path";
+import { fileURLToPath } from "url";
+import fileUpload from "express-fileupload";
+import userRouter from "./routers/userRoutes.js";
+import tradeRouter from "./routers/tradeRoutes.js";
+import adminRouter from "./routers/adminRoutes.js";
+import depositWithdrawRouter from "./routers/depositWithdrawRoutes.js";
+import futuresTradeRouter from "./routers/futuresTradeRoutes.js";
+import perpetualTradeRouter from "./routers/perpetualRoutes.js";
+import walletRouter from "./routers/walletRoutes.js";
 
-  const app = express();
+const app = express();
 
-  const __filename = fileURLToPath(import.meta.url);
-  const __dirname = dirname(__filename);
+const __filename = fileURLToPath(import.meta.url);
+const __dirname = dirname(__filename);
 
-  const envPath = join(__dirname, "/config/config.env");
+const envPath = join(__dirname, "/config/config.env");
 
-  config({ path: envPath });
-  
-  app.use(
-    cors({
-      origin: [process.env.FRONTEND_URL,'http://localhost:5173'],
-      credentials: true,
-      methods: "GET,POST,PUT,DELETE",
-      allowedHeaders: "Content-Type,Authorization",
-    })
-  );
-  app.use(express.json());
-  app.use(cookieParser());
-  app.use(express.urlencoded({ extended: true }));
-  app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
+config({ path: envPath });
 
-  app.use("/api/user", userRouter);
-  app.use("/api/trade", tradeRouter);
-  app.use("/api/admin", adminRouter);
-  app.use("/api/funds", depositWithdrawRouter)
-  app.use("/api/futures", futuresTradeRouter)
-  app.use("/api/perpetual", perpetualTradeRouter)
+app.use(
+  cors({
+    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+    credentials: true,
+    methods: "GET,POST,PUT,DELETE",
+    allowedHeaders: "Content-Type,Authorization",
+  })
+);
+app.use(express.json());
+app.use(cookieParser());
+app.use(express.urlencoded({ extended: true }));
+app.use(fileUpload({ useTempFiles: true, tempFileDir: "/temp/" }));
 
+app.use("/api/user", userRouter);
+app.use("/api/trade", tradeRouter);
+app.use("/api/admin", adminRouter);
+app.use("/api/funds", depositWithdrawRouter);
+app.use("/api/futures", futuresTradeRouter);
+app.use("/api/perpetual", perpetualTradeRouter);
 
-  dbConnection();
+// Wallet routes
+app.use("/api/wallet", walletRouter);
 
-  export default app;
+dbConnection();
+
+export default app;

@@ -93,6 +93,28 @@ export const fetchExchangeRate = createAsyncThunk(
   }
 );
 
+// Transfer Funds Async Thunk
+export const transferFunds = createAsyncThunk(
+  "assets/transferFunds",
+  async ({ fromWallet, toWallet, amount }, { rejectWithValue }) => {
+    try {
+      const response = await API.post("/wallet/transfer", {
+        fromWallet,
+        toWallet,
+        amount,
+      });
+      toast.success(response.data.message);
+      return response.data;
+    } catch (error) {
+      console.log(error.response?.data?.message);
+      
+      toast.error(error.response?.data?.message || "Transfer failed");
+      return rejectWithValue(
+        error.response?.data?.message || "Transfer failed"
+      );
+    }
+  }
+);
 const assetsSlice = createSlice({
   name: "assets",
   initialState: {
@@ -159,6 +181,18 @@ const assetsSlice = createSlice({
         state.status = "failed";
         state.error =
           action.payload?.message || "Failed to fetch exchange rate";
+      })
+
+      // Transfer Funds Cases
+      .addCase(transferFunds.pending, (state) => {
+        state.transferStatus = "loading";
+      })
+      .addCase(transferFunds.fulfilled, (state, action) => {
+        state.transferStatus = "succeeded";
+      })
+      .addCase(transferFunds.rejected, (state, action) => {
+        state.transferStatus = "failed";
+        state.transferError = action.payload;
       });
   },
 });
