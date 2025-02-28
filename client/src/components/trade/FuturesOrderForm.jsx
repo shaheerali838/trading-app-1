@@ -13,6 +13,12 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const [quantity, setQuantity] = useState("");
   const { wallet } = useSelector((state) => state.assets);
 
+  const extractBase = (pair) => {
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3);
+    return `${base}`;
+  };
+
   useEffect(() => {
     dispatch(getWallet());
   }, [dispatch]);
@@ -60,49 +66,96 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </button>
       </div>
 
-      <div className="flex justify-between items-center ">
-        <p>
-          Available Amount:{" "}
-          <span className="pl-2 pr-1 text-white">
-            {wallet?.balanceUSDT?.toFixed(2) || "0.0"}
-          </span>
-          USDT
-        </p>
-      </div>
-
       <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Leverage</label>
         <input
           type="number"
-          min="1"
-          max="100"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full"
-          value={leverage}
-          onChange={(e) => setLeverage(Number(e.target.value))}
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
+          value={marketPrice?.toFixed(0)}
+          readOnly
         />
       </div>
-
       <div className="mb-4">
         <label className="block text-sm text-gray-300 mb-1">Quantity</label>
         <input
           type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full"
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
+          placeholder="0"
           value={quantity}
           onChange={(e) => setQuantity(e.target.value)}
         />
       </div>
+      <div className=" max-w-full text-sm mb-4">
+        <p className="block text-sm text-gray-300 mb-1">Select Leverage</p>
+        <div className="flex justify-evenly">
+          <p
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+              leverage === 25
+                ? "bg-primary text-white"
+                : "bg-transparent text-gray-500"
+            } `}
+            onClick={() => setLeverage(Number(25))}
+          >
+            25X
+          </p>
 
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Entry Price</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full"
-          value={marketPrice}
-          readOnly
-        />
+          <p
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+              leverage === 50
+                ? "bg-primary text-white"
+                : "bg-transparent text-gray-500"
+            } `}
+            onClick={() => setLeverage(Number(50))}
+          >
+            50X
+          </p>
+
+          <p
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+              leverage === 75
+                ? "bg-primary text-white"
+                : "bg-transparent text-gray-500"
+            } `}
+            onClick={() => setLeverage(Number(75))}
+          >
+            75X
+          </p>
+
+          <p
+            className={`rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+              leverage === 100
+                ? "bg-primary text-white"
+                : "bg-transparent text-gray-500 "
+            } `}
+            onClick={() => setLeverage(Number(100))}
+          >
+            100X
+          </p>
+        </div>
       </div>
 
-      <Button onClick={handleSubmit} className={` w-full py-2 rounded-md ${orderType === "long"? "bg-blue-500 hover:bg-blue-700": "bg-red-500 hover:bg-red-700" }`}>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Available USDT:</span>
+        <span className="text-white">
+          {wallet?.balanceUSDT.toFixed(2) || "0.00"}
+        </span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Latest Price:</span>
+        <span className="text-white">{marketPrice?.toFixed(2)}</span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Maximum Positions:</span>
+        <span className="text-white">0</span>
+      </div>
+
+      <Button
+        onClick={handleSubmit}
+        className={` w-full py-2 rounded-md ${
+          orderType === "long"
+            ? "bg-blue-500 hover:bg-blue-700"
+            : "bg-red-500 hover:bg-red-700"
+        }`}
+      >
         Open Position
       </Button>
     </Card>

@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import { toast } from "react-toastify";
 import { placeOrder } from "../../store/slices/tradeSlice";
 import AnimatedHeading from "../animation/AnimateHeading";
+import { getWallet } from "../../store/slices/assetsSlice";
 
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
@@ -15,7 +16,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [price, setPrice] = useState(marketPrice);
   const [amount, setAmount] = useState("");
   const { status, error } = useSelector((state) => state.trade);
-
+  const {wallet} = useSelector((state) => state.assets);
   const extractBase = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
     const base = pair.slice(0, 3); 
@@ -38,6 +39,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       socket.off("tradeUpdate");
     };
   }, []);
+  useEffect(() => {
+        dispatch(getWallet());
+    
+  }, [])
 
   const handleSubmit = async () => {
     if (!amount || amount <= 0) return alert("Enter a valid amount");
@@ -109,7 +114,7 @@ return (
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
+            className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
           />
         </div>
       )}
@@ -127,6 +132,10 @@ return (
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Market Price:</span>
         <span className="text-white">${marketPrice}</span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Available Amount:</span>
+        <span className="text-white">{wallet?.holdings?.find((holding)=> holding.asset === extractBase(selectedPair))?.quantity.toFixed(2) || "0.00"}</span>
       </div>
 
       <Button onClick={handleSubmit} className={`w-full py-2 rounded-md ${side === "buy" ? "bg-green-500" : "bg-red-500"}`}>

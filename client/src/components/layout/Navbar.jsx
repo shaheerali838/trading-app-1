@@ -20,6 +20,7 @@ import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
 import { MdCandlestickChart } from "react-icons/md";
 import { setShowChart } from "../../store/slices/globalSlice";
+import { LuMessageCircleQuestion } from "react-icons/lu";
 
 const Navbar = () => {
   const { user } = useSelector((state) => state.user);
@@ -231,6 +232,11 @@ const Navbar = () => {
                   </MenuItem>
                 </MenuList>
               </Menu>
+              <div className="flex items-center justify-center">
+                <a href="mailto:bitex.helpdesk@gmail.com">
+                  <LuMessageCircleQuestion />
+                </a>
+              </div>
             </>
           )}
         </div>
