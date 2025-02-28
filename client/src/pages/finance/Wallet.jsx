@@ -13,6 +13,7 @@ import {
   fetchExchangeRate,
   getWallet,
   swapAssets,
+  transferFunds,
 } from "../../store/slices/assetsSlice";
 import {
   Card,
@@ -25,9 +26,19 @@ import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import Loader from "../../components/layout/Loader";
 import API from "../../utils/api";
 
+const validPairs = {
+  USDT: ["ETH", "BTC", "BNB", "ADA", "SOL", "XRP", "DOT"],
+  ETH: ["USDT", "BTC", "BNB", "ADA", "SOL", "XRP", "DOT"],
+  BTC: ["USDT", "ETH", "BNB", "ADA", "SOL", "XRP", "DOT"],
+  BNB: ["USDT", "ETH", "BTC", "ADA", "SOL", "XRP", "DOT"],
+  ADA: ["USDT", "ETH", "BTC", "BNB", "SOL", "XRP", "DOT"],
+  SOL: ["USDT", "ETH", "BTC", "BNB", "ADA", "XRP", "DOT"],
+  XRP: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "DOT"],
+  DOT: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "XRP"],
+};
 const Wallet = () => {
   const [open, setOpen] = useState(false);
-  const [fromAsset, setFromAsset] = useState("USDT");
+  const [fromAsset, setFromAsset] = useState("");
   const [toAsset, setToAsset] = useState("ETH");
   const dispatch = useDispatch();
   const navigate = useNavigate();
@@ -35,6 +46,12 @@ const Wallet = () => {
   const { wallet, status, error, exchangeRate } = useSelector(
     (state) => state.assets
   );
+
+  // Handle Fund Transfer
+  const [transferOpen, setTransferOpen] = useState(false);
+  const [fromWallet, setFromWallet] = useState("");
+  const [toWallet, setToWallet] = useState("");
+  const [transferAmount, setTransferAmount] = useState("");
 
   useEffect(() => {
     dispatch(getWallet());
@@ -46,6 +63,14 @@ const Wallet = () => {
 
     return () => clearInterval(interval);
   }, [dispatch, fromAsset, toAsset]);
+  useEffect(() => {
+    if (fromAsset && validPairs[fromAsset]) {
+      // Reset 'toAsset' to the first valid option if the current 'toAsset' is invalid
+      if (!validPairs[fromAsset].includes(toAsset)) {
+        setToAsset(validPairs[fromAsset][0]);
+      }
+    }
+  }, [fromAsset, toAsset]);
 
   const handleSwap = async () => {
     if (!amount) {
@@ -63,6 +88,29 @@ const Wallet = () => {
     }
   };
 
+  // Fund Transfer Handler
+  const handleTransfer = async () => {
+    if (!transferAmount || !fromWallet || !toWallet) {
+      toast.error("Please fill in all fields");
+      return;
+    }
+
+    try {
+      await dispatch(
+        transferFunds({ fromWallet, toWallet, amount: transferAmount })
+      ).unwrap();
+      setTransferOpen(false);
+      toast.success("Funds transferred successfully");
+
+      // Reset fields after successful transfer
+      setFromWallet("");
+      setToWallet("");
+      setTransferAmount("");
+    } catch (error) {
+      toast.error(error.message || "Transfer failed");
+    }
+  };
+
   return (
     <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
       <motion.div
@@ -77,12 +125,12 @@ const Wallet = () => {
           <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Total USDT
+                Exchange Balance
               </h2>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    ${wallet?.balanceUSDT?.toFixed(2) || "0.00"}{" "}
+                    ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
                     <span className="text-gray-400 text-sm">USDT</span>
                   </p>
                 </div>
@@ -90,45 +138,39 @@ const Wallet = () => {
             </div>
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Total ETH
+                Spot Asset
               </h2>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.holdings
-                      .find((holding) => holding.asset === "ETH")
-                      ?.quantity.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">ETH</span>
+                    ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                    <span className="text-gray-400 text-sm">USDT</span>
                   </p>
                 </div>
               </div>
             </div>
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Total USDC
+                Futures Asset
               </h2>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.holdings
-                      .find((holding) => holding.asset === "USDC")
-                      ?.quantity.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">USDC</span>
+                    ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                    <span className="text-gray-400 text-sm">USDT</span>
                   </p>
                 </div>
               </div>
             </div>
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Total BTC
+                Perpetual Asset
               </h2>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
                   <p className="text-3xl font-bold text-white">
-                    {wallet?.holdings
-                      .find((holding) => holding.asset === "BTC")
-                      ?.quantity.toFixed(2) || "0.00"}
-                    <span className="text-gray-400 text-sm">BTC</span>
+                    ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                    <span className="text-gray-400 text-sm">USDT</span>
                   </p>
                 </div>
               </div>
@@ -153,6 +195,12 @@ const Wallet = () => {
               onClick={() => setOpen(true)}
             >
               Swap
+            </button>
+            <button
+              className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
+              onClick={() => setTransferOpen(true)}
+            >
+              Transfer
             </button>
           </div>
 
@@ -247,14 +295,15 @@ const Wallet = () => {
             </Card>
           </div>
         </div>
+        {/* for mobile screens */}
         <div className="md:hidden bg-darkGray min-h-screen p-4 text-lightGray">
           {/* My Assets */}
           <div className="max-w-lg mx-auto">
             <h2 className="text-xl font-semibold mb-2">My assets</h2>
             <div className="bg-gray-800 p-4 rounded-2xl shadow-md">
-              <p className="text-lg">All assets</p>
+              <p className="text-lg"> Exchange Balance</p>
               <p className="text-3xl font-bold">
-                {wallet?.balanceUSDT?.toFixed(2) || "0.00"}{" "}
+                ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
                 <span className="text-sm">USDT</span>
               </p>
             </div>
@@ -283,6 +332,13 @@ const Wallet = () => {
                 <FaSyncAlt size={20} />
                 Swap
               </button>
+              <button
+                className="flex flex-col items-center p-2 hover:text-electricBlue transition"
+                onClick={() => setTransferOpen(true)}
+              >
+                <FaExchangeAlt size={20} />
+                Transfer
+              </button>
             </div>
           </div>
 
@@ -291,94 +347,165 @@ const Wallet = () => {
             <h2 className="text-xl font-semibold mb-2">My account</h2>
             <div className="space-y-2">
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg">ETH</p>
+                <p className="text-lg"> Spot Asset</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.holdings
-                    .find((holding) => holding.asset === "ETH")
-                    ?.quantity.toFixed(2) || "0.00"}
-                  <span className="text-sm">ETH</span>
+                  ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                  <span className="text-sm">USDT</span>
                 </p>
               </div>
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg">USDC</p>
+                <p className="text-lg"> Futures Asset</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.holdings
-                    .find((holding) => holding.asset === "USDC")
-                    ?.quantity.toFixed(2) || "0.00"}{" "}
-                  <span className="text-sm">USDC</span>
+                  ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                  <span className="text-sm">USDT</span>
                 </p>
               </div>
               <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg">BTC</p>
+                <p className="text-lg"> Perpetual Asset</p>
                 <p className="text-2xl font-bold">
-                  {wallet?.holdings
-                    .find((holding) => holding.asset === "BTC")
-                    ?.quantity.toFixed(2) || "0.00"}{" "}
-                  <span className="text-sm">BTC</span>
+                  ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                  <span className="text-sm">USDT</span>
                 </p>
               </div>
             </div>
           </div>
         </div>
 
+
         <Dialog open={open} handler={() => setOpen(false)} size="sm">
+        <DialogHeader className="text-white bg-gray-900 flex justify-between">
+          <span>Swap</span>
+          <button onClick={() => setOpen(false)}>✖</button>
+        </DialogHeader>
+        <DialogBody className="bg-gray-900 text-white p-6">
+          {/* From Currency */}
+          <div className="mb-4">
+            <label className="block mb-1">From</label>
+            <select
+              className="w-full bg-gray-800 p-2 rounded"
+              value={fromAsset}
+              onChange={(e) => setFromAsset(e.target.value)}
+            >
+              <option value="" disabled>
+                Select a Currency
+              </option>
+              {Object.keys(validPairs).map((asset) => (
+                <option key={asset} value={asset}>
+                  {asset}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* To Currency */}
+          <div className="mb-4">
+            <label className="block mb-1">To</label>
+            <select
+              className="w-full bg-gray-800 p-2 rounded"
+              value={toAsset}
+              onChange={(e) => setToAsset(e.target.value)}
+              disabled={!fromAsset} // Disable if 'fromAsset' is not selected
+            >
+              <option value="" disabled>
+                Select a Currency
+              </option>
+              {validPairs[fromAsset]?.map((asset) => (
+                <option key={asset} value={asset}>
+                  {asset}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {/* Amount Input */}
+          <div className="mb-4">
+            <label className="block mb-1">Exchange Amount</label>
+            <input
+              type="number"
+              className="w-full bg-gray-800 p-2 rounded"
+              placeholder="Enter amount"
+              value={amount}
+              onChange={(e) => setAmount(e.target.value)}
+            />
+          </div>
+
+          {/* Exchange Rate Display */}
+          <p className="text-sm mb-4">
+            Current Exchange Rate: {amount} {fromAsset} ={" "}
+            {amount * exchangeRate} {toAsset}
+          </p>
+
+          {/* Swap Button */}
+          <button
+            onClick={handleSwap}
+            className="bg-blue-500 w-full py-2 rounded"
+          >
+            Exchange
+          </button>
+        </DialogBody>
+      </Dialog>
+        <Dialog
+          open={transferOpen}
+          handler={() => setTransferOpen(false)}
+          size="sm"
+        >
           <DialogHeader className="text-white bg-gray-900 flex justify-between">
-            <span>Swap</span>
-            <button onClick={() => setOpen(false)}>✖</button>
+            <span>Transfer Funds</span>
+            <button onClick={() => setTransferOpen(false)}>✖</button>
           </DialogHeader>
           <DialogBody className="bg-gray-900 text-white p-6">
-            {/* From Currency */}
+            {/* From Wallet (Dropdown) */}
             <div className="mb-4">
-              <label className="block mb-1">From</label>
+              <label className="block mb-1">From Wallet</label>
               <select
                 className="w-full bg-gray-800 p-2 rounded"
-                value={fromAsset}
-                onChange={(e) => setFromAsset(e.target.value)}
+                value={fromWallet}
+                onChange={(e) => setFromWallet(e.target.value)}
               >
-                <option value="USDT">USDT</option>
-                <option value="BTC">BTC</option>
-                <option value="ETH">ETH</option>
+                <option value="" disabled>
+                  Select Wallet
+                </option>
+                {/* Default empty option */}
+                <option value="exchangeWallet">Exchange Wallet</option>
               </select>
             </div>
 
-            {/* To Currency */}
+            {/* To Wallet (Dropdown) */}
             <div className="mb-4">
-              <label className="block mb-1">To</label>
+              <label className="block mb-1">To Wallet</label>
               <select
                 className="w-full bg-gray-800 p-2 rounded"
-                value={toAsset}
-                onChange={(e) => setToAsset(e.target.value)}
+                value={toWallet}
+                onChange={(e) => setToWallet(e.target.value)}
               >
-                <option value="ETH">ETH</option>
-                <option value="BTC">BTC</option>
-                <option value="USDT">USDT</option>
+                <option value="" disabled>
+                  Select Wallet
+                </option>{" "}
+                {/* Default empty option */}
+                <option value="spotWallet">Spot Wallet</option>
+                <option value="futuresWallet">Futures Wallet</option>
+                <option value="perpetualsWallet">Perpetual Wallet</option>
               </select>
             </div>
 
             {/* Amount Input */}
             <div className="mb-4">
-              <label className="block mb-1">Exchange Amount</label>
+              <label className="block mb-1">Amount</label>
               <input
                 type="number"
                 className="w-full bg-gray-800 p-2 rounded"
                 placeholder="Enter amount"
-                value={amount}
-                onChange={(e) => setAmount(e.target.value)}
+                value={transferAmount}
+                onChange={(e) => setTransferAmount(e.target.value)}
               />
             </div>
 
-            {/* Exchange Rate Display */}
-            <p className="text-sm mb-4">
-              Current Exchange Rate: {amount} {fromAsset} ={" "}
-              {amount * exchangeRate} {toAsset}
-            </p>
-
-            {/* Swap Button */}
+            {/* Transfer Button */}
             <button
-              onClick={handleSwap}
+              onClick={handleTransfer}
               className="bg-blue-500 w-full py-2 rounded"
             >
-              Exchange
+              Transfer Funds
             </button>
           </DialogBody>
         </Dialog>

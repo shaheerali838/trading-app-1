@@ -22,20 +22,23 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate required margin
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  if (wallet.balanceUSDT < marginUsed) {
-    return res.status(400).json({ message: "Insufficient margin balance" });
+  if (wallet.futuresWallet < marginUsed) {
+    return res.status(400).json({
+      message:
+        "Insufficient funds in Futures Wallet. Transfer funds from Exchange Wallet.",
+    });
   }
 
   // Calculate liquidation price (approximate formula)
   let liquidationPrice;
   if (type === "long") {
-    liquidationPrice = entryPrice * (entryPrice * leverage / leverage - 1);
+    liquidationPrice = entryPrice * ((entryPrice * leverage) / leverage - 1);
   } else {
-    liquidationPrice = entryPrice * (entryPrice * leverage / leverage + 1);
+    liquidationPrice = entryPrice * ((entryPrice * leverage) / leverage + 1);
   }
 
   // Deduct margin from user's wallet
-  wallet.balanceUSDT -= marginUsed;
+  wallet.futuresWallet -= marginUsed;
   await wallet.save();
 
   // Save trade to database
@@ -86,7 +89,7 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   }
 
   // Update wallet balance
-  wallet.marginBalance += trade.marginUsed + profitLoss;
+  wallet.futuresWallet += trade.marginUsed + profitLoss;
   await wallet.save();
 
   // Close the trade
@@ -133,7 +136,7 @@ export const checkLiquidations = async (marketPrices) => {
         wallet.balanceUSDT -= trade.marginUsed;
         await wallet.save();
       }
-      
+
       trade.status = "liquidated";
       trade.closedAt = new Date();
       await trade.save();
