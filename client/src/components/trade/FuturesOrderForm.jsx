@@ -42,24 +42,24 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   };
 
   return (
-    <Card className="p-4 bg-transparent text-lg text-white w-full max-w-md">
+    <Card className="p-4 bg-transparent text-lg text-white w-full md:max-w-md">
       <AnimatedHeading>
         <h2>Open Position</h2>
       </AnimatedHeading>
 
-      <div className="mb-4 bg-gray-800 p-1 rounded-md flex">
+      <div className=" p-1 rounded-md flex gap-2">
         <button
           onClick={() => setOrderType("long")}
-          className={`w-1/2 text-center ${
-            orderType === "long" ? "bg-green-500 text-white" : "text-gray-400"
+          className={`w-1/2 text-center py-2 rounded-md ${
+            orderType === "long" ? "bg-[#26bb8c] text-white" : "text-gray-400  bg-[#232323]"
           }`}
         >
           Long
         </button>
         <button
           onClick={() => setOrderType("short")}
-          className={`w-1/2 text-center ${
-            orderType === "short" ? "bg-red-500 text-white" : "text-gray-400"
+          className={`w-1/2 text-center py-2 rounded-md ${
+            orderType === "short" ? "bg-[#ff5e5a] text-white" : "text-gray-400  bg-[#232323]"
           }`}
         >
           Short
@@ -88,7 +88,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         <p className="block text-sm text-gray-300 mb-1">Select Leverage</p>
         <div className="flex justify-evenly">
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 25
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -99,7 +99,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           </p>
 
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 50
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -110,7 +110,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           </p>
 
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 75
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -121,7 +121,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           </p>
 
           <p
-            className={`rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={`rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 100
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500 "
@@ -152,8 +152,8 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         onClick={handleSubmit}
         className={` w-full py-2 rounded-md ${
           orderType === "long"
-            ? "bg-blue-500 hover:bg-blue-700"
-            : "bg-red-500 hover:bg-red-700"
+            ? "bg-[#26bb8c] hover:bg-green-500"
+            : "bg-[#ff5e5a] hover:bg-red-500"
         }`}
       >
         Open Position

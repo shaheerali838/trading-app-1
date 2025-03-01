@@ -77,7 +77,7 @@ export const addTokens = async (req, res) => {
     const numericAmount = Number(amount);
 
     if (currency === "USDT") {
-      wallet.balanceUSDT += numericAmount;
+      wallet.exchangeWallet += numericAmount;
     } else {
       wallet.holdings.forEach((holding) => {
         if (holding.asset === request.currency) {
@@ -131,10 +131,10 @@ export const approveWithDrawRequest = async (req, res) => {
         holding.quantity -= request.amount;
       });
     } else {
-      if (wallet.balanceUSDT < request.amount) {
+      if (wallet.exchangeWallet < request.amount) {
         return res.status(400).json({ message: "Insufficient balance" });
       }
-      wallet.balanceUSDT -= request.amount;
+      wallet.exchangeWallet -= request.amount;
     }
 
     wallet.withdrawalHistory.push({

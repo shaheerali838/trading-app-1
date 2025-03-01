@@ -14,6 +14,7 @@ const TradingChart = ({
   const wsRef = useRef(null); // WebSocket reference
   const [marketData, setMarketData] = useState([]);
   const [ohlc, setOhlc] = useState(null);
+  const [savedRange, setSavedRange] = useState(null); // Define savedRange state
 
   const timeIntervals = ["1m", "5m", "15m", "1h", "1d"];
 

@@ -265,7 +265,7 @@ export const swapCrypto = async (req, res) => {
     if (fromAsset === "USDT") {
       // Check if the user has enough USDT in the exchangeWallet
       if (userWallet.exchangeWallet < amount) {
-        return res.status(400).json({ message: "Insufficient balance" });
+        return res.status(400).json({ message: "Insufficient balance" }); 
       }
       // Deduct from exchangeWallet
       userWallet.exchangeWallet -= amount;

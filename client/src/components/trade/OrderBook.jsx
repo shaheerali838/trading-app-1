@@ -85,18 +85,18 @@ const OrderBook = ({ selectedPair }) => {
       </table>
 
       {/* Small Screen View */}
-      <div className="sm:hidden flex flex-col gap-1 text-lg">
+      <div className="sm:hidden flex flex-col gap-1 text-[1rem]">
         {[...asks].reverse().map(([price, amount], index) => {
           const amountValue = parseFloat(amount);
           const bgWidth = (amountValue / maxAskAmount) * 100;
           return (
             <div key={index} className="relative">
               <div
-                className="absolute left-0 top-0 h-full bg-green-500 opacity-20"
+                className="absolute left-0 top-0 h-full bg-[#0e231e]"
                 style={{ width: `${bgWidth + 39}%` }}
               ></div>
               <div className="flex justify-between text-crimsonRed relative">
-                <span className="text-green-400">
+                <span className="text-[#117554]">
                   {parseFloat(price).toFixed(2)}
                 </span>
                 <span className="text-gray-400">{amountValue.toFixed(2)}</span>
@@ -105,7 +105,7 @@ const OrderBook = ({ selectedPair }) => {
           );
         })}
 
-        <div className="text-center font-bold text-red-500 py-1">
+        <div className="text-center font-bold text-[#410a08] py-1">
           {asks.length > 0 ? parseFloat(asks[0][0]).toFixed(2) : "N/A"}
         </div>
 
@@ -115,11 +115,11 @@ const OrderBook = ({ selectedPair }) => {
           return (
             <div key={index} className="relative">
               <div
-                className="absolute left-0 top-0 h-full bg-red-500 opacity-20"
+                className="absolute left-0 top-0 h-full bg-[#ff5e5a] opacity-20"
                 style={{ width: `${bgWidth + 39}%` }}
               ></div>
               <div className="flex justify-between  relative">
-                <span className="text-red-400">
+                <span className="text-[#863936]">
                   {parseFloat(price).toFixed(2)}
                 </span>
                 <span className="text-gray-400">{amountValue.toFixed(2)}</span>

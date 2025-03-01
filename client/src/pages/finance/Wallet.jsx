@@ -371,79 +371,78 @@ const Wallet = () => {
           </div>
         </div>
 
-
         <Dialog open={open} handler={() => setOpen(false)} size="sm">
-        <DialogHeader className="text-white bg-gray-900 flex justify-between">
-          <span>Swap</span>
-          <button onClick={() => setOpen(false)}>✖</button>
-        </DialogHeader>
-        <DialogBody className="bg-gray-900 text-white p-6">
-          {/* From Currency */}
-          <div className="mb-4">
-            <label className="block mb-1">From</label>
-            <select
-              className="w-full bg-gray-800 p-2 rounded"
-              value={fromAsset}
-              onChange={(e) => setFromAsset(e.target.value)}
-            >
-              <option value="" disabled>
-                Select a Currency
-              </option>
-              {Object.keys(validPairs).map((asset) => (
-                <option key={asset} value={asset}>
-                  {asset}
+          <DialogHeader className="text-white bg-gray-900 flex justify-between">
+            <span>Swap</span>
+            <button onClick={() => setOpen(false)}>✖</button>
+          </DialogHeader>
+          <DialogBody className="bg-gray-900 text-white p-6">
+            {/* From Currency */}
+            <div className="mb-4">
+              <label className="block mb-1">From</label>
+              <select
+                className="w-full bg-gray-800 p-2 rounded"
+                value={fromAsset}
+                onChange={(e) => setFromAsset(e.target.value)}
+              >
+                <option value="" disabled>
+                  Select a Currency
                 </option>
-              ))}
-            </select>
-          </div>
+                {Object.keys(validPairs).map((asset) => (
+                  <option key={asset} value={asset}>
+                    {asset}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* To Currency */}
-          <div className="mb-4">
-            <label className="block mb-1">To</label>
-            <select
-              className="w-full bg-gray-800 p-2 rounded"
-              value={toAsset}
-              onChange={(e) => setToAsset(e.target.value)}
-              disabled={!fromAsset} // Disable if 'fromAsset' is not selected
-            >
-              <option value="" disabled>
-                Select a Currency
-              </option>
-              {validPairs[fromAsset]?.map((asset) => (
-                <option key={asset} value={asset}>
-                  {asset}
+            {/* To Currency */}
+            <div className="mb-4">
+              <label className="block mb-1">To</label>
+              <select
+                className="w-full bg-gray-800 p-2 rounded"
+                value={toAsset}
+                onChange={(e) => setToAsset(e.target.value)}
+                disabled={!fromAsset} // Disable if 'fromAsset' is not selected
+              >
+                <option value="" disabled>
+                  Select a Currency
                 </option>
-              ))}
-            </select>
-          </div>
+                {validPairs[fromAsset]?.map((asset) => (
+                  <option key={asset} value={asset}>
+                    {asset}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* Amount Input */}
-          <div className="mb-4">
-            <label className="block mb-1">Exchange Amount</label>
-            <input
-              type="number"
-              className="w-full bg-gray-800 p-2 rounded"
-              placeholder="Enter amount"
-              value={amount}
-              onChange={(e) => setAmount(e.target.value)}
-            />
-          </div>
+            {/* Amount Input */}
+            <div className="mb-4">
+              <label className="block mb-1">Exchange Amount</label>
+              <input
+                type="number"
+                className="w-full bg-gray-800 p-2 rounded"
+                placeholder="Enter amount"
+                value={amount}
+                onChange={(e) => setAmount(e.target.value)}
+              />
+            </div>
 
-          {/* Exchange Rate Display */}
-          <p className="text-sm mb-4">
-            Current Exchange Rate: {amount} {fromAsset} ={" "}
-            {amount * exchangeRate} {toAsset}
-          </p>
+            {/* Exchange Rate Display */}
+            <p className="text-sm mb-4">
+              Current Exchange Rate: {amount} {fromAsset} ={" "}
+              {amount * exchangeRate} {toAsset}
+            </p>
 
-          {/* Swap Button */}
-          <button
-            onClick={handleSwap}
-            className="bg-blue-500 w-full py-2 rounded"
-          >
-            Exchange
-          </button>
-        </DialogBody>
-      </Dialog>
+            {/* Swap Button */}
+            <button
+              onClick={handleSwap}
+              className="bg-blue-500 w-full py-2 rounded"
+            >
+              Exchange
+            </button>
+          </DialogBody>
+        </Dialog>
         <Dialog
           open={transferOpen}
           handler={() => setTransferOpen(false)}
@@ -467,6 +466,9 @@ const Wallet = () => {
                 </option>
                 {/* Default empty option */}
                 <option value="exchangeWallet">Exchange Wallet</option>
+                <option value="spotWallet">Spot Wallet</option>
+                <option value="futuresWallet">Futures Wallet</option>
+                <option value="perpetualsWallet">Perpetual Wallet</option>
               </select>
             </div>
 
@@ -482,6 +484,7 @@ const Wallet = () => {
                   Select Wallet
                 </option>{" "}
                 {/* Default empty option */}
+                <option value="exchangeWallet">Exchange Wallet</option>
                 <option value="spotWallet">Spot Wallet</option>
                 <option value="futuresWallet">Futures Wallet</option>
                 <option value="perpetualsWallet">Perpetual Wallet</option>

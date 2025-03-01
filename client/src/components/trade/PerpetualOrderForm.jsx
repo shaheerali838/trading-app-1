@@ -55,24 +55,25 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         <h2>Perpetual</h2>
       </AnimatedHeading>
 
-      <div className="mb-4 bg-gray-800 p-1 rounded-md flex">
+<div className=" p-1 rounded-md flex gap-2">
         <button
           onClick={() => setType("long")}
-          className={`w-1/2 text-center ${
-            type === "long" ? "bg-green-500 text-white" : "text-gray-400"
+          className={`w-1/2 text-center py-2 rounded-md ${
+            type === "long" ? "bg-[#26bb8c] text-white" : "text-gray-400  bg-[#232323]"
           }`}
         >
           Long
         </button>
         <button
           onClick={() => setType("short")}
-          className={`w-1/2 text-center ${
-            type === "short" ? "bg-red-500 text-white" : "text-gray-400"
+          className={`w-1/2 text-center py-2 rounded-md ${
+            type === "short" ? "bg-[#ff5e5a] text-white" : "text-gray-400  bg-[#232323]"
           }`}
         >
           Short
         </button>
       </div>
+
       <div className="mb-4">
         <input
           type="number"
@@ -81,11 +82,21 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           readOnly
         />
       </div>
+      <div className="mb-4">
+        <label className="block text-sm text-gray-300 mb-1">Quantity</label>
+        <input
+          type="number"
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
+          placeholder="0"
+          value={quantity}
+          onChange={(e) => setQuantity(e.target.value)}
+        />
+      </div>
       <div className=" max-w-full text-sm mb-4">
         <p className="block text-sm text-gray-300 mb-1">Select Leverage</p>
         <div className="flex justify-evenly">
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 25
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -96,7 +107,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           </p>
 
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 50
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -107,7 +118,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           </p>
 
           <p
-            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 75
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500"
@@ -118,7 +129,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
           </p>
 
           <p
-            className={`rounded-sm border-[.2px] border-gray-700 w-fit px-1 cursor-pointer hover:scale-[1.2] ${
+            className={`rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
               leverage === 100
                 ? "bg-primary text-white"
                 : "bg-transparent text-gray-500 "
@@ -128,46 +139,6 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
             100X
           </p>
         </div>
-      </div>
-
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Quantity</label>
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
-          value={quantity}
-          placeholder="0"
-          onChange={(e) => setQuantity(e.target.value)}
-        />
-      </div>
-
-      <Button
-        onClick={handleOpenTrade}
-        className="w-full py-2 rounded-md bg-blue-500 hover:bg-blue-700"
-        disabled={loading}
-      >
-        {loading ? "Opening Trade..." : "Open Trade"}
-      </Button>
-
-      <div className="mt-6">
-        <h3 className="text-lg font-semibold">Close Trade</h3>
-        <label className="block text-sm text-gray-300 mb-1">
-          Select Open Trade
-        </label>
-        <select
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full mb-2"
-          value={closeTradeId}
-          onChange={(e) => setCloseTradeId(e.target.value)}
-        >
-          <option value="" disabled>
-            Select an Open Position
-          </option>
-          {openTrades?.map((trade) => (
-            <option key={trade._id} value={trade._id} className="bg-black">
-              {trade.pair} ({trade.type}) - {trade.entryPrice}
-            </option>
-          ))}
-        </select>
       </div>
 
       <div className="flex justify-between text-gray-400 text-sm mb-2">
@@ -184,12 +155,16 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         <span>Maximum Positions:</span>
         <span className="text-white">0</span>
       </div>
+
       <Button
-        onClick={handleCloseTrade}
-        className="w-full py-2 rounded-md bg-red-500 hover:bg-red-700"
-        disabled={loading}
+        onClick={handleOpenTrade}
+        className={` w-full py-2 rounded-md ${
+          type === "long"
+            ? "bg-[#26bb8c] hover:bg-green-500"
+            : "bg-[#ff5e5a] hover:bg-red-500"
+        }`}
       >
-        {loading ? "Closing Trade..." : "Close Trade"}
+        Open Position
       </Button>
     </Card>
   );

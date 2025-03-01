@@ -16,10 +16,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [price, setPrice] = useState(marketPrice);
   const [amount, setAmount] = useState("");
   const { status, error } = useSelector((state) => state.trade);
-  const {wallet} = useSelector((state) => state.assets);
+  const { wallet } = useSelector((state) => state.assets);
   const extractBase = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
-    const base = pair.slice(0, 3); 
+    const base = pair.slice(0, 3);
     return `${base}`;
   };
 
@@ -40,16 +40,15 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     };
   }, []);
   useEffect(() => {
-        dispatch(getWallet());
-    
-  }, [])
+    dispatch(getWallet());
+  }, []);
 
   const handleSubmit = async () => {
     if (!amount || amount <= 0) return alert("Enter a valid amount");
     if (orderType === "limit" && (!price || price <= 0)) {
       return alert("Enter a valid price");
     }
-    
+
     const orderData = {
       type: side,
       orderType,
@@ -68,22 +67,30 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         toast.error(error.message);
       });
   };
-return (
-    <Card className="md:p-4 bg-transparent text-white w-full text-lg ">
+  return (
+    <Card className="md:p-4 bg-transparent text-white w-full text-lg  flex justify-center">
       <AnimatedHeading>
-        <h2>Spot</h2>
+        <h2 className="hidden md:block">Spot</h2>
       </AnimatedHeading>
-      <div className="mb-4">
-        <div className="bg-gray-800 p-1 rounded-md flex">
+      <div className="mb-2">
+        <div className=" p-1 rounded-md flex gap-2">
           <button
             onClick={() => setSide("buy")}
-            className={`w-1/2 text-center ${side === "buy" ? "bg-green-500 text-white" : "text-gray-400"}`}
+            className={`w-1/2 text-center py-2 rounded-md ${
+              side === "buy"
+                ? "bg-[#26bb8c] text-white"
+                : "text-gray-400 bg-[#232323]"
+            }`}
           >
             Buy
           </button>
           <button
             onClick={() => setSide("sell")}
-            className={`w-1/2 text-center ${side === "sell" ? "bg-red-500 text-white" : "text-gray-400"}`}
+            className={`w-1/2 text-center py-2 rounded-md ${
+              side === "sell"
+                ? "bg-[#ff5e5a] text-white"
+                : "text-gray-400 bg-[#232323]"
+            }`}
           >
             Sell
           </button>
@@ -91,30 +98,49 @@ return (
       </div>
 
       <div className="mb-4">
-        <div className="bg-gray-800 p-1 rounded-md flex">
+        <div className="p-1 rounded-md flex gap-2">
           <button
             onClick={() => setOrderType("market")}
-            className={`w-1/2 text-center ${orderType === "market" ? "bg-blue-500 text-white" : "text-gray-400"}`}
+            className={`w-1/2 text-center py-2 rounded-md ${
+              orderType === "market"
+                ? "bg-primary text-white"
+                : "text-gray-400 bg-[#232323]"
+            }`}
           >
             Market
           </button>
           <button
             onClick={() => setOrderType("limit")}
-            className={`w-1/2 text-center ${orderType === "limit" ? "bg-blue-500 text-white" : "text-gray-400"}`}
+            className={`w-1/2 text-center py-2 rounded-md ${
+              orderType === "limit"
+                ? "bg-primary text-white"
+                : "text-gray-400 bg-[#232323]"
+            }`}
           >
             Limit
           </button>
         </div>
       </div>
 
-      {orderType === "limit" && (
+      {orderType === "limit" ? (
         <div className="mb-4">
-          <label className="block text-sm text-gray-300 mb-1">Price</label>
+          <label className="block text-sm text-gray-300 mb-1">
+            Select Limit Price
+          </label>
           <input
             type="number"
             value={price}
             onChange={(e) => setPrice(e.target.value)}
-            className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
+            className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-center text-white border border-gray-800"
+          />
+        </div>
+      ) : (
+        <div className="mb-4">
+          <input
+            type="number"
+            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800 w-full  text-center"
+            value={marketPrice?.toFixed(0)}
+            readOnly
           />
         </div>
       )}
@@ -125,7 +151,7 @@ return (
           type="number"
           value={amount}
           onChange={(e) => setAmount(e.target.value)}
-          className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800"
+          className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800"
         />
       </div>
 
@@ -135,10 +161,19 @@ return (
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available Amount:</span>
-        <span className="text-white">{wallet?.holdings?.find((holding)=> holding.asset === extractBase(selectedPair))?.quantity.toFixed(2) || "0.00"}</span>
+        <span className="text-white">
+          {wallet?.holdings
+            ?.find((holding) => holding.asset === extractBase(selectedPair))
+            ?.quantity.toFixed(2) || "0.00"}
+        </span>
       </div>
 
-      <Button onClick={handleSubmit} className={`w-full py-2 rounded-md ${side === "buy" ? "bg-green-500" : "bg-red-500"}`}>
+      <Button
+        onClick={handleSubmit}
+        className={`w-full py-2 rounded-md ${
+          side === "buy" ? "bg-[#26bb8c]" : "bg-[#ff5e5a]"
+        }`}
+      >
         {side === "buy" ? "Buy" : "Sell"}
       </Button>
     </Card>

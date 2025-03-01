@@ -61,11 +61,12 @@ export const swapAssets = createAsyncThunk(
         amount,
         exchangeRate,
       });
-
-      toast.success(response.data.message);
+      console.log(response.data.message);
+      
+      toast.success(response.data.message || "Swap successful");
       return response.data;
     } catch (error) {
-      toast.error(error.response?.data?.message);
+      toast.error(error?.response?.data?.message || "Swap failed");
       return rejectWithValue(error.response?.data);
     }
   }
