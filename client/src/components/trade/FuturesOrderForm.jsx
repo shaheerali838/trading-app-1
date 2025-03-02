@@ -136,7 +136,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available USDT:</span>
         <span className="text-white">
-          {wallet?.balanceUSDT.toFixed(2) || "0.00"}
+          {wallet?.futuresWallet.toFixed(2) || "0.00"}
         </span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">

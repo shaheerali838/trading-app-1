@@ -8,6 +8,7 @@ import { useDispatch, useSelector } from "react-redux";
 import { motion } from "framer-motion";
 import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
+import OpenPerpetualPositions from "../components/trade/OpenPerpetualPositions";
 const socket = io(import.meta.env.VITE_API_URL);
 
 const PerpetualTrade = () => {
@@ -144,13 +145,16 @@ const PerpetualTrade = () => {
             <div className="w-1/2 bg-transparent md:border border-[#2f2f2f] p-4">
               <OrderBook selectedPair={selectedPair} />
             </div>
-            <div className="w-1/2 bg-transparent md:border border-[#2f2f2f] p-4">
+            <div className="w-1/2 bg-transparent md:border border-[#2f2f2f] md:p-4">
               <PerpetualOrderForm
                 selectedPair={selectedPair}
                 marketPrice={currentMarketPrice}
               />
             </div>
           </div>
+        </div>
+        <div className="bg-[#0f0f0f] md:bg-transparent h-full mb-4">
+          <OpenPerpetualPositions marketPrice={currentMarketPrice} />
         </div>
       </motion.div>
     </div>

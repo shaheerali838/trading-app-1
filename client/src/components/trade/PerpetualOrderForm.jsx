@@ -50,16 +50,18 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   };
 
   return (
-    <Card className="p-4 bg-transparent text-white w-full max-w-md">
+    <Card className="p-4 bg-transparent text-white w-full md:max-w-md">
       <AnimatedHeading>
         <h2>Perpetual</h2>
       </AnimatedHeading>
 
-<div className=" p-1 rounded-md flex gap-2">
+      <div className=" p-1 rounded-md flex gap-2">
         <button
           onClick={() => setType("long")}
           className={`w-1/2 text-center py-2 rounded-md ${
-            type === "long" ? "bg-[#26bb8c] text-white" : "text-gray-400  bg-[#232323]"
+            type === "long"
+              ? "bg-[#26bb8c] text-white"
+              : "text-gray-400  bg-[#232323]"
           }`}
         >
           Long
@@ -67,7 +69,9 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         <button
           onClick={() => setType("short")}
           className={`w-1/2 text-center py-2 rounded-md ${
-            type === "short" ? "bg-[#ff5e5a] text-white" : "text-gray-400  bg-[#232323]"
+            type === "short"
+              ? "bg-[#ff5e5a] text-white"
+              : "text-gray-400  bg-[#232323]"
           }`}
         >
           Short
@@ -144,7 +148,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available USDT:</span>
         <span className="text-white">
-          {wallet?.balanceUSDT.toFixed(2) || "0.00"}
+          {wallet?.perpetualsWallet.toFixed(2) || "0.00"}
         </span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">

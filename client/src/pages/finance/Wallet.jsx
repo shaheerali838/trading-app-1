@@ -9,6 +9,7 @@ import {
   FaArrowUp,
   FaSyncAlt,
 } from "react-icons/fa";
+import { IoIosArrowForward } from "react-icons/io";
 import {
   fetchExchangeRate,
   getWallet,
@@ -25,6 +26,7 @@ import {
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import Loader from "../../components/layout/Loader";
 import API from "../../utils/api";
+import Assets from "../../components/wallet/Assets";
 
 const validPairs = {
   USDT: ["ETH", "BTC", "BNB", "ADA", "SOL", "XRP", "DOT"],
@@ -52,6 +54,8 @@ const Wallet = () => {
   const [fromWallet, setFromWallet] = useState("");
   const [toWallet, setToWallet] = useState("");
   const [transferAmount, setTransferAmount] = useState("");
+  const [showAssets, setShowAssets] = useState(false);
+  const [assetsType, setAssetsType] = useState("");
 
   useEffect(() => {
     dispatch(getWallet());
@@ -63,6 +67,9 @@ const Wallet = () => {
 
     return () => clearInterval(interval);
   }, [dispatch, fromAsset, toAsset]);
+  useEffect(() => {
+    setShowAssets(false);
+  }, []);
   useEffect(() => {
     if (fromAsset && validPairs[fromAsset]) {
       // Reset 'toAsset' to the first valid option if the current 'toAsset' is invalid
@@ -111,8 +118,12 @@ const Wallet = () => {
     }
   };
 
+  const handleAssetsRendering = (type) => {
+    setAssetsType(type);
+    setShowAssets(true);
+  };
   return (
-    <div className="min-h-[100vh] max-w-7xl mx-auto px-6 py-4">
+    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -300,7 +311,7 @@ const Wallet = () => {
           {/* My Assets */}
           <div className="max-w-lg mx-auto">
             <h2 className="text-xl font-semibold mb-2">My assets</h2>
-            <div className="bg-gray-800 p-4 rounded-2xl shadow-md">
+            <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
               <p className="text-lg"> Exchange Balance</p>
               <p className="text-3xl font-bold">
                 ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
@@ -342,35 +353,69 @@ const Wallet = () => {
             </div>
           </div>
 
-          {/* My Account Section */}
-          <div className="max-w-lg mx-auto">
-            <h2 className="text-xl font-semibold mb-2">My account</h2>
-            <div className="space-y-2">
-              <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg"> Spot Asset</p>
-                <p className="text-2xl font-bold">
-                  ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
-                  <span className="text-sm">USDT</span>
-                </p>
-              </div>
-              <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg"> Futures Asset</p>
-                <p className="text-2xl font-bold">
-                  ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
-                  <span className="text-sm">USDT</span>
-                </p>
-              </div>
-              <div className="bg-gray-800 p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer">
-                <p className="text-lg"> Perpetual Asset</p>
-                <p className="text-2xl font-bold">
-                  ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
-                  <span className="text-sm">USDT</span>
-                </p>
+          {/* My wallets Section */}
+          {showAssets ? (
+            <Assets type={assetsType} />
+          ) : (
+            <div className="max-w-lg mx-auto">
+              <h2 className="text-xl font-semibold mb-2">My account</h2>
+              <div className="space-y-2">
+                <div
+                  className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
+                  onClick={() => {
+                    handleAssetsRendering("spot");
+                  }}
+                >
+                  <div>
+                    <p className="text-lg"> Spot Asset</p>
+                    <p className="text-2xl font-bold">
+                      ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                      <span className="text-sm">USDT</span>
+                    </p>
+                  </div>
+                  <div className="text-3xl">
+                    <IoIosArrowForward />
+                  </div>
+                </div>
+                <div
+                  className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
+                  onClick={() => {
+                    handleAssetsRendering("futures");
+                  }}
+                >
+                  <div>
+                    <p className="text-lg"> Futures Asset</p>
+                    <p className="text-2xl font-bold">
+                      ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                      <span className="text-sm">USDT</span>
+                    </p>
+                  </div>
+                  <div className="text-3xl">
+                    <IoIosArrowForward />
+                  </div>
+                </div>
+                <div
+                  className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
+                  onClick={() => {
+                    handleAssetsRendering("perpetuals");
+                  }}
+                >
+                  <div>
+                    <p className="text-lg"> Perpetual Asset</p>
+                    <p className="text-2xl font-bold">
+                      ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                      <span className="text-sm">USDT</span>
+                    </p>
+                  </div>
+                  <div className="text-3xl">
+                    <IoIosArrowForward />
+                  </div>
+                </div>
               </div>
             </div>
-          </div>
+          )}
         </div>
-
+        {/* Swap Funds */}
         <Dialog open={open} handler={() => setOpen(false)} size="sm">
           <DialogHeader className="text-white bg-gray-900 flex justify-between">
             <span>Swap</span>
@@ -443,6 +488,7 @@ const Wallet = () => {
             </button>
           </DialogBody>
         </Dialog>
+        {/* Transfer Funds */}
         <Dialog
           open={transferOpen}
           handler={() => setTransferOpen(false)}

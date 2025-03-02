@@ -160,11 +160,9 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         <span className="text-white">${marketPrice}</span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Available Amount:</span>
+        <span>Available USDT:</span>
         <span className="text-white">
-          {wallet?.holdings
-            ?.find((holding) => holding.asset === extractBase(selectedPair))
-            ?.quantity.toFixed(2) || "0.00"}
+          {wallet?.spotWallet.toFixed(2) || "0.00"}
         </span>
       </div>
 
