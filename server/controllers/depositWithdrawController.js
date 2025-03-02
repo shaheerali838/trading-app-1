@@ -89,7 +89,6 @@ export const addTokens = async (req, res) => {
         wallet.holdings.push({ asset: currency, quantity: numericAmount });
       }
     }
-    wallet.exchangeWallet = amount;
     await wallet.save();
 
     wallet.depositHistory.push({ currency, amount, createdAt: new Date() });
