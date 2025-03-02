@@ -53,8 +53,13 @@ export const getWallet = createAsyncThunk(
 
 export const swapAssets = createAsyncThunk(
   "wallet/swapAssets",
-  async ({ fromAsset, toAsset, amount, exchangeRate }, { rejectWithValue }) => {
+  async (
+    { fromAsset, toAsset, amount, exchangeRate },
+    { dispatch, rejectWithValue }
+  ) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/user/swap", {
         fromAsset,
         toAsset,
@@ -62,12 +67,14 @@ export const swapAssets = createAsyncThunk(
         exchangeRate,
       });
       console.log(response.data.message);
-      
+
       toast.success(response.data.message || "Swap successful");
       return response.data;
     } catch (error) {
       toast.error(error?.response?.data?.message || "Swap failed");
       return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );
@@ -97,8 +104,10 @@ export const fetchExchangeRate = createAsyncThunk(
 // Transfer Funds Async Thunk
 export const transferFunds = createAsyncThunk(
   "assets/transferFunds",
-  async ({ fromWallet, toWallet, amount }, { rejectWithValue }) => {
+  async ({ fromWallet, toWallet, amount }, { dispatch, rejectWithValue }) => {
     try {
+      dispatch(setLoading(true));
+
       const response = await API.post("/wallet/transfer", {
         fromWallet,
         toWallet,
@@ -108,11 +117,13 @@ export const transferFunds = createAsyncThunk(
       return response.data;
     } catch (error) {
       console.log(error.response?.data?.message);
-      
+
       toast.error(error.response?.data?.message || "Transfer failed");
       return rejectWithValue(
         error.response?.data?.message || "Transfer failed"
       );
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
     }
   }
 );

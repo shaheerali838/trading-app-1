@@ -3,7 +3,7 @@ import API from "../../utils/api";
 import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice";
 
-// ✅ Open Perpetual Trade
+// Open Perpetual Trade
 export const openPerpetualTrade = createAsyncThunk(
   "perpetual/openTrade",
   async (tradeData, { dispatch, rejectWithValue }) => {
@@ -24,7 +24,7 @@ export const openPerpetualTrade = createAsyncThunk(
   }
 );
 
-// ✅ Close Perpetual Trade
+// Close Perpetual Trade
 export const closePerpetualTrade = createAsyncThunk(
   "perpetual/closeTrade",
   async ({ tradeId, closePrice }, { dispatch, rejectWithValue }) => {
@@ -47,7 +47,7 @@ export const closePerpetualTrade = createAsyncThunk(
   }
 );
 
-// ✅ Get Open Positions
+// Get Open Positions
 export const fetchOpenPerpetualTrades = createAsyncThunk(
   "perpetual/fetchOpenTrades",
   async (_, { dispatch, rejectWithValue }) => {

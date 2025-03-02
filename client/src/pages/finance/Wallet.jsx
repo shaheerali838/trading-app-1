@@ -107,7 +107,6 @@ const Wallet = () => {
         transferFunds({ fromWallet, toWallet, amount: transferAmount })
       ).unwrap();
       setTransferOpen(false);
-      toast.success("Funds transferred successfully");
 
       // Reset fields after successful transfer
       setFromWallet("");

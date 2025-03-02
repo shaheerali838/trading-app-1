@@ -19,7 +19,7 @@ const Footer = () => {
               The most trusted website for trading.
             </p>
           </div>
-          <div className="flex flex-col min-[w-80vw] md:flex-row space-y-4 md:space-y-0 md:space-x-16">
+          <div className="flex gap-8 justify-center flex-wrap  md:flex-row space-y-4 md:space-y-0 md:space-x-16">
             <div>
               <h3 className="text-xl font-semibold text-[#1E90FF]">Company</h3>
               <ul className="mt-2 space-y-2">
