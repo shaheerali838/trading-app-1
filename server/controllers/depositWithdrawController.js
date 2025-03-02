@@ -26,6 +26,7 @@ export const createDepositWithdrawRequest = async (req, res) => {
         const holding = wallet.holdings.find(
           (holding) => holding.asset === currency
         );
+
         if (!holding || holding.quantity < amount) {
           return res.status(400).json({ message: "Insufficient balance" });
         }
@@ -130,16 +131,15 @@ export const approveWithDrawRequest = async (req, res) => {
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
+
     if (request.currency !== "USDT") {
-      wallet.holdings.forEach((holding) => {
-        if (
-          holding.asset === request.currency &&
-          holding.quantity <= request.amount
-        ) {
-          return res.status(400).json({ message: "Insufficient balance" });
-        }
-        holding.quantity -= request.amount;
-      });
+      const holding = wallet.holdings.find(
+        (holding) => holding.asset === request.currency
+      );
+      if (!holding || holding.quantity < request.amount) {
+        return res.status(400).json({ message: "Insufficient balance" });
+      }
+      holding.quantity -= request.amount;
     } else {
       if (wallet.exchangeWallet < request.amount) {
         return res.status(400).json({ message: "Insufficient balance" });
