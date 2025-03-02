@@ -153,7 +153,7 @@ const Assets = ({type}) => {
           type === "perpetuals" && (
             <div className="mt-6 overflow-x-auto">
               <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-                <OpenPerpetualPositions marketPrice={currentMarketPrice} />
+                <OpenPerpetualPositions marketPrice={currentMarketPrice} showBtn={false} />
               </div>
             </div>
           )

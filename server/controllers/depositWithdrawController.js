@@ -17,8 +17,19 @@ export const createDepositWithdrawRequest = async (req, res) => {
       return res.status(404).json({ message: "Wallet not found" });
     }
 
-    if (type === "withdraw" && wallet[`balance${currency}`] < amount) {
-      return res.status(400).json({ message: "Insufficient balance" });
+    if (type === "withdraw") {
+      if (currency === "USDT") {
+        if (wallet.exchangeWallet < amount) {
+          return res.status(400).json({ message: "Insufficient balance" });
+        }
+      } else {
+        const holding = wallet.holdings.find(
+          (holding) => holding.asset === currency
+        );
+        if (!holding || holding.quantity < amount) {
+          return res.status(400).json({ message: "Insufficient balance" });
+        }
+      }
     }
 
     const request = await DepositWithdrawRequest.create({

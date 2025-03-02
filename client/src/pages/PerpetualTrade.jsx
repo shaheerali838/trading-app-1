@@ -154,8 +154,8 @@ const PerpetualTrade = () => {
           </div>
         </div>
         <div className="bg-[#0f0f0f] md:bg-transparent h-full mb-4">
-          <OpenPerpetualPositions marketPrice={currentMarketPrice} />
-        </div>
+          <OpenPerpetualPositions marketPrice={currentMarketPrice} showBtn={true} />
+        </div> 
       </motion.div>
     </div>
   );

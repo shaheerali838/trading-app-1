@@ -7,7 +7,7 @@ import {
 import { Button, Card } from "@material-tailwind/react";
 import { toast } from "react-toastify";
 
-const OpenPerpetualPositions = ({ marketPrice }) => {
+const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
   const dispatch = useDispatch();
   const { openTrades, loading } = useSelector((state) => state.perpetual);
   const { coins } = useSelector((state) => state.market);
@@ -29,7 +29,9 @@ const OpenPerpetualPositions = ({ marketPrice }) => {
 
   return (
     <Card className=" bg-transparent text-white min-w-[100%] max-w-md overflow-x-auto">
-      <h2 className="text-lg font-semibold mb-4 hidden md:block">Close Trade</h2>
+      <h2 className="text-lg font-semibold mb-4 hidden md:block">
+        Close Trade
+      </h2>
 
       <table className="text-sm text-left text-gray-400">
         <thead className="text-xs text-gray-400 uppercase bg-[#1a1a1a]">
@@ -43,9 +45,11 @@ const OpenPerpetualPositions = ({ marketPrice }) => {
             <th scope="col" className="px-6 py-3">
               Entry Price
             </th>
-            <th scope="col" className="px-6 py-3">
-              Action
-            </th>
+            {showBtn && (
+              <th scope="col" className="px-6 py-3">
+                Action
+              </th>
+            )}
           </tr>
         </thead>
         <tbody>
@@ -67,15 +71,17 @@ const OpenPerpetualPositions = ({ marketPrice }) => {
                   </td>
                   <td className="px-6 py-4">{trade.type}</td>
                   <td className="px-6 py-4">{trade.entryPrice}</td>
-                  <td className="px-6 py-4">
-                    <Button
-                      onClick={() => handleCloseTrade(trade._id)}
-                      className={`px-4 py-2 rounded-md bg-[#ff5e5a]`}
-                      disabled={loading}
-                    >
-                      {loading ? "Closing..." : "Close Trade"}
-                    </Button>
-                  </td>
+                  {showBtn && (
+                    <td className="px-6 py-4">
+                      <Button
+                        onClick={() => handleCloseTrade(trade._id)}
+                        className={`px-4 py-2 rounded-md bg-[#ff5e5a]`}
+                        disabled={loading}
+                      >
+                        {loading ? "Closing..." : "Close Trade"}
+                      </Button>
+                    </td>
+                  )}
                 </tr>
               );
             })
