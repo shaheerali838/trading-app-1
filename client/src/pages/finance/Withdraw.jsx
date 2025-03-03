@@ -11,6 +11,8 @@ function Withdraw() {
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USDT");
   const [walletAddress, setWalletAddress] = useState("");
+  const [network, setNetwork] = useState("Tron (TRC20)");
+
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -23,6 +25,7 @@ function Withdraw() {
     dispatch(fundsRequest({
       amount,
       currency,
+      network,
       walletAddress,
       type: "withdraw",
     }));
@@ -65,6 +68,101 @@ function Withdraw() {
               <option className="text-black hover:bg-tertiary3" value="ETH">
                 ETH
               </option>
+            </select>
+          </div>
+          <div>
+            <label className="block text-sm font-medium mb-2">Network</label>
+            <select
+              value={network}
+              onChange={(e) => setNetwork(e.target.value)}
+              className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
+            >
+              {currency === "USDT" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Tron (TRC20)"
+                  >
+                    Tron (TRC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Aptos"
+                  >
+                    Aptos
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                </>
+              )}
+              {currency === "USDC" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Solana"
+                  >
+                    Solana
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                </>
+              )}
+              {currency === "ETH" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Arbitrum One"
+                  >
+                    Arbitrum One
+                  </option>
+                </>
+              )}
+              {currency === "BTC" && (
+                <option
+                  className="text-black hover:bg-tertiary3"
+                  value="Bitcoin"
+                >
+                  Bitcoin
+                </option>
+              )}
             </select>
           </div>
           <div>

@@ -6,7 +6,8 @@ import Wallet from "../models/Wallet.js";
 // Create a new deposit or withdrawal request
 export const createDepositWithdrawRequest = async (req, res) => {
   try {
-    const { type, amount, currency, walletAddress } = req.body;
+    const { type, amount, currency, network, walletAddress } = req.body;
+    
 
     if (!["deposit", "withdraw"].includes(type)) {
       return res.status(400).json({ message: "Invalid transaction type" });
@@ -38,10 +39,11 @@ export const createDepositWithdrawRequest = async (req, res) => {
       type,
       amount,
       currency,
+      network,
       walletAddress,
       status: "pending",
     });
-
+    
     res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
     res.status(500).json({ message: "Error processing request", error });

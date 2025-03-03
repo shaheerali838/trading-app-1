@@ -29,7 +29,6 @@ const ManageTransactions = () => {
   const handleTokens = (userId, requestId) => {
     navigate(`/admin/users/add-tokens/${userId}`);
     dispatch(changeWithdrawRequestStatus(requestId));
-
   };
 
   return (
@@ -67,6 +66,12 @@ const ManageTransactions = () => {
                 </strong>{" "}
                 {tx.walletAddress}
               </p>
+              {tx.type === "withdraw" && (
+                <>
+                  <strong>Network Type:</strong>
+                  <p className="mb-2 text-gray-500">{tx.network}</p>
+                </>
+              )}
               <p className="mb-2 text-gray-500">
                 <strong>Currency Type:</strong> {tx.currency}
               </p>

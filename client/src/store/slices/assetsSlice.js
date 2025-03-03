@@ -7,7 +7,7 @@ import { setLoading } from "./globalSlice";
 export const fundsRequest = createAsyncThunk(
   "funds/request",
   async (
-    { amount, currency, walletAddress, type },
+    { amount, currency, network, walletAddress, type },
     { dispatch, rejectWithValue }
   ) => {
     try {
@@ -16,6 +16,7 @@ export const fundsRequest = createAsyncThunk(
       const response = await API.post("/funds/request", {
         amount,
         currency,
+        network,
         type,
         walletAddress,
       });
@@ -71,7 +72,6 @@ export const swapAssets = createAsyncThunk(
       toast.success(response.data.message || "Swap successful");
       return response.data;
     } catch (error) {
-      toast.error(error?.response?.data?.message || "Swap failed");
       return rejectWithValue(error.response?.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
@@ -83,19 +83,40 @@ export const fetchExchangeRate = createAsyncThunk(
   "wallet/fetchExchangeRate",
   async ({ fromAsset, toAsset }, { rejectWithValue }) => {
     try {
-      const exchangeRateResponse = await axios.get(
-        `https://api.binance.com/api/v3/ticker/price?symbol=${toAsset}${fromAsset}`
-      );
-
-      const exchangeRate = parseFloat(exchangeRateResponse.data.price);
-
-      if (!exchangeRate) {
+      // Validate inputs
+      if (!fromAsset || !toAsset) {
+        toast.error("Invalid currency pair");
         return rejectWithValue({ message: "Invalid currency pair" });
       }
 
+      console.log("Fetching exchange rate:", fromAsset, "to", toAsset);
+
+      // Make the API request to CryptoCompare
+      const response = await axios.get(
+        `https://min-api.cryptocompare.com/data/price`,
+        {
+          params: {
+            fsym: fromAsset.toUpperCase(), // Convert from (e.g., BTC)
+            tsyms: toAsset.toUpperCase(), // Convert to (e.g., ETH)
+          },
+        }
+      );
+
+      // Extract the exchange rate from the response
+      const exchangeRate = response.data[toAsset.toUpperCase()];
+
+      if (!exchangeRate) {
+        toast.error("Invalid currency pair or no data available");
+        return rejectWithValue({ message: "Invalid currency pair or no data available" });
+      }
+
+      console.log("Exchange rate fetched:", exchangeRate);
       return exchangeRate;
     } catch (error) {
-      toast.error(error.response?.data?.message);
+      console.error("Error fetching exchange rate:", error);
+      toast.error(
+        error.response?.data?.Message || "Failed to fetch exchange rate"
+      );
       return rejectWithValue(error.response?.data);
     }
   }
@@ -113,7 +134,7 @@ export const transferFunds = createAsyncThunk(
         toWallet,
         amount,
       });
-      toast.success(response.data.message);
+      toast.success(response?.data?.message || "Transfer successful");
       return response.data;
     } catch (error) {
       console.log(error.response?.data?.message);
@@ -127,6 +148,7 @@ export const transferFunds = createAsyncThunk(
     }
   }
 );
+
 const assetsSlice = createSlice({
   name: "assets",
   initialState: {
@@ -136,6 +158,7 @@ const assetsSlice = createSlice({
     withdrawalHistory: [],
     status: "idle",
     error: null,
+    exchangeRate: null, // Add exchangeRate to the initial state
   },
   reducers: {
     updateBalance: (state, action) => {

@@ -62,9 +62,9 @@ const Wallet = () => {
     // Auto-refresh every 30 seconds
     const interval = setInterval(() => {
       dispatch(getWallet());
-      dispatch(fetchExchangeRate({ fromAsset, toAsset }));
     }, 10000);
 
+    dispatch(fetchExchangeRate({ fromAsset, toAsset }));
     return () => clearInterval(interval);
   }, [dispatch, fromAsset, toAsset]);
   useEffect(() => {
@@ -84,14 +84,14 @@ const Wallet = () => {
       toast.error("Please enter an amount");
       return;
     }
-
+    dispatch(fetchExchangeRate({ fromAsset, toAsset }));
     try {
       dispatch(
         swapAssets({ fromAsset, toAsset, amount, exchangeRate })
       ).unwrap();
       setOpen(false);
     } catch (error) {
-      toast.error(error.message || "Swap failed");
+      setOpen(false);
     }
   };
 
@@ -113,7 +113,7 @@ const Wallet = () => {
       setToWallet("");
       setTransferAmount("");
     } catch (error) {
-      toast.error(error.message || "Transfer failed");
+      setTransferOpen(false);
     }
   };
 
@@ -311,7 +311,9 @@ const Wallet = () => {
           <div className="max-w-lg mx-auto">
             <h2 className="text-xl font-semibold mb-2">My assets</h2>
             <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
-              <p className="text-lg"> Exchange Balance</p>
+              <p className="text-lg">
+                {showAssets ? "Total Assets" : " Exchange Balance"}
+              </p>
               <p className="text-3xl font-bold">
                 ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
                 <span className="text-sm">USDT</span>

@@ -13,7 +13,6 @@ function Deposit() {
   const [network, setNetwork] = useState("Tron (TRC20)");
   const { status, depositHistory } = useSelector((state) => state.assets);
   const [amount, setAmount] = useState("");
-  const [method, setMethod] = useState("bank");
   const [currency, setCurrency] = useState("USDT");
 
   const handleSubmit = async (e) => {

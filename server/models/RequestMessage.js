@@ -10,6 +10,7 @@ const depositWithdrawSchema = new mongoose.Schema(
     type: { type: String, enum: ["deposit", "withdraw"], required: true },
     amount: { type: Number, required: true },
     currency: { type: String, required: true },
+    network: { type: String },
     walletAddress: { type: String, required: true },
     status: {
       type: String,
