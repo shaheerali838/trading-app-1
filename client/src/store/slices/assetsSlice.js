@@ -85,7 +85,6 @@ export const fetchExchangeRate = createAsyncThunk(
     try {
       // Validate inputs
       if (!fromAsset || !toAsset) {
-        toast.error("Invalid currency pair");
         return rejectWithValue({ message: "Invalid currency pair" });
       }
 

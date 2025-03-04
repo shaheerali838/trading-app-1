@@ -9,6 +9,7 @@ import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import { useNavigate } from "react-router-dom";
 import { MdCandlestickChart } from "react-icons/md";
+import FuturesOpenPosition from "../components/trade/FuturesOpenPositions";
 
 const socket = io(import.meta.env.VITE_API_URL);
 
@@ -142,42 +143,7 @@ function FuturesTrade() {
           </div>
         </div>
 
-        {/* Orders Section with Tab Navigation */}
-        <div className="mt-6">
-          <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-            <h4 className="text-lg font-semibold text-white">Open Positions</h4>
-            {openPositions.length > 0 ? (
-              <table className="w-full text-white">
-                <thead>
-                  <tr className="border-b border-gray-700">
-                    <th className="py-2">Pair</th>
-                    <th className="py-2">Type</th>
-                    <th className="py-2">Leverage</th>
-                    <th className="py-2">Entry Price</th>
-                    <th className="py-2 hidden md:table-cell">
-                      Liquidation Price
-                    </th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {openPositions.map((trade) => (
-                    <tr key={trade._id} className="border-b border-gray-700">
-                      <td className="py-2">{trade.pair}</td>
-                      <td className="py-2 capitalize">{trade.type}</td>
-                      <td className="py-2">{trade.leverage}x</td>
-                      <td className="py-2">${trade?.entryPrice?.toFixed(2)}</td>
-                      <td className="py-2 text-red-500 hidden md:table-cell">
-                        ${trade?.liquidationPrice?.toFixed(2)}
-                      </td>
-                    </tr>
-                  ))}
-                </tbody>
-              </table>
-            ) : (
-              <p className="text-gray-400">No open positions</p>
-            )}
-          </div>
-        </div>
+        <FuturesOpenPosition marketData={marketData} />
       </motion.div>
     </div>
   );
