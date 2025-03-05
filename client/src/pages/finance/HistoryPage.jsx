@@ -16,10 +16,6 @@ const HistoryPage = () => {
     return <Loader />;
   }
 
-  if (error) {
-    return <div className="text-red-500 text-center p-4">Error: {error}</div>;
-  }
-
   if (!wallet) {
     return (
       <div className="text-gray-400 text-center p-4">

@@ -41,9 +41,6 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         status: "pending",
       });
       await trade.save();
-
-      wallet.spotWallet -= totalCost;
-      await wallet.save();
       io.emit("tradeUpdate", trade);
     } else {
       // Use the `coin` from the request to find the correct holding

@@ -46,7 +46,10 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
     let totalCost = trade.quantity * trade.price;
 
     if (trade.type === "buy") {
-      wallet.balanceUSDT -= totalCost;
+      if (wallet.spotWallet < totalCost) {
+        return res.status(400).json({ message: "Insufficient funds in spot wallet" });
+      }
+      wallet.spotWallet -= totalCost;
       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
       if (holding) {
         holding.quantity += trade.quantity;
@@ -64,7 +67,7 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
           (h) => h.asset !== trade.asset
         );
       }
-      wallet.balanceUSDT += totalCost;
+      wallet.spotWallet += totalCost;
     }
 
     await wallet.save();
