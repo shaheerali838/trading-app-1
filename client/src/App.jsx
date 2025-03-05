@@ -28,6 +28,7 @@ import FuturesTrade from "./pages/FuturesTrade.jsx";
 import PerpetualTrade from "./pages/PerpetualTrade.jsx";
 import BottomNavbar from "./components/layout/BottomNavbar.jsx";
 import LiquidateOpenTrades from "./pages/admin/LiquidateOpenTrades.jsx";
+import HistoryPage from "./pages/finance/HistoryPage.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -74,6 +75,7 @@ const App = () => {
                 element={<RequestRelease />}
               />
               <Route path="/wallet/withdraw" element={<Withdraw />} />
+              <Route path="/wallet/histories" element={<HistoryPage />} />
               <Route path="/trade" element={<Trade />} />
               <Route path="/futures" element={<FuturesTrade />} />
               <Route path="/perpetual" element={<PerpetualTrade />} />

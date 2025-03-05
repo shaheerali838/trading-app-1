@@ -10,6 +10,7 @@ import {
   FaSyncAlt,
 } from "react-icons/fa";
 import { IoIosArrowForward } from "react-icons/io";
+import { MdHistory } from "react-icons/md";
 import {
   fetchExchangeRate,
   getWallet,
@@ -27,6 +28,7 @@ import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
 import Loader from "../../components/layout/Loader";
 import API from "../../utils/api";
 import Assets from "../../components/wallet/Assets";
+import { fetchMarketData } from "../../store/slices/marketSlice";
 
 const validPairs = {
   USDT: ["ETH", "BTC", "BNB", "ADA", "SOL", "XRP", "DOT"],
@@ -48,6 +50,7 @@ const Wallet = () => {
   const { wallet, status, error, exchangeRate } = useSelector(
     (state) => state.assets
   );
+  const { coins } = useSelector((state) => state.market);
 
   // Handle Fund Transfer
   const [transferOpen, setTransferOpen] = useState(false);
@@ -56,6 +59,31 @@ const Wallet = () => {
   const [transferAmount, setTransferAmount] = useState("");
   const [showAssets, setShowAssets] = useState(false);
   const [assetsType, setAssetsType] = useState("");
+
+  useEffect(() => {
+    if (assetsType === "spot") {
+      dispatch(fetchMarketData()); // Initial fetch
+
+      const interval = setInterval(() => {
+        dispatch(fetchMarketData()); // Poll every 10 seconds
+      }, 10000);
+
+      return () => clearInterval(interval); // Cleanup
+    }
+  }, [dispatch, assetsType]);
+  let totalValue;
+  if (coins.length > 0) {
+    console.log("the coin data is :", JSON.stringify(coins, null, 2));
+    totalValue = wallet?.holdings.reduce((total, holding) => {
+      const coin = coins.find((c) => c.symbol === holding.asset.toLowerCase());
+      if (!coin) {
+        console.warn(`Coin data not found for asset: ${holding.asset}`);
+        return total;
+      }
+      return total + coin.current_price * holding.quantity;
+    }, 0);
+    console.log("Total Value of Holdings:", totalValue);
+  }
 
   useEffect(() => {
     dispatch(getWallet());
@@ -266,7 +294,7 @@ const Wallet = () => {
                         <span>{tx.currency}</span>
                         <span className="text-green-500">
                           <AiOutlineArrowDown className="inline-block" /> $
-                          {tx.amount.toFixed(2)}
+                          {tx.amount?.toFixed(2)}
                         </span>
                       </li>
                     ))}
@@ -293,7 +321,7 @@ const Wallet = () => {
                         <span>{new Date(tx.createdAt).toLocaleString()}</span>
                         <span className="text-red-500">
                           <AiOutlineArrowUp className="inline-block" /> $
-                          {tx.amount.toFixed(2)}
+                          {tx.amount?.toFixed(2)}
                         </span>
                       </li>
                     ))}
@@ -309,14 +337,22 @@ const Wallet = () => {
         <div className="md:hidden bg-darkGray min-h-screen p-4 text-lightGray">
           {/* My Assets */}
           <div className="max-w-lg mx-auto">
-            <h2 className="text-xl font-semibold mb-2">My assets</h2>
+            <div className="flex justify-between items-center mb-4">
+              <h2 className="text-xl font-semibold mb-2">My assets</h2>
+              <div className="flex gap-1 items-center text-gray-600" onClick={() => {navigate("/wallet/histories")}}>
+                History
+              <MdHistory />
+              </div>
+            </div>
             <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
               <p className="text-lg">
-                {showAssets ? "Total Assets" : " Exchange Balance"}
+                {showAssets ? "Total Spot Assets" : " Exchange Balance"}
               </p>
-              <p className="text-3xl font-bold">
-                ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
-                <span className="text-sm">USDT</span>
+              <p className="text-3xl font-bold text-white">
+                {assetsType === "spot"
+                  ? totalValue?.toFixed(2)
+                  : wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
+                <span className="text-gray-400 text-sm">USDT</span>
               </p>
             </div>
 
