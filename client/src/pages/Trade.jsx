@@ -172,12 +172,6 @@ function Trade() {
             </div>
           </div>
         </div>
-
-        <div className="mt-6">
-          <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-            <RecentTrades trades={recentTrades} />
-          </div>
-        </div>
       </motion.div>
     </div>
   );

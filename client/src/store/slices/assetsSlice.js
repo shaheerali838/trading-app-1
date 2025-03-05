@@ -42,7 +42,6 @@ export const getWallet = createAsyncThunk(
           "Content-Type": "application/json",
         },
       });
-  console.log("the walletttt is " + response.data);
 
       return response.data; // Return object, NOT string
     } catch (error) {
@@ -69,7 +68,6 @@ export const swapAssets = createAsyncThunk(
         amount,
         exchangeRate,
       });
-      console.log(response.data.message);
 
       toast.success(response.data.message || "Swap successful");
       return response.data;
@@ -90,7 +88,6 @@ export const fetchExchangeRate = createAsyncThunk(
         return rejectWithValue({ message: "Invalid currency pair" });
       }
 
-      console.log("Fetching exchange rate:", fromAsset, "to", toAsset);
 
       // Make the API request to CryptoCompare
       const response = await axios.get(
@@ -111,10 +108,8 @@ export const fetchExchangeRate = createAsyncThunk(
         return rejectWithValue({ message: "Invalid currency pair or no data available" });
       }
 
-      console.log("Exchange rate fetched:", exchangeRate);
       return exchangeRate;
     } catch (error) {
-      console.error("Error fetching exchange rate:", error);
       toast.error(
         error.response?.data?.Message || "Failed to fetch exchange rate"
       );
@@ -138,7 +133,6 @@ export const transferFunds = createAsyncThunk(
       toast.success(response?.data?.message || "Transfer successful");
       return response.data;
     } catch (error) {
-      console.log(error.response?.data?.message);
 
       toast.error(error.response?.data?.message || "Transfer failed");
       return rejectWithValue(

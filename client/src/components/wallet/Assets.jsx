@@ -70,7 +70,7 @@ const Assets = ({type}) => {
                         className="w-8 h-8"
                       />
                       <div>
-                        <h2 className="text-lg font-bold">
+                        <h2 className="text-lg font-bold ">
                           {holding?.asset?.toUpperCase()}
                         </h2>
                       </div>
@@ -78,12 +78,12 @@ const Assets = ({type}) => {
 
                     {/* Middle Section */}
                     <div className="text-right">
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold text-green-400">
                         ${coinData?.current_price?.toFixed(2) || "0"}
                       </p>
                     </div>
                     <div className="text-right">
-                      <p className="text-lg font-semibold">
+                      <p className="text-lg font-semibold text-blue-400">
                         {holding.quantity?.toFixed(2)}
                       </p>
                     </div>

@@ -3,7 +3,7 @@ import { FiHome, FiBarChart2, FiTrendingUp, FiBriefcase } from "react-icons/fi";
 
 const BottomNavbar = () => {
   return (
-    <div className="fixed bottom-0 left-0 w-full bg-[#1C1C1C] text-white flex justify-around py-3 md:hidden border-t border-gray-700">
+    <div className="fixed bottom-0 left-0 z-50 w-full bg-[#1C1C1C] text-white flex justify-around py-3 md:hidden border-t border-gray-700">
       {/* Home */}
       <NavLink
         to="/"

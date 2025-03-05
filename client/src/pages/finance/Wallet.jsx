@@ -73,7 +73,6 @@ const Wallet = () => {
   }, [dispatch, assetsType]);
   let totalValue;
   if (coins.length > 0) {
-    console.log("the coin data is :", JSON.stringify(coins, null, 2));
     totalValue = wallet?.holdings.reduce((total, holding) => {
       const coin = coins.find((c) => c.symbol === holding.asset.toLowerCase());
       if (!coin) {
@@ -82,7 +81,6 @@ const Wallet = () => {
       }
       return total + coin.current_price * holding.quantity;
     }, 0);
-    console.log("Total Value of Holdings:", totalValue);
   }
 
   useEffect(() => {
@@ -339,7 +337,7 @@ const Wallet = () => {
           <div className="max-w-lg mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold mb-2">My assets</h2>
-              <div className="flex gap-1 items-center text-gray-600" onClick={() => {navigate("/wallet/histories")}}>
+              <div className="flex gap-1 items-center text-gray-600 cursor-pointer" onClick={() => {navigate("/wallet/histories")}}>
                 History
               <MdHistory />
               </div>

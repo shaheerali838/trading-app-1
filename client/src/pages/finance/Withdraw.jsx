@@ -210,42 +210,6 @@ function Withdraw() {
           </ol>
         </div>
       </div>
-
-      <div className="card mt-8 w-full">
-        <AnimatedHeading>
-          <h2 className="text-xl font-bold mb-4 w-full text-center">
-            Withdrawal History
-          </h2>
-        </AnimatedHeading>
-        <table className="min-w-full bg-dark/30 rounded-lg">
-          <thead className="border-b-1 border-gray-700">
-            <tr>
-              <th className="py-2 px-4 text-left">Currency</th>
-              <th className="py-2 px-4 text-left">Quantity</th>
-              <th className="py-2 px-4 text-left">Time</th>
-              <th className="py-2 px-4 text-left">Status</th>
-            </tr>
-          </thead>
-          <tbody>
-            {withdrawalHistory.length !== 0 ? (
-              withdrawalHistory.map((tx) => (
-                <tr key={tx.id} className="border-t border-light/20">
-                  <td className="py-2 px-4">{tx.currency}</td>
-                  <td className="py-2 px-4">{tx.quantity}</td>
-                  <td className="py-2 px-4">
-                    {new Date(tx.timestamp).toLocaleString()}
-                  </td>
-                  <td className="py-2 px-4">{tx.status}</td>
-                </tr>
-              ))
-            ) : (
-              <p className="text-light/60 w-full text-center">
-                No withdrawal history
-              </p>
-            )}
-          </tbody>
-        </table>
-      </div>
     </div>
   );
 }
