@@ -101,6 +101,25 @@ export const rejectOrder = createAsyncThunk(
   }
 );
 
+export const fetchSpotTradesHistory = createAsyncThunk(
+  "trade/history",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.get("/trade/history", {
+        withCredentials: true,
+      });
+      
+      return response.data.trades;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
 const tradeSlice = createSlice({
   name: "trade",
   initialState: {
@@ -109,7 +128,7 @@ const tradeSlice = createSlice({
     recentTrades: [],
     trades: [],
     pendingOrders: [],
-    status: "idle",
+    spotHistoryTrades: [], // Add historyTrades to the initial state
     error: null,
   },
   reducers: {
@@ -183,6 +202,18 @@ const tradeSlice = createSlice({
       .addCase(rejectOrder.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
+      })
+      .addCase(fetchSpotTradesHistory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchSpotTradesHistory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.spotHistoryTrades = action.payload;
+      })
+      .addCase(fetchSpotTradesHistory.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload?.message || "Failed to fetch history trades";
       });
   },
 });

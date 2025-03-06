@@ -126,3 +126,20 @@ export const fetchOpenPerpetualTrades = catchAsyncErrors(
     }
   }
 );
+
+export const getPerpetualTradesHistory = async (req, res) => {
+  try {
+    const userId = req.user._id;
+    const trades = await PerpetualTrade.find({
+      userId,
+      status: { $in: ["closed", "liquidated"] },
+    });
+    console.log(
+      "got a history request and this is a futures complete object: " + trades
+    );
+
+    res.status(200).json({ message: "Trades fetched successfully", trades });
+  } catch (error) {
+    res.status(500).json({ message: "Error fetching trades", error });
+  }
+};

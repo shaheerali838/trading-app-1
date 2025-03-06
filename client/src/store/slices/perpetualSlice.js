@@ -66,10 +66,32 @@ export const fetchOpenPerpetualTrades = createAsyncThunk(
     }
   }
 );
+
+// Fetch History Trades
+export const fetchPerpetualTradesHistory = createAsyncThunk(
+  "perpetual/fetchHistoryTrades",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.get("/perpetual/history", {
+        withCredentials: true,
+      });
+
+      return response.data.trades;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
 const perpetualSlice = createSlice({
   name: "perpetual",
   initialState: {
     openTrades: [],
+    perpetualsHistoryTrades: [], // Add historyTrades to the initial state
     loading: false,
     error: null,
   },
@@ -111,6 +133,18 @@ const perpetualSlice = createSlice({
       .addCase(fetchOpenPerpetualTrades.rejected, (state, action) => {
         state.loading = false;
         state.error = action.payload?.message || "Failed to fetch trades";
+      })
+      .addCase(fetchPerpetualTradesHistory.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchPerpetualTradesHistory.fulfilled, (state, action) => {
+        state.loading = false;
+        state.perpetualsHistoryTrades = action.payload;
+      })
+      .addCase(fetchPerpetualTradesHistory.rejected, (state, action) => {
+        state.loading = false;
+        state.error =
+          action.payload?.message || "Failed to fetch history trades";
       });
   },
 });

@@ -4,6 +4,7 @@ import {
   closePerpetualPosition,
   applyFundingRates,
   fetchOpenPerpetualTrades,
+  getPerpetualTradesHistory,
 } from "../controllers/perpetualController.js";
 import { isUserAuthenticated } from "../middlewares/auth.js";
 
@@ -13,5 +14,7 @@ router.post("/open", isUserAuthenticated, openPerpetualPosition);
 router.post("/close", isUserAuthenticated, closePerpetualPosition);
 router.get("/funding-rates", applyFundingRates);
 router.get("/open-positions", isUserAuthenticated, fetchOpenPerpetualTrades);
+router.get("/history", isUserAuthenticated, getPerpetualTradesHistory);
+
 
 export default router;

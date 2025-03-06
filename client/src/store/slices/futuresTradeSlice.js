@@ -71,9 +71,27 @@ export const closeFuturesTrade = createAsyncThunk(
   }
 );
 
+// Fetch History Trades
+export const fetchFuturesTradesHistory = createAsyncThunk(
+  "futures/history",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.get("/futures/history");
+      return response.data.trades;
+    } catch (error) {
+      return rejectWithValue(error.response.data);
+    } finally {
+      dispatch(setLoading(false));
+    }
+  }
+);
+
 // Initial State
 const initialState = {
   openPositions: [],
+  futuresHistoryTrades: [], // Add historyTrades to the initial state
   status: "idle",
   error: null,
 };
@@ -117,6 +135,17 @@ const futuresTradeSlice = createSlice({
         );
       })
       .addCase(closeFuturesTrade.rejected, (state, action) => {
+        state.status = "failed";
+        state.error = action.payload;
+      })
+      .addCase(fetchFuturesTradesHistory.pending, (state) => {
+        state.status = "loading";
+      })
+      .addCase(fetchFuturesTradesHistory.fulfilled, (state, action) => {
+        state.status = "succeeded";
+        state.futuresHistoryTrades = action.payload;
+      })
+      .addCase(fetchFuturesTradesHistory.rejected, (state, action) => {
         state.status = "failed";
         state.error = action.payload;
       });
