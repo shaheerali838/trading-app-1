@@ -93,7 +93,7 @@ function FuturesOpenPosition() {
                       pnlData[trade._id] > 0 ? "text-green-500" : "text-red-400"
                     }`}
                   >
-                    {pnlData[trade._id] ? pnlData[trade._id].toFixed(2) : "--"}{" "}
+                    {pnlData[trade._id] ? pnlData[trade._id]?.toFixed(2) : "--"}{" "}
                   </td>
                 </tr>
               ))}
@@ -143,8 +143,8 @@ function FuturesOpenPosition() {
                   </div>
 
                   <div className="flex justify-between mt-1">
-                    <span>Size ({trade.pair.split("/")[0]})</span>
-                    <span>{trade.quantity.toFixed(2)}</span>
+                    <span>Size ({trade?.pair?.split("/")[0]})</span>
+                    <span>{trade?.quantity?.toFixed(2)}</span>
                   </div>
 
                   <div className="flex justify-between mt-1">

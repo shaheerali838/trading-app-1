@@ -7,6 +7,7 @@ import Transaction from "../models/Transaction.js"; // Ensure you import the Tra
 import User from "../models/User.js";
 import Wallet from "../models/Wallet.js";
 import { io } from "../server.js";
+import TradeHistory from "../models/TradeHistory.js";
 
 export const fetchUsers = async (req, res, next) => {
   try {
@@ -34,7 +35,6 @@ export const fetchTransactions = async (req, res, next) => {
 
 export const approveOrder = catchAsyncErrors(async (req, res) => {
   try {
-
     const { orderId } = req.params;
 
     const trade = await Trade.findById(orderId);
@@ -47,7 +47,9 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
 
     if (trade.type === "buy") {
       if (wallet.spotWallet < totalCost) {
-        return res.status(400).json({ message: "Insufficient funds in spot wallet" });
+        return res
+          .status(400)
+          .json({ message: "Insufficient funds in spot wallet" });
       }
       wallet.spotWallet -= totalCost;
       const holding = wallet.holdings.find((h) => h.asset === trade.asset);
@@ -70,9 +72,21 @@ export const approveOrder = catchAsyncErrors(async (req, res) => {
       wallet.spotWallet += totalCost;
     }
 
+    const tradeHistory = new TradeHistory({
+      userId: trade.userId,
+      tradeId: trade._id,
+      asset: trade.asset,
+      quantity: trade.quantity,
+      price: trade.price,
+      type: trade.type,
+      tradeType: "spot",
+      status: "completed",
+    });
+
     await wallet.save();
     trade.status = "approved";
     await trade.save();
+    await tradeHistory.save();
 
     io.emit("orderApproved", trade);
 
@@ -117,7 +131,6 @@ export const fetchOpenTrades = async (req, res) => {
   }
 };
 
-
 export const liquidateTrade = async (req, res) => {
   try {
     const { tradeId } = req.params;
@@ -126,13 +139,15 @@ export const liquidateTrade = async (req, res) => {
     if (!marketPrice) {
       return res.status(400).json({ message: "Market price is required" });
     }
-
+    let tradeType;
     let trade = await FuturesTrade.findById(tradeId);
+    tradeType = "futures";
     if (!trade) {
       trade = await PerpetualTrade.findById(tradeId);
       if (!trade) {
         return res.status(404).json({ message: "Trade not found" });
       }
+      tradeType = "perpetual";
     }
 
     if (trade.status !== "open") {
@@ -162,18 +177,34 @@ export const liquidateTrade = async (req, res) => {
     if (wallet.balanceUSDT < 0) {
       wallet.balanceUSDT = 0;
     }
+
+    const tradeHistory = new TradeHistory({
+      userId: trade.userId,
+      tradeId: trade._id,
+      asset: trade.pair,
+      quantity: trade.quantity,
+      price: trade.entryPrice,
+      type: trade.type,
+      tradeType,
+      status: "liquidated",
+      pnl: profitLoss,
+      leverage: trade.leverage,
+    });
+
     await wallet.save();
 
     // **Update trade status to "liquidated"**
     trade.status = "liquidated";
     await trade.save();
-
+    tradeHistory.save();
     res.status(200).json({
       message: "Trade liquidated successfully",
       profitLoss,
       newBalance: wallet.balanceUSDT,
     });
   } catch (error) {
-    res.status(500).json({ message: "Error liquidating trade", error: error.message });
+    res
+      .status(500)
+      .json({ message: "Error liquidating trade", error: error.message });
   }
 };
