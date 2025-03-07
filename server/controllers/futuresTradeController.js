@@ -3,6 +3,8 @@ import FuturesTrade from "../models/FuturesTrade.js";
 import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
+import { io } from "../server.js"; // Import WebSocket instance
+
 
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const {

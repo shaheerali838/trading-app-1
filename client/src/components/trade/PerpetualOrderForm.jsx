@@ -16,7 +16,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
   const { loading, openTrades } = useSelector((state) => state.perpetual);
 
   const [type, setType] = useState("long");
-  const [leverage, setLeverage] = useState(10);
+  const [leverage, setLeverage] = useState(50);
   const [quantity, setQuantity] = useState("");
   const [closeTradeId, setCloseTradeId] = useState("");
   const [tradeType, setTradeType] = useState("market");

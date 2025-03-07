@@ -19,10 +19,11 @@ const TradingChart = ({
   const timeIntervals = ["1m", "5m", "15m", "1h", "1d"];
 
   const formatTradingPair = (pair) => {
-    if (pair.length <= 3) return pair; // Handle edge cases
-    const base = pair.slice(0, 3); // Extract base currency (e.g., BTC)
-    const quote = pair.slice(3); // Extract quote currency (e.g., USDT)
-    return `${base}/${quote}`; // Format as BTC/USDT
+    if (pair.length <= 4) return pair; // Handle edge cases (e.g., "USDT")
+
+    const index = pair.length - 4; // Find the index where "/" should be inserted
+
+    return `${pair.slice(0, index)}/${pair.slice(index)}`; // Insert "/" before "USDT"
   };
 
   // Function to fetch historical market data (initial chart load)

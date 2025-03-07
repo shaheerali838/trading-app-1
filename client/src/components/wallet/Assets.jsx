@@ -7,7 +7,7 @@ import { fetchOpenPositions } from "../../store/slices/futuresTradeSlice";
 import { fetchMarketData } from "../../store/slices/marketSlice";
 import { useParams } from "react-router-dom";
 
-const Assets = ({type}) => {
+const Assets = ({ type }) => {
   const dispatch = useDispatch();
   const { wallet } = useSelector((state) => state.assets);
   const { openPositions } = useSelector((state) => state.futures);
@@ -18,7 +18,7 @@ const Assets = ({type}) => {
     dispatch(fetchMarketData());
     if (type === "spot") {
       dispatch(getWallet());
-      setAssetType("Your Assets");
+      setAssetType("");
     } else if (type === "futures") {
       dispatch(fetchOpenPositions());
       setAssetType("Futures Open Positions");
@@ -26,7 +26,6 @@ const Assets = ({type}) => {
       setAssetType("Perpetuals Open Positions");
     }
   }, [dispatch, type]);
-
 
   const getCoinData = (symbol) => {
     return coins.find(
@@ -44,23 +43,12 @@ const Assets = ({type}) => {
         {type === "spot" ? (
           wallet?.holdings?.length > 0 ? (
             <>
-              <div className="flex items-center justify-between p-3 border-b bg-[#111111] text-white">
-                <div className="flex items-center gap-3">
-                  <h2 className="text-lg font-bold">Name</h2>
-                </div>
-                <div className="text-right">
-                  <h2 className="text-lg font-bold">Price</h2>
-                </div>
-                <div className="text-right">
-                  <h2 className="text-lg font-bold">Quantity</h2>
-                </div>
-              </div>
               {wallet?.holdings?.map((holding, index) => {
                 const coinData = getCoinData(holding.asset);
                 return (
                   <div
                     key={index}
-                    className="flex items-center justify-between p-3 border-b bg-[#1C1C1C] text-white"
+                    className="flex items-center justify-between p-3 border-b text-gray-500"
                   >
                     {/* Left Section */}
                     <div className="flex items-center gap-3">
@@ -70,21 +58,24 @@ const Assets = ({type}) => {
                         className="w-8 h-8"
                       />
                       <div>
-                        <h2 className="text-lg font-bold ">
+                        <h2 className="text-white font-bold ">
                           {holding?.asset?.toUpperCase()}
                         </h2>
                       </div>
                     </div>
 
                     {/* Middle Section */}
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-green-400">
-                        ${coinData?.current_price?.toFixed(2) || "0"}
+                    <div className="text-sm text-right flex flex-col">
+                      <span>Available Balance</span>
+
+                      <p className="font-semibold text-gray-300">
+                        {holding.quantity?.toFixed(2)}
                       </p>
                     </div>
-                    <div className="text-right">
-                      <p className="text-lg font-semibold text-blue-400">
-                        {holding.quantity?.toFixed(2)}
+                    <div className=" text-sm text-right flex flex-col">
+                      <span>Valuation</span>
+                      <p className=" font-semibold text-gray-300">
+                        ≈ ${coinData?.current_price?.toFixed(2) || "0"}
                       </p>
                     </div>
                   </div>
@@ -153,7 +144,10 @@ const Assets = ({type}) => {
           type === "perpetuals" && (
             <div className="mt-6 overflow-x-auto">
               <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-                <OpenPerpetualPositions marketPrice={currentMarketPrice} showBtn={false} />
+                <OpenPerpetualPositions
+                  marketPrice={currentMarketPrice}
+                  showBtn={false}
+                />
               </div>
             </div>
           )

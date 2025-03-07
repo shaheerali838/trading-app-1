@@ -11,7 +11,7 @@ import AnimatedHeading from "../animation/AnimateHeading";
 const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("long");
-  const [leverage, setLeverage] = useState(10);
+  const [leverage, setLeverage] = useState(50);
   const [quantity, setQuantity] = useState("");
   const [tradeType, setTradeType] = useState("market");
   const [limitPrice, setLimitPrice] = useState(null);

@@ -17,7 +17,24 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [amount, setAmount] = useState("");
   const { status, error } = useSelector((state) => state.trade);
   const { wallet } = useSelector((state) => state.assets);
+  const tradingPairs = [
+    "BTCUSDT",
+    "ETHUSDT",
+    "BNBUSDT",
+    "SOLUSDT",
+    "XRPUSDT",
+    "ADAUSDT",
+    "DOGEUSDT",
+    "MATICUSDT",
+    "DOTUSDT",
+    "LTCUSDT",
+  ];
   const extractBase = (pair) => {
+    if (pair === "MATICUSDT") {
+      return "MATIC";
+    } else if (pair === "DOGEUSDT") {
+      return "DOGE";
+    }
     if (pair.length <= 3) return pair; // Handle edge cases
     const base = pair.slice(0, 3);
     return `${base}`;
