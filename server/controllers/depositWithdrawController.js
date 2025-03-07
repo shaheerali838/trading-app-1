@@ -7,7 +7,6 @@ import Wallet from "../models/Wallet.js";
 export const createDepositWithdrawRequest = async (req, res) => {
   try {
     const { type, amount, currency, network, walletAddress } = req.body;
-    
 
     if (!["deposit", "withdraw"].includes(type)) {
       return res.status(400).json({ message: "Invalid transaction type" });
@@ -43,7 +42,7 @@ export const createDepositWithdrawRequest = async (req, res) => {
       walletAddress,
       status: "pending",
     });
-    
+
     res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
     res.status(500).json({ message: "Error processing request", error });
@@ -90,20 +89,20 @@ export const addTokens = async (req, res) => {
 
     const numericAmount = Number(amount);
 
+    console.log('the currecy is ' + currency);
+
     if (currency === "USDT") {
       wallet.exchangeWallet += numericAmount;
     } else {
-      wallet.holdings.forEach((holding) => {
-        if (holding.asset === request.currency) {
-          holding.quantity += numericAmount;
-          return;
-        }
-      });
-      if (!wallet.holdings.find((holding) => holding.asset === currency)) {
-        wallet.holdings.push({ asset: currency, quantity: numericAmount });
+      const holding = wallet.exchangeHoldings.find(
+        (holding) => holding.asset === currency
+      );
+      if (!holding) {
+        wallet.exchangeHoldings.push({ asset: currency, quantity: numericAmount });
+      } else {
+        holding.quantity += numericAmount;
       }
     }
-    await wallet.save();
 
     wallet.depositHistory.push({ currency, amount, createdAt: new Date() });
 
@@ -111,6 +110,8 @@ export const addTokens = async (req, res) => {
 
     res.status(200).json({ message: `Tokens added successfully`, wallet });
   } catch (error) {
+    console.log(error.message);
+
     res.status(500).json({ message: "Error adding tokens", error });
   }
 };
@@ -135,7 +136,7 @@ export const approveWithDrawRequest = async (req, res) => {
     }
 
     if (request.currency !== "USDT") {
-      const holding = wallet.holdings.find(
+      const holding = wallet.exchangeHoldings.find(
         (holding) => holding.asset === request.currency
       );
       if (!holding || holding.quantity < request.amount) {

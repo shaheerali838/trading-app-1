@@ -25,7 +25,16 @@ export const fetchOpenPositions = createAsyncThunk(
 export const openFuturesTrade = createAsyncThunk(
   "futures/openTrade",
   async (
-    { pair, type, leverage, quantity, entryPrice },
+    {
+      pair,
+      type,
+      tradeType,
+      assetsAmount,
+      limitPrice,
+      leverage,
+      quantity,
+      entryPrice,
+    },
     { dispatch, rejectWithValue }
   ) => {
     try {
@@ -33,12 +42,22 @@ export const openFuturesTrade = createAsyncThunk(
 
       const response = await API.post(
         "/futures/open",
-        { pair, type, leverage, quantity, entryPrice },
+        {
+          pair,
+          type,
+          tradeType,
+          assetsAmount,
+          limitPrice,
+          leverage,
+          quantity,
+          entryPrice,
+        },
         { withCredentials: true }
       );
       toast.success("Trade Opened Successfully");
       return response.data;
     } catch (error) {
+      console.log(error.response)
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response.data);
     } finally {

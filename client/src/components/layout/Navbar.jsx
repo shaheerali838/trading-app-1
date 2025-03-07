@@ -8,12 +8,9 @@ import {
   MenuList,
   MenuItem,
   Button,
-  Typography,
-  DialogFooter,
-  DialogBody,
-  DialogHeader,
-  Dialog,
 } from "@material-tailwind/react";
+import { Modal } from "flowbite-react";
+
 import { VscChevronDown } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
@@ -310,30 +307,35 @@ const Navbar = () => {
             )}
           </motion.div>
         )}
-        <Dialog
-          open={openDialog}
-          size="xs"
-          handler={handleLogoutDialog}
-          className="text-white bg-[#242424]"
+        <Modal
+          show={openDialog}
+          size="md"
+          className="backdrop-blur-[2px] bg-black/50 text-white rounded-lg "
         >
-          <DialogHeader className="text-tertiary1">Confirmation!</DialogHeader>
-          <DialogBody>
-            Are you sure you want to logout from this account?
-          </DialogBody>
-          <DialogFooter>
-            <Button
-              variant="text"
-              color="red"
-              onClick={handleLogoutDialog}
-              className="mr-1"
-            >
-              <span>Cancel</span>
-            </Button>
-            <Button variant="gradient" color="green" onClick={handleLogout}>
-              <span>Confirm</span>
-            </Button>
-          </DialogFooter>
-        </Dialog>
+          <div className="bg-[#1A1A1A] rounded-lg p-5">
+            <div>
+              <p >
+                Are you sure you want to logout from this account?
+              </p>
+            </div>
+            <div className="mt-2 w-full flex justify-end">
+              <Button
+                variant="text"
+                color="red"
+                onClick={handleLogoutDialog}
+                className="mr-1"
+              >
+                <span>Cancel</span>
+              </Button>
+              <button
+                onClick={handleLogout}
+                className="bg-green-500 hover:bg-green-400 rounded-md px-3 py-1"
+              >
+                <span>Confirm</span>
+              </button>
+            </div>
+          </div>
+        </Modal>
       </nav>
     </header>
   );

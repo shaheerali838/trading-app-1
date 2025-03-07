@@ -4,7 +4,15 @@ import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 
 export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
-  const { pair, type, leverage, quantity, entryPrice } = req.body;
+  const {
+    pair,
+    type,
+    leverage,
+    quantity,
+    entryPrice,
+    tradeType,
+    assetsAmount,
+  } = req.body;
   const userId = req.user._id;
 
   if (!["long", "short"].includes(type)) {
@@ -16,16 +24,15 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
   if (!wallet) {
     return res.status(404).json({ message: "Wallet not found" });
   }
-
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  if (wallet.perpetualsWallet < marginUsed) {
-    return res
-      .status(400)
-      .json({
-        message:
-          "Insufficient funds in Perpetuals Wallet. Transfer funds from Exchange Wallet.",
-      });
+  const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
+
+  if (availableMargin < marginUsed) {
+    return res.status(400).json({
+      message:
+        "Insufficient funds in Futures Wallet based on the specified assets amount.",
+    });
   }
 
   let liquidationPrice =
@@ -40,6 +47,8 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     userId,
     pair,
     type,
+    tradeType,
+    assetsAmount,
     leverage,
     entryPrice,
     quantity,

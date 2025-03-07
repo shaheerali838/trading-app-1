@@ -40,6 +40,7 @@ const validPairs = {
   XRP: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "DOT"],
   DOT: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "XRP"],
 };
+const transferablePairs = ["USDT", "USDC", "ETH", "BTC"];
 const Wallet = () => {
   const [open, setOpen] = useState(false);
   const [fromAsset, setFromAsset] = useState("");
@@ -59,6 +60,7 @@ const Wallet = () => {
   const [transferAmount, setTransferAmount] = useState("");
   const [showAssets, setShowAssets] = useState(false);
   const [assetsType, setAssetsType] = useState("");
+  const [transferAsset, setTransferAsset] = useState("USDT");
 
   useEffect(() => {
     if (assetsType === "spot") {
@@ -127,16 +129,26 @@ const Wallet = () => {
       toast.error("Please fill in all fields");
       return;
     }
+    if (fromWallet === toWallet) {
+      toast.error("From and To wallets cannot be the same");
+      return;
+    }
 
     try {
       await dispatch(
-        transferFunds({ fromWallet, toWallet, amount: transferAmount })
+        transferFunds({
+          fromWallet,
+          toWallet,
+          amount: transferAmount,
+          transferAsset,
+        })
       ).unwrap();
       setTransferOpen(false);
 
       // Reset fields after successful transfer
       setFromWallet("");
       setToWallet("");
+      setTransferAsset("USDT");
       setTransferAmount("");
     } catch (error) {
       setTransferOpen(false);
@@ -337,9 +349,14 @@ const Wallet = () => {
           <div className="max-w-lg mx-auto">
             <div className="flex justify-between items-center mb-4">
               <h2 className="text-xl font-semibold mb-2">My assets</h2>
-              <div className="flex gap-1 items-center text-gray-600 cursor-pointer" onClick={() => {navigate("/wallet/histories")}}>
+              <div
+                className="flex gap-1 items-center text-gray-600 cursor-pointer"
+                onClick={() => {
+                  navigate("/wallet/histories");
+                }}
+              >
                 History
-              <MdHistory />
+                <MdHistory />
               </div>
             </div>
             <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
@@ -571,6 +588,27 @@ const Wallet = () => {
                 <option value="perpetualsWallet">Perpetual Wallet</option>
               </select>
             </div>
+
+            {(fromWallet === "exchangeWallet" && toWallet === "spotWallet") ||
+            (fromWallet === "spotWallet" && toWallet === "exchangeWallet") ? (
+              <div className="mb-4">
+                <label className="block mb-1">Select Currency</label>
+                <select
+                  className="w-full bg-gray-800 p-2 rounded"
+                  value={transferAsset}
+                  onChange={(e) => setTransferAsset(e.target.value)}
+                >
+                  <option value="" disabled>
+                    Select Currency
+                  </option>
+                  {transferablePairs.map((asset) => (
+                    <option key={asset} value={asset}>
+                      {asset}
+                    </option>
+                  ))}
+                </select>
+              </div>
+            ) : null}
 
             {/* Amount Input */}
             <div className="mb-4">

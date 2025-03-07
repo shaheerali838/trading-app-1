@@ -56,14 +56,14 @@ function RequestRelease() {
               <option className="text-black hover:bg-tertiary3" value="USDT">
                 USDT
               </option>
-              <option className="text-black hover:bg-tertiary3" value="USDT">
+              <option className="text-black hover:bg-tertiary3" value="USDC">
                 USDC
               </option>
-              <option className="text-black hover:bg-tertiary3" value="USDT">
+              <option className="text-black hover:bg-tertiary3" value="ETH">
                 ETH
               </option>
-              <option className="text-black hover:bg-tertiary3" value="USDT">
-                USDT
+              <option className="text-black hover:bg-tertiary3" value="BTC">
+                BTC
               </option>
             </select>
           </div>

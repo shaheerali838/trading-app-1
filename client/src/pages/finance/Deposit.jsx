@@ -1,4 +1,4 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
@@ -14,6 +14,26 @@ function Deposit() {
   const { status, depositHistory } = useSelector((state) => state.assets);
   const [amount, setAmount] = useState("");
   const [currency, setCurrency] = useState("USDT");
+
+  // Reset network when currency changes
+  useEffect(() => {
+    switch (currency) {
+      case "USDT":
+        setNetwork("Tron (TRC20)");
+        break;
+      case "USDC":
+        setNetwork("Ethereum (ERC20)");
+        break;
+      case "ETH":
+        setNetwork("Ethereum (ERC20)");
+        break;
+      case "BTC":
+        setNetwork("Bitcoin");
+        break;
+      default:
+        setNetwork("Tron (TRC20)");
+    }
+  }, [currency]);
 
   const handleSubmit = async (e) => {
     e.preventDefault();

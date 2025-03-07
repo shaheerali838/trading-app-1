@@ -5,9 +5,29 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
-  const { pair, type, leverage, quantity, entryPrice } = req.body;
+  const {
+    pair,
+    type,
+    leverage,
+    quantity,
+    entryPrice,
+    assetsAmount,
+    tradeType,
+  } = req.body;
   const userId = req.user._id;
 
+  if (
+    !pair ||
+    !type ||
+    !leverage ||
+    !quantity ||
+    !entryPrice ||
+    !tradeType ||
+    !assetsAmount
+  ) {
+    console.log("the body is " + req.body);
+    return res.status(400).json({ message: "Kindly fill in all fields" });
+  }
   // Validate trade type
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
@@ -22,10 +42,12 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   // Calculate required margin
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  if (wallet.futuresWallet < marginUsed) {
+  const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
+
+  if (availableMargin < marginUsed) {
     return res.status(400).json({
       message:
-        "Insufficient funds in Futures Wallet. Transfer funds from Exchange Wallet.",
+        "Insufficient funds in Futures Wallet based on the specified assets amount.",
     });
   }
 
@@ -46,6 +68,8 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     userId,
     pair,
     type,
+    tradeType,
+    assetsAmount,
     leverage,
     entryPrice,
     quantity,

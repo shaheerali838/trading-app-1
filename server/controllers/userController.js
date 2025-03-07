@@ -168,9 +168,7 @@ export const requestDeposit = async (req, res) => {
       userId: req.user.userId,
       type: "deposit",
       amount,
-      currency: "PKR",
-      paymentMethod,
-      proofOfPayment: req.file.path, // Image proof
+      currency: "USDT",
       status: "pending",
     });
 
