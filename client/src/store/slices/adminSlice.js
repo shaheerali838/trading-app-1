@@ -144,10 +144,10 @@ export const fetchOpenTrades = createAsyncThunk(
 // Liquidate a trade
 export const liquidateTrade = createAsyncThunk(
   "admin/liquidateTrade",
-  async ({tradeId, marketPrice}, { dispatch, rejectWithValue }) => {
+  async ({tradeId, marketPrice,amount, type}, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
-      const response = await API.post(`/admin/liquidate-trade/${tradeId}`,{marketPrice});
+      const response = await API.post(`/admin/liquidate-trade/${tradeId}`,{marketPrice,type,amount});
       toast.success(response.data.message);
       return { tradeId };
     } catch (error) {

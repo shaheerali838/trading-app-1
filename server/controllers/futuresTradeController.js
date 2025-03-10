@@ -5,12 +5,12 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import { io } from "../server.js"; // Import WebSocket instance
 
-
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const {
     pair,
     type,
     leverage,
+    time,
     quantity,
     entryPrice,
     assetsAmount,
@@ -23,6 +23,7 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     !type ||
     !leverage ||
     !quantity ||
+    !time ||
     !entryPrice ||
     !tradeType ||
     !assetsAmount
@@ -73,12 +74,14 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     tradeType,
     assetsAmount,
     leverage,
+    time,
     entryPrice,
     quantity,
     marginUsed,
     liquidationPrice,
     status: "open",
   });
+  io.emit("newFuturesTrade", futuresTrade);
 
   res.status(201).json({
     message: "Futures position opened successfully",

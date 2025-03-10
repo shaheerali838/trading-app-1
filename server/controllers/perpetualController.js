@@ -2,6 +2,7 @@ import Wallet from "../models/Wallet.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
+import { io } from "../server.js";
 
 export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
   const {
@@ -55,6 +56,8 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     marginUsed,
     liquidationPrice,
   });
+  io.emit("newPerpetualsTrade", trade);
+
 
   res.status(201).json({
     message: "Perpetual position opened successfully",

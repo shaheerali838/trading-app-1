@@ -6,25 +6,31 @@ import { response } from "express";
 
 export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
-    const { type, orderType, price, amount, coin } = req.body; // Added tradeType to specify spot or futures
+    const { type, orderType, price, usdtAmount, coin } = req.body; // Added tradeType to specify spot or futures
 
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
     }
 
-    if (amount <= 0 || (orderType === "limit" && price <= 0)) {
+    if (usdtAmount <= 0 || (orderType === "limit" && price <= 0)) {
       return res.status(400).json({ message: "Invalid order details" });
     }
 
     const wallet = await Wallet.findOne({ userId: req.user._id });
     if (!wallet) return res.status(404).json({ message: "Wallet not found" });
 
-    let totalCost = amount * price;
-    // Ensure user has enough Spot Wallet balance
+    let quantity;
+      const marketPrice = price; // Implement this function to get the current market price
+      quantity = usdtAmount / marketPrice;
+
+
+    let totalCost = usdtAmount;
+
+    // Ensure user has enough Spot Wallet balance for buy orders
     if (type === "buy" && wallet.spotWallet < totalCost) {
       return res.status(400).json({
         message:
-          "Insufficient funds in Spot Wallet. Transfer funds from Exchange Wallet.",
+          "Insufficient funds in Spot Wallet.",
       });
     }
 
@@ -34,7 +40,7 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         type,
         orderType,
         price,
-        quantity: amount, // This is the quantity being traded
+        quantity, // This is the quantity being traded
         totalCost,
         asset: coin, // Add the asset (coin) being traded
         status: "pending",
@@ -43,8 +49,9 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
       io.emit("tradeUpdate", trade);
     } else {
       // Use the `coin` from the request to find the correct holding
+      const sellingQuantity = usdtAmount; // as we are only sending usdtAmount for both buying and selling assets.
       const holding = wallet.holdings.find((h) => h.asset === coin);
-      if (!holding || holding.quantity < amount) {
+      if (!holding || holding.quantity < sellingQuantity) {
         return res.status(400).json({ message: "Insufficient crypto balance" });
       }
 
@@ -53,7 +60,7 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         type,
         orderType,
         price,
-        quantity: amount, // This is the quantity being traded
+        quantity: sellingQuantity, // This is the quantity being traded
         totalCost,
         asset: coin, // Add the asset (coin) being traded
         status: "pending",
@@ -132,8 +139,8 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
 
     const transferAmount = Number(amount); // Ensure the amount is a number
 
-    console.log('the asset is' + asset) ;
-    
+    console.log("the asset is" + asset);
+
     // Validate balance for USDT transfers
     if (asset === "USDT") {
       if (wallet[fromWallet] < transferAmount) {
@@ -145,15 +152,21 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
       wallet[toWallet] += transferAmount;
     } else {
       // Handle asset transfers between exchange and spot wallets
-      const fromHoldings = fromWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
-      const toHoldings = toWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+      const fromHoldings =
+        fromWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
+      const toHoldings =
+        toWallet === "spotWallet" ? wallet.holdings : wallet.exchangeHoldings;
 
       // Validate if fromHoldings is empty
       if (fromHoldings.length === 0) {
-        return res.status(400).json({ message: "No holdings found in the source wallet" });
+        return res
+          .status(400)
+          .json({ message: "No holdings found in the source wallet" });
       }
 
-      const fromHolding = fromHoldings.find((holding) => holding.asset === asset);
+      const fromHolding = fromHoldings.find(
+        (holding) => holding.asset === asset
+      );
       if (!fromHolding || fromHolding.quantity < transferAmount) {
         return res.status(400).json({ message: "Insufficient balance" });
       }

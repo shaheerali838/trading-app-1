@@ -15,6 +15,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const [quantity, setQuantity] = useState("");
   const [tradeType, setTradeType] = useState("market");
   const [limitPrice, setLimitPrice] = useState(null);
+  const [time, setTime] = useState("1s");
   const [openModal, setOpenModal] = useState(false);
   const [assetsAmount, setAssetsAmount] = useState(100);
   const { wallet } = useSelector((state) => state.assets);
@@ -41,6 +42,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         pair: selectedPair,
         type: orderType,
         tradeType,
+        time,
         assetsAmount,
         limitPrice,
         leverage,
@@ -122,7 +124,6 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </button>
       </div>
 
-      
       {tradeType === "limit" ? (
         <div className="mb-4">
           <label className="block text-sm text-gray-300 mb-1">
@@ -137,15 +138,50 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       ) : (
         <div className="mb-2">
-        <input
-          type="number"
-          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
-          value={marketPrice?.toFixed(0)}
-          readOnly
-        />
-      </div>
+          <input
+            type="number"
+            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
+            value={marketPrice?.toFixed(0)}
+            readOnly
+          />
+        </div>
       )}
 
+      <div className="mb-2">
+        <label className="block text-sm text-gray-300 mb-1">Cycle</label>
+        <select
+          type="number"
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
+          placeholder="0"
+          value={quantity}
+          onChange={(e) => setTime(e.target.value)}
+        >
+          <option value="10s" className="bg-[#1a1a1a] ">
+            30s - 20%
+          </option>
+          <option value="60s" className="bg-[#1a1a1a] ">
+            60s - 30%
+          </option>
+          <option value="120s" className="bg-[#1a1a1a] ">
+            120s - 50%
+          </option>
+          <option value="24h" className="bg-[#1a1a1a] ">
+            24h - 60%
+          </option>
+          <option value="48h" className="bg-[#1a1a1a] ">
+            48h - 70%
+          </option>
+          <option value="72h" className="bg-[#1a1a1a] ">
+            72h - 80%
+          </option>
+          <option value="7d" className="bg-[#1a1a1a] ">
+            7d - 90%
+          </option>
+          <option value="15d" className="bg-[#1a1a1a] ">
+            15d - 100%
+          </option>
+        </select>
+      </div>
       <div className="mb-2">
         <label className="block text-sm text-gray-300 mb-1">Quantity</label>
         <input

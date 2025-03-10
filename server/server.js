@@ -72,7 +72,7 @@ const connectWebSocket = () => {
         JSON.stringify({
           action: "SubAdd",
           subs,
-          api_key: process.env.CRYPTOCOMPARE_API_KEY, // Use API Key for better limits
+          api_key: process.env.CRYPTOCOMPARE_API_KEY,
         })
       );
     };
@@ -84,8 +84,9 @@ const connectWebSocket = () => {
           const pair = `${data.FROMSYMBOL}USDT`;
           const price = parseFloat(data.PRICE);
 
-          marketPrices[pair] = price;
+          console.log(`📈 Market price update for ${pair}: ${price}`);
 
+          marketPrices[pair] = price;
           io.emit("marketPriceUpdate", { pair, price });
 
           await checkLiquidations(marketPrices);
@@ -107,7 +108,6 @@ const connectWebSocket = () => {
     console.error("❌ Failed to connect WebSocket:", error.message);
   }
 };
-
 // Start WebSocket connection
 connectWebSocket();
 

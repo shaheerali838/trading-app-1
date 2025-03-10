@@ -29,6 +29,7 @@ import PerpetualTrade from "./pages/PerpetualTrade.jsx";
 import BottomNavbar from "./components/layout/BottomNavbar.jsx";
 import LiquidateOpenTrades from "./pages/admin/LiquidateOpenTrades.jsx";
 import HistoryPage from "./pages/finance/HistoryPage.jsx";
+import SendPnL from "./pages/admin/SendPnL.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -65,6 +66,7 @@ const App = () => {
                 element={<AddTokens />}
               />
               <Route path="/admin/liquidate/open-trades" element={<LiquidateOpenTrades />} />
+              <Route path="/admin/send-pnl/:tradeId/:marketPrice/:type" element={<SendPnL />} />
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />

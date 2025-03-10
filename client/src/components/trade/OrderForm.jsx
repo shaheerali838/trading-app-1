@@ -14,7 +14,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [orderType, setOrderType] = useState("market");
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
-  const [amount, setAmount] = useState("");
+  const [usdtAmount, setUsdtAmount] = useState("");
   const { status, error } = useSelector((state) => state.trade);
   const { wallet } = useSelector((state) => state.assets);
   const tradingPairs = [
@@ -61,7 +61,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, []);
 
   const handleSubmit = async () => {
-    if (!amount || amount <= 0) return alert("Enter a valid amount");
+    if (!usdtAmount || usdtAmount <= 0) return toast.error("Enter a valid amount");
     if (orderType === "limit" && (!price || price <= 0)) {
       return alert("Enter a valid price");
     }
@@ -69,8 +69,8 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     const orderData = {
       type: side,
       orderType,
-      price: orderType === "market" ? marketPrice : price,
-      amount,
+      price: marketPrice,
+      usdtAmount,
       coin: extractBase(selectedPair),
     };
 
@@ -163,11 +163,11 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       )}
 
       <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Amount</label>
+        <label className="block text-sm text-gray-300 mb-1">{side === "buy"? "USDT Amount" : "Quantity"}</label>
         <input
           type="number"
-          value={amount}
-          onChange={(e) => setAmount(e.target.value)}
+          value={usdtAmount}
+          onChange={(e) => setUsdtAmount(e.target.value)}
           className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800"
         />
       </div>
