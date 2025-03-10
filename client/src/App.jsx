@@ -45,7 +45,7 @@ const App = () => {
     <div className="bg-gradient text-white overflow-hidden">
       <Router>
         <Navbar />
-        <main>
+        <main className="pt-[82px]">
           {loading && <Loader />}
           <Routes>
             <Route path="/" element={<Home />} />

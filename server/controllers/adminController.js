@@ -102,21 +102,33 @@ export const rejectOrder = catchAsyncErrors(async (req, res) => {
 
 export const fetchOpenTrades = async (req, res) => {
   try {
-    const futuresTrades = await FuturesTrade.find({ status: "open" });
-    const perpetualTrades = await PerpetualTrade.find({
-      status: "open",
-    });
+    // Fetch open futures trades and add category field
+    const futuresTrades = await FuturesTrade.find({ status: "open" })
+      .populate("userId", "firstName") // Fetch user firstName
+      .lean() // Converts Mongoose documents to plain objects
 
+    futuresTrades.forEach(trade => trade.category = "Futures");
+
+    // Fetch open perpetual trades and add category field
+    const perpetualTrades = await PerpetualTrade.find({ status: "open" })
+      .populate("userId", "firstName")
+      .lean();
+
+    perpetualTrades.forEach(trade => trade.category = "Perpetual");
+
+    // Combine both trade lists
     const openTrades = [...futuresTrades, ...perpetualTrades];
 
     res.status(200).json({
-      message: "successfully found the open trades",
+      message: "Successfully found the open trades",
       trades: openTrades,
     });
   } catch (error) {
+    console.error("Error fetching open trades:", error);
     res.status(500).json({ message: "Error fetching open trades" });
   }
 };
+
 
 export const liquidateTrade = async (req, res) => {
   try {
@@ -128,13 +140,13 @@ export const liquidateTrade = async (req, res) => {
     }
 
     let trade = await FuturesTrade.findById(tradeId);
-    let tradeType = "futures";
+    let category = "futures";
     if (!trade) {
       trade = await PerpetualTrade.findById(tradeId);
       if (!trade) {
         return res.status(404).json({ message: "Trade not found" });
       }
-      tradeType = "perpetual";
+      category = "perpetual";
     }
 
     if (trade.status !== "open") {
@@ -157,12 +169,12 @@ export const liquidateTrade = async (req, res) => {
     profitLoss = type === "profit"? amount * trade.leverage: -amount * trade.leverage;
 
     // **Update User Wallet Balance**
-    if (tradeType === "futures") {
+    if (category === "futures") {
       wallet.futuresWallet += profitLoss;
       if (wallet.futuresWallet < 0) {
         wallet.futuresWallet = 0;
       }
-    } else if (tradeType === "perpetual") {
+    } else if (category === "perpetual") {
       wallet.perpetualsWallet += profitLoss;
       if (wallet.perpetualsWallet < 0) {
         wallet.perpetualsWallet = 0;

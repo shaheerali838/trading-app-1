@@ -47,7 +47,7 @@ const AdminDashboard = () => {
           </Link>
         </Card>
         <Card className="rounded-lg bg-[#2A2A2A] text-gray-500 p-6 hover:scale-105 transition duration-300 ease-in-out">
-          <h2 className="text-2xl font-bold mb-2 text-white">Trade Liquidation</h2>
+          <h2 className="text-2xl font-bold mb-2 text-white">Futures & Perpetual Trades Management</h2>
           <p>View, Analyze, Block and Approve only Valid Orders</p>
           <Link to={"/admin/liquidate/open-trades"}>
             <p className="text-blue-500 hover:underline cursor-pointer">

@@ -161,7 +161,7 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
       if (fromHoldings.length === 0) {
         return res
           .status(400)
-          .json({ message: "No holdings found in the source wallet" });
+          .json({ message: "Insufficient crypto balance" });
       }
 
       const fromHolding = fromHoldings.find(

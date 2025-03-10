@@ -269,15 +269,15 @@ export const swapCrypto = async (req, res) => {
       userWallet.exchangeWallet -= amount;
     } else {
       // Find the 'fromAsset' in the assets array
-      const fromAssetIndex = userWallet.holdings.findIndex(
+      const fromAssetIndex = userWallet.exchangeHoldings.findIndex(
         (holding) => holding.asset === fromAsset
       );
 
-      if (fromAssetIndex === -1 || userWallet.holdings[fromAssetIndex].quantity < amount) {
-        return res.status(400).json({ message: "Insufficient balance" });
+      if (fromAssetIndex === -1 || userWallet.exchangeHoldings[fromAssetIndex].quantity < amount) {
+        return res.status(400).json({ message: "Insufficient balance in exchange wallet" });
       }
       // Deduct from the existing asset balance
-      userWallet.holdings[fromAssetIndex].quantity -= amount;
+      userWallet.exchangeHoldings[fromAssetIndex].quantity -= amount;
     }
 
     // Handle 'toAsset' logic
@@ -286,16 +286,16 @@ export const swapCrypto = async (req, res) => {
       userWallet.exchangeWallet += toAmount;
     } else {
       // Find the 'toAsset' in the assets array
-      const toAssetIndex = userWallet.holdings.findIndex(
+      const toAssetIndex = userWallet.exchangeHoldings.findIndex(
         (holding) => holding.asset === toAsset
       );
 
       if (toAssetIndex === -1) {
         // If the asset doesn't exist, add it to the assets array
-        userWallet.holdings.push({ asset: toAsset, quantity: toAmount });
+        userWallet.exchangeHoldings.push({ asset: toAsset, quantity: toAmount });
       } else {
         // If the asset exists, increment its balance
-        userWallet.holdings[toAssetIndex].quantity += toAmount;
+        userWallet.exchangeHoldings[toAssetIndex].quantity += toAmount;
       }
     }
 

@@ -72,6 +72,7 @@ export const swapAssets = createAsyncThunk(
       toast.success(response.data.message || "Swap successful");
       return response.data;
     } catch (error) {
+      toast.error(error.response.data.message);
       return rejectWithValue(error.response?.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request

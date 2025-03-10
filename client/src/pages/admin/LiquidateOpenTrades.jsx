@@ -78,8 +78,10 @@ const LiquidateOpenTrades = () => {
         <table className="w-full text-left">
           <thead>
             <tr className="border-b border-gray-700">
+              <th className="p-2">User Name</th>
               <th className="p-2">Pair</th>
-              <th className="p-2">Type</th>
+              <th className="p-2">Order Type</th>
+              <th className="p-2">Trade Type</th>
               <th className="p-2">Leverage</th>
               <th className="p-2">Entry Price</th>
               <th className="p-2">Actions</th>
@@ -88,8 +90,10 @@ const LiquidateOpenTrades = () => {
           <tbody>
             {openTrades.map((trade) => (
               <tr key={trade._id} className="border-b border-gray-800">
+                <td className="p-2">{trade.userId.firstName}</td>
                 <td className="p-2">{trade.pair}</td>
                 <td className="p-2">{trade.type}</td>
+                <td className="p-2">{trade.category}</td>
                 <td className="p-2">{trade.leverage}x</td>
                 <td className="p-2">${trade.entryPrice}</td>
                 <td className="p-2">

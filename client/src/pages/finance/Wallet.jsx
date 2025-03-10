@@ -361,7 +361,7 @@ const Wallet = () => {
             </div>
             <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
               <p className="text-lg">
-                {showAssets ? "Total Spot Assets" : " Exchange Balance"}
+                {assetsType === "spot" ? "Total Spot Assets" : " Exchange Balance"}
               </p>
               <p className="text-3xl font-bold text-white">
                 {assetsType === "spot"

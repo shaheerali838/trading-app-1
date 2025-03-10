@@ -15,6 +15,8 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     assetsAmount,
   } = req.body;
   const userId = req.user._id;
+  console.log("the data in the body is"+ JSON.stringify(req.body));
+  
 
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
@@ -27,7 +29,7 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
   }
   const marginUsed = (quantity * entryPrice) / leverage;
 
-  const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
+  const availableMargin = wallet.perpetualsWallet * (assetsAmount / 100);
 
   if (availableMargin < marginUsed) {
     return res.status(400).json({
