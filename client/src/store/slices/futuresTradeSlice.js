@@ -34,6 +34,7 @@ export const openFuturesTrade = createAsyncThunk(
       limitPrice,
       leverage,
       quantity,
+      amountInUSDT,
       entryPrice,
     },
     { dispatch, rejectWithValue }
@@ -52,6 +53,7 @@ export const openFuturesTrade = createAsyncThunk(
           limitPrice,
           leverage,
           quantity,
+          amountInUSDT,
           entryPrice,
         },
         { withCredentials: true }
@@ -59,7 +61,7 @@ export const openFuturesTrade = createAsyncThunk(
       toast.success("Trade Opened Successfully");
       return response.data;
     } catch (error) {
-      console.log(error.response)
+      console.log(error.response.data.message)
       toast.error(error.response?.data?.message || "Failed to open trade");
       return rejectWithValue(error.response.data);
     } finally {

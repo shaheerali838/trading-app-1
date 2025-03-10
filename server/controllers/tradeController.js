@@ -49,9 +49,8 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
       io.emit("tradeUpdate", trade);
     } else {
       // Use the `coin` from the request to find the correct holding
-      const sellingQuantity = usdtAmount; // as we are only sending usdtAmount for both buying and selling assets.
       const holding = wallet.holdings.find((h) => h.asset === coin);
-      if (!holding || holding.quantity < sellingQuantity) {
+      if (!holding || holding.quantity < quantity) {
         return res.status(400).json({ message: "Insufficient crypto balance" });
       }
 
@@ -60,7 +59,7 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         type,
         orderType,
         price,
-        quantity: sellingQuantity, // This is the quantity being traded
+        quantity, // This is the quantity being traded
         totalCost,
         asset: coin, // Add the asset (coin) being traded
         status: "pending",

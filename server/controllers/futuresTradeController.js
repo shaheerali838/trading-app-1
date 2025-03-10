@@ -5,32 +5,35 @@ import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import { io } from "../server.js"; // Import WebSocket instance
 
+
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const {
     pair,
     type,
     leverage,
     time,
-    quantity,
+    quantity, // Quantity of crypto (optional)
     entryPrice,
     assetsAmount,
     tradeType,
+    amountInUSDT, // New field: Amount of USDT to allocate
   } = req.body;
   const userId = req.user._id;
 
+  // Validate required fields
   if (
     !pair ||
     !type ||
     !leverage ||
-    !quantity ||
     !time ||
     !entryPrice ||
     !tradeType ||
-    !assetsAmount
+    !assetsAmount ||
+    (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
   ) {
-    console.log("the body is " + req.body);
     return res.status(400).json({ message: "Kindly fill in all fields" });
   }
+
   // Validate trade type
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
@@ -42,24 +45,31 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     return res.status(404).json({ message: "Wallet not found" });
   }
 
+  let calculatedQuantity = quantity;
+
+  // If amountInUSDT is provided, calculate the quantity of crypto
+  if (amountInUSDT) {
+    calculatedQuantity = amountInUSDT / entryPrice; // Quantity = USDT Amount / Entry Price
+  }
+
   // Calculate required margin
-  const marginUsed = (quantity * entryPrice) / leverage;
+  const marginUsed = (calculatedQuantity * entryPrice) / leverage;
 
   const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
 
   if (availableMargin < marginUsed) {
     return res.status(400).json({
       message:
-        "Insufficient funds in Futures Wallet based on the specified assets amount.",
+        "Insufficient funds in Perpetuals Wallet based on the specified assets amount.",
     });
   }
 
   // Calculate liquidation price (approximate formula)
   let liquidationPrice;
   if (type === "long") {
-    liquidationPrice = entryPrice * ((entryPrice * leverage) / leverage - 1);
+    liquidationPrice = entryPrice * (1 - 1 / leverage);
   } else {
-    liquidationPrice = entryPrice * ((entryPrice * leverage) / leverage + 1);
+    liquidationPrice = entryPrice * (1 + 1 / leverage);
   }
 
   // Deduct margin from user's wallet
@@ -76,11 +86,13 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     leverage,
     time,
     entryPrice,
-    quantity,
+    quantity: calculatedQuantity, // Use calculated quantity
     marginUsed,
     liquidationPrice,
     status: "open",
   });
+
+  // Emit event for real-time updates
   io.emit("newFuturesTrade", futuresTrade);
 
   res.status(201).json({

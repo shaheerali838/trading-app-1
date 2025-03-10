@@ -15,6 +15,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
   const [usdtAmount, setUsdtAmount] = useState("");
+  const [availableAssetAmount, setAvailableAssetAmount] = useState(0);
   const { status, error } = useSelector((state) => state.trade);
   const { wallet } = useSelector((state) => state.assets);
   const tradingPairs = [
@@ -60,8 +61,24 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     dispatch(getWallet());
   }, []);
 
+
+  useEffect(() => {
+    if (!wallet?.holdings) return; // Prevents running if wallet is not loaded
+
+    const asset = wallet.holdings.find(
+      (holding) => holding.asset === extractBase(selectedPair)
+    );
+
+    if (asset) {
+      setAvailableAssetAmount(asset.quantity);
+    } else {
+      setAvailableAssetAmount(0);
+    }
+  }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
+
   const handleSubmit = async () => {
-    if (!usdtAmount || usdtAmount <= 0) return toast.error("Enter a valid amount");
+    if (!usdtAmount || usdtAmount <= 0)
+      return toast.error("Enter a valid amount");
     if (orderType === "limit" && (!price || price <= 0)) {
       return alert("Enter a valid price");
     }
@@ -163,7 +180,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       )}
 
       <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">{side === "buy"? "USDT Amount" : "Quantity"}</label>
+        <label className="block text-sm text-gray-300 mb-1">USDT Amount</label>
         <input
           type="number"
           value={usdtAmount}
@@ -180,6 +197,12 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         <span>Available USDT:</span>
         <span className="text-white">
           {wallet?.spotWallet.toFixed(2) || "0.00"}
+        </span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Available {extractBase(selectedPair)}:</span>
+        <span className="text-white">
+          {availableAssetAmount?.toFixed(4) || "0.00"}
         </span>
       </div>
 

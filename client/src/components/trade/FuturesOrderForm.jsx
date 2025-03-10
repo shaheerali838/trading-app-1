@@ -46,7 +46,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         assetsAmount,
         limitPrice,
         leverage,
-        quantity,
+        amountInUSDT:quantity,
         entryPrice: marketPrice,
       })
     );
@@ -183,7 +183,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </select>
       </div>
       <div className="mb-2">
-        <label className="block text-sm text-gray-300 mb-1">Quantity</label>
+        <label className="block text-sm text-gray-300 mb-1">Amount</label>
         <input
           type="number"
           className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"

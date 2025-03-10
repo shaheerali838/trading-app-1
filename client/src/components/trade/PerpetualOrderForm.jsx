@@ -41,7 +41,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
         assetsAmount,
         limitPrice,
         leverage,
-        quantity,
+        amountInUSDT:quantity,
         entryPrice: marketPrice,
       })
     );
@@ -154,7 +154,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
 
      
       <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">Quantity</label>
+        <label className="block text-sm text-gray-300 mb-1">Amount</label>
         <input
           type="number"
           className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"

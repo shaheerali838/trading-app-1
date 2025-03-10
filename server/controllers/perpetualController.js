@@ -13,11 +13,21 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     entryPrice,
     tradeType,
     assetsAmount,
+    amountInUSDT, // New field: Amount of USDT to allocate
   } = req.body;
   const userId = req.user._id;
-  console.log("the data in the body is"+ JSON.stringify(req.body));
-  
 
+  if (
+    !pair ||
+    !type ||
+    !leverage ||
+    !entryPrice ||
+    !tradeType ||
+    !assetsAmount ||
+    (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
+  ) {
+    return res.status(400).json({ message: "Kindly fill in all fields" });
+  }
   if (!["long", "short"].includes(type)) {
     return res.status(400).json({ message: "Invalid trade type" });
   }
@@ -27,9 +37,15 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
   if (!wallet) {
     return res.status(404).json({ message: "Wallet not found" });
   }
-  const marginUsed = (quantity * entryPrice) / leverage;
+  let calculatedQuantity = quantity;
 
-  const availableMargin = wallet.perpetualsWallet * (assetsAmount / 100);
+  if (amountInUSDT) {
+    calculatedQuantity = amountInUSDT / entryPrice; // Quantity = USDT Amount / Entry Price
+  }
+  // Calculate required margin
+  const marginUsed = (calculatedQuantity * entryPrice) / leverage;
+
+  const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
 
   if (availableMargin < marginUsed) {
     return res.status(400).json({
@@ -54,12 +70,11 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
     assetsAmount,
     leverage,
     entryPrice,
-    quantity,
+    quantity: calculatedQuantity,
     marginUsed,
     liquidationPrice,
   });
   io.emit("newPerpetualsTrade", trade);
-
 
   res.status(201).json({
     message: "Perpetual position opened successfully",
