@@ -13,7 +13,6 @@ function Withdraw() {
   const [walletAddress, setWalletAddress] = useState("");
   const [network, setNetwork] = useState("Tron (TRC20)");
 
-
   const handleSubmit = (e) => {
     e.preventDefault();
 
@@ -22,13 +21,15 @@ function Withdraw() {
       return;
     }
 
-    dispatch(fundsRequest({
-      amount,
-      currency,
-      network,
-      walletAddress,
-      type: "withdraw",
-    }));
+    dispatch(
+      fundsRequest({
+        amount,
+        currency,
+        network,
+        walletAddress,
+        type: "withdraw",
+      })
+    );
   };
 
   return (
@@ -67,6 +68,15 @@ function Withdraw() {
               </option>
               <option className="text-black hover:bg-tertiary3" value="ETH">
                 ETH
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="Solana">
+                Solana
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="TRX">
+                TRX
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="POL">
+                POL
               </option>
             </select>
           </div>
@@ -155,6 +165,48 @@ function Withdraw() {
                   </option>
                 </>
               )}
+              {currency === "Solana" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Solana"
+                  >
+                    Solana
+                  </option>
+                </>
+              )}
+              {currency === "POL" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                </>
+              )}
+              {currency === "TRX" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Tron (TRC20)"
+                  >
+                    Tron (TRC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                </>
+              )}
               {currency === "BTC" && (
                 <option
                   className="text-black hover:bg-tertiary3"
@@ -176,7 +228,7 @@ function Withdraw() {
               className="input w-full ring-[.3px] px-2 py-1 rounded-sm ring-[#00c853] focus:outline-none"
             />
           </div>
-          
+
           <button
             type="submit"
             className="btn btn-primary w-full bg-primary py-1 rounded-sm cursor-pointer"
@@ -188,10 +240,10 @@ function Withdraw() {
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>
-              1. The above deposit address is the official payment address of the
-              platform. Please ensure you use the official deposit address of the
-              platform. Any loss of funds caused by incorrect charging shall be
-              borne by yourself.
+              1. The above deposit address is the official payment address of
+              the platform. Please ensure you use the official deposit address
+              of the platform. Any loss of funds caused by incorrect charging
+              shall be borne by yourself.
             </li>
             <li>
               2. Please make sure that your computer and browser are safe to
@@ -202,10 +254,10 @@ function Withdraw() {
               entire network node to ensure it can be credited.
             </li>
             <li>
-              4. Please select the above-mentioned token system and currency type
-              and transfer the corresponding amount for deposit. Please do not
-              transfer any other irrelevant assets, otherwise they will not be
-              retrieved.
+              4. Please select the above-mentioned token system and currency
+              type and transfer the corresponding amount for deposit. Please do
+              not transfer any other irrelevant assets, otherwise they will not
+              be retrieved.
             </li>
           </ol>
         </div>

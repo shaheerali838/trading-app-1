@@ -30,6 +30,15 @@ function Deposit() {
       case "BTC":
         setNetwork("Bitcoin");
         break;
+      case "POL":
+        setNetwork("Polygon POS");
+        break;
+      case "TRX":
+        setNetwork("Tron (TRC20)");
+        break;
+      case "Solana":
+        setNetwork("Solana");
+        break;
       default:
         setNetwork("Tron (TRC20)");
     }
@@ -92,6 +101,31 @@ function Deposit() {
         default:
           return "";
       }
+    } else if (currency === "Solana") {
+      switch (network) {
+        case "Solana":
+          return "HXCrdd3hitq5tf64m6q5o6YCABrNxkRFRHm4tEdG5D8u";
+        default:
+          return "";
+      }
+    } else if (currency === "TRX") {
+      switch (network) {
+        case "Tron (TRC20)":
+          return "TDuXRdKfexXUY8Cx6ohNTVSwovpW8CiCs7";
+        case "Ethereum (ERC20)":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        default:
+          return "";
+      }
+    } else if (currency === "POL") {
+      switch (network) {
+        case "Ethereum (ERC20)":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        case "Polygon POS":
+          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+        default:
+          return "";
+      }
     } else if (currency === "BTC") {
       return "bc1qmyx7nmyn76xm67umkydhyt4s2ynuen89cm8w83";
     }
@@ -125,6 +159,15 @@ function Deposit() {
               </option>
               <option className="text-black hover:bg-tertiary3" value="ETH">
                 ETH
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="Solana">
+                Solana
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="TRX">
+                TRX
+              </option>
+              <option className="text-black hover:bg-tertiary3" value="POL">
+                POL
               </option>
             </select>
           </div>
@@ -210,6 +253,48 @@ function Deposit() {
                     value="Arbitrum One"
                   >
                     Arbitrum One
+                  </option>
+                </>
+              )}
+              {currency === "Solana" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Solana"
+                  >
+                    Solana
+                  </option>
+                </>
+              )}
+              {currency === "POL" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Polygon POS"
+                  >
+                    Polygon POS
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
+                  </option>
+                </>
+              )}
+              {currency === "TRX" && (
+                <>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Tron (TRC20)"
+                  >
+                    Tron (TRC20)
+                  </option>
+                  <option
+                    className="text-black hover:bg-tertiary3"
+                    value="Ethereum (ERC20)"
+                  >
+                    Ethereum (ERC20)
                   </option>
                 </>
               )}
