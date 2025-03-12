@@ -39,7 +39,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       setUsdtAmount(0);
     }
   }, [assetsAmount]);
-  
+
   useEffect(() => {
     if (usdtAmount > 0) {
       setAssetsAmount(0);
@@ -94,29 +94,31 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const handleSubmit = async () => {
     // Check if both assetsAmount and usdtAmount are set
     if (assetsAmount > 0 && usdtAmount > 0) {
-      return toast.error("Please enter either Assets Amount or USDT Amount, not both.");
+      return toast.error(
+        "Please enter either Assets Amount or USDT Amount, not both."
+      );
     }
-  
+
     // Check if neither assetsAmount nor usdtAmount is set
     if (assetsAmount <= 0 && usdtAmount <= 0) {
       return toast.error("Please enter either Assets Amount or USDT Amount.");
     }
-  
+
     // Check if usdtAmount is set but invalid
     if (usdtAmount > 0 && usdtAmount <= 0) {
       return toast.error("Enter a valid USDT amount.");
     }
-  
+
     // Check if assetsAmount is set but invalid
     if (assetsAmount > 0 && assetsAmount <= 0) {
       return toast.error("Enter a valid Assets amount.");
     }
-  
+
     // Check if orderType is limit and price is invalid
     if (orderType === "limit" && (!price || price <= 0)) {
       return toast.error("Enter a valid price.");
     }
-  
+
     const orderData = {
       type: side,
       orderType,
@@ -125,7 +127,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
       coin: extractBase(selectedPair),
     };
-  
+
     dispatch(placeOrder(orderData))
       .unwrap()
       .then((response) => {
@@ -217,15 +219,19 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       )}
 
-      <div className="mb-4">
-        <label className="block text-sm text-gray-300 mb-1">USDT Amount</label>
+      <div className="relative w-full  mb-2">
         <input
           type="number"
           value={usdtAmount}
           onChange={(e) => setUsdtAmount(e.target.value)}
-          className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800"
+          className="w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 pr-16 text-left"
+          placeholder="Enter Quantity"
         />
+        <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
+          {side === "buy" ? "USDT" : extractBase(selectedPair)}
+        </span>
       </div>
+
       <div className=" max-w-full text-sm mb-2">
         <div className="flex justify-evenly">
           {assetsOptions.map((option, index) => (
