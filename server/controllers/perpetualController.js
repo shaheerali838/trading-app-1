@@ -45,7 +45,7 @@ export const openPerpetualPosition = catchAsyncErrors(async (req, res) => {
   // Calculate required margin
   const marginUsed = (calculatedQuantity * entryPrice) / leverage;
 
-  const availableMargin = wallet.futuresWallet * (assetsAmount / 100);
+  const availableMargin = wallet.perpetualsWallet * (assetsAmount / 100);
 
   if (availableMargin < marginUsed) {
     return res.status(400).json({

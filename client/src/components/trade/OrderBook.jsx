@@ -5,6 +5,17 @@ const OrderBook = ({ selectedPair }) => {
   const [asks, setAsks] = useState([]);
   const wsRef = useRef(null);
 
+  const extractBase = (pair) => {
+    if (pair === "MATICUSDT") {
+      return "MATIC";
+    } else if (pair === "DOGEUSDT") {
+      return "DOGE";
+    }
+    if (pair.length <= 3) return pair; // Handle edge cases
+    const base = pair.slice(0, 3);
+    return `${base}`;
+  };
+
   useEffect(() => {
     if (wsRef.current) {
       wsRef.current.close();
@@ -36,9 +47,10 @@ const OrderBook = ({ selectedPair }) => {
 
   return (
     <div className="w-full p-4">
-      <h3 className="text-sm text-secondary font-semibold text-center">
-        Order Book
-      </h3>
+      <span className="text-[.85rem] text-gray-500 flex justify-between">
+        <p>Price (USDT)</p>
+        <p>{`Amount (${extractBase(selectedPair)})`}</p>
+      </span>
 
       {/* Large Screen View */}
       <table className="hidden sm:table w-full text-[.7rem]">

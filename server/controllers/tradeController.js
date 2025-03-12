@@ -6,7 +6,7 @@ import { response } from "express";
 
 export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
-    const { type, orderType, price, usdtAmount, coin } = req.body; // Added tradeType to specify spot or futures
+    const { type, orderType, price, usdtAmount, assetsAmount, coin } = req.body; // Added tradeType to specify spot or futures
 
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
@@ -26,8 +26,10 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
 
     let totalCost = usdtAmount;
 
+    const usableAssets = (wallet.spotWallet / 100) * assetsAmount;
+
     // Ensure user has enough Spot Wallet balance for buy orders
-    if (type === "buy" && wallet.spotWallet < totalCost) {
+    if (type === "buy" && usableAssets < totalCost) {
       return res.status(400).json({
         message:
           "Insufficient funds in Spot Wallet.",

@@ -15,6 +15,8 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
   const [usdtAmount, setUsdtAmount] = useState("");
+  const [assetsAmount, setAssetsAmount] = useState(100);
+
   const [availableAssetAmount, setAvailableAssetAmount] = useState(0);
   const { status, error } = useSelector((state) => state.trade);
   const { wallet } = useSelector((state) => state.assets);
@@ -30,6 +32,8 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     "DOTUSDT",
     "LTCUSDT",
   ];
+  const assetsOptions = [25, 50, 75, 100];
+
   const extractBase = (pair) => {
     if (pair === "MATICUSDT") {
       return "MATIC";
@@ -61,7 +65,6 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     dispatch(getWallet());
   }, []);
 
-
   useEffect(() => {
     if (!wallet?.holdings) return; // Prevents running if wallet is not loaded
 
@@ -88,6 +91,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       orderType,
       price: marketPrice,
       usdtAmount,
+      assetsAmount,
       coin: extractBase(selectedPair),
     };
 
@@ -100,6 +104,9 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       .catch((error) => {
         toast.error(error.message);
       });
+  };
+  const handleAssetsClick = (value) => {
+    setAssetsAmount(value);
   };
   return (
     <Card className="md:p-4 bg-transparent text-white w-full text-lg  flex justify-center">
@@ -188,32 +195,46 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
           className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-white border border-gray-800"
         />
       </div>
-
-      <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Market Price:</span>
-        <span className="text-white">${marketPrice}</span>
-      </div>
-      <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Available USDT:</span>
-        <span className="text-white">
-          {wallet?.spotWallet.toFixed(2) || "0.00"}
-        </span>
-      </div>
-      <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Available {extractBase(selectedPair)}:</span>
-        <span className="text-white">
-          {availableAssetAmount?.toFixed(4) || "0.00"}
-        </span>
+      <div className=" max-w-full text-sm mb-2">
+        <div className="flex justify-evenly">
+          {assetsOptions.map((option, index) => (
+            <p
+              key={index}
+              className={` rounded-sm border-[.2px] border-gray-700 w-fit px-1 mx-1 cursor-pointer hover:scale-[1.2] ${
+                assetsAmount === option
+                  ? "bg-[#2c2c2c] text-white"
+                  : "bg-transparent text-gray-500"
+              } `}
+              onClick={() => handleAssetsClick(option)}
+            >
+              {option}%
+            </p>
+          ))}
+        </div>
       </div>
 
       <Button
         onClick={handleSubmit}
-        className={`w-full py-2 rounded-md ${
+        className={`w-full py-2 my-2 rounded-md ${
           side === "buy" ? "bg-[#26bb8c]" : "bg-[#ff5e5a]"
         }`}
       >
         {side === "buy" ? "Buy" : "Sell"}
       </Button>
+      <div className="flex gap-1 text-gray-400 text-sm mb-2">
+        <span>Market Price</span>
+        <span className="text-gray-300">${marketPrice}</span>
+      </div>
+      <div className="flex gap-1 text-gray-400 text-sm mb-2">
+        <span>Available </span>
+        <span className="text-gray-300">
+          {wallet?.spotWallet.toFixed(2) || "0.00"} USDT
+        </span>
+      </div>
+      <div className="flex gap-1 text-gray-400 text-sm mb-2">
+        <span>Max Buy </span>
+        <span className="text-gray-300">0 {extractBase(selectedPair)}</span>
+      </div>
     </Card>
   );
 };
