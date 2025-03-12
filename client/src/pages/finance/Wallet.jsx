@@ -359,9 +359,16 @@ const Wallet = () => {
                 <MdHistory />
               </div>
             </div>
-            <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
+            <div
+              className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md"
+              onClick={() => {
+                handleAssetsRendering("exchange");
+              }}
+            >
               <p className="text-lg">
-                {assetsType === "spot" ? "Total Spot Assets" : " Exchange Balance"}
+                {assetsType === "spot"
+                  ? "Total Spot Assets"
+                  : " Exchange Balance"}
               </p>
               <p className="text-3xl font-bold text-white">
                 {assetsType === "spot"
@@ -421,7 +428,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg"> Spot Asset</p>
                     <p className="text-2xl font-bold">
-                      ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                      ${totalValue?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>

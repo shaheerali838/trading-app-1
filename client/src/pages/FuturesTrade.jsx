@@ -89,9 +89,7 @@ function FuturesTrade() {
       >
         <div className="flex justify-between px-4 md:px-0">
           <AnimatedHeading>
-            <h3 className="text-2xl font-semibold text-white">
-              Futures Trading
-            </h3>
+            <h3 className="text-2xl font-semibold text-white">Trading</h3>
           </AnimatedHeading>
           <div className="md:hidden">
             <select

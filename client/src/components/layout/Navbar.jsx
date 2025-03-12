@@ -87,7 +87,7 @@ const Navbar = () => {
               >
                 <option value="trade">Spot</option>
                 <option value="perpetual">Perpetual</option>
-                <option value="futures">Futures</option>
+                <option value="futures">Trading</option>
               </select>
               <div
                 className="text-2xl text-gray-400 cursor-pointer"
@@ -149,7 +149,7 @@ const Navbar = () => {
                     to={"/futures"}
                     className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    Futures
+                    Trading
                   </Link>
                 </MenuItem>
                 <MenuItem>
@@ -277,7 +277,7 @@ const Navbar = () => {
               Spot Trading
             </Link>
             <Link to={"/futures"} className="py-3" onClick={toggleMenu}>
-              Future Trading
+              Trading
             </Link>
             <Link to={"/perpetual"} className="py-3" onClick={toggleMenu}>
               Perpetual Trading

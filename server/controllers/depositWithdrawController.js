@@ -8,31 +8,61 @@ export const createDepositWithdrawRequest = async (req, res) => {
   try {
     const { type, amount, currency, network, walletAddress } = req.body;
 
+    // Validate transaction type
     if (!["deposit", "withdraw"].includes(type)) {
       return res.status(400).json({ message: "Invalid transaction type" });
     }
 
+    // Validate currency (example: "USDT", "BTC", etc.)
+    const validCurrencies = ["USDT", "BTC", "ETH"]; // Add more currencies as needed
+    if (!validCurrencies.includes(currency)) {
+      return res.status(400).json({ message: "Invalid currency" });
+    }
+
+    // Find the user's wallet
     const wallet = await Wallet.findOne({ userId: req.user._id });
     if (!wallet) {
       return res.status(404).json({ message: "Wallet not found" });
     }
 
+    // Handle withdrawals
     if (type === "withdraw") {
       if (currency === "USDT") {
+        // Check if the user has enough USDT in the exchange wallet
         if (wallet.exchangeWallet < amount) {
-          return res.status(400).json({ message: "Insufficient balance" });
+          return res.status(400).json({ message: "Insufficient USDT balance" });
         }
+        // Deduct from the exchange wallet
+        wallet.exchangeWallet -= amount;
       } else {
-        const holding = wallet.holdings.find(
-          (holding) => holding.asset === currency
-        );
-
+        // Check if the user has enough of the specified cryptocurrency
+        const holding = wallet.exchangeHoldings.find((h) => h.asset === currency);
         if (!holding || holding.quantity < amount) {
-          return res.status(400).json({ message: "Insufficient balance" });
+          return res
+            .status(400)
+            .json({ message: `Insufficient ${currency} balance` });
         }
+        // Deduct from the holdings
+        holding.quantity -= amount;
+      }
+
+      // Freeze the withdrawn amount
+      const frozenAssetIndex = wallet.frozenAssets.findIndex(
+        (asset) => asset.asset === currency
+      );
+      if (frozenAssetIndex !== -1) {
+        // If the asset already exists in frozenAssets, update the quantity
+        wallet.frozenAssets[frozenAssetIndex].quantity += Number(amount);
+      } else {
+        // If the asset does not exist in frozenAssets, add it
+        wallet.frozenAssets.push({ asset: currency, quantity: amount });
       }
     }
 
+    // Save the updated wallet
+    await wallet.save();
+
+    // Create the deposit/withdrawal request
     const request = await DepositWithdrawRequest.create({
       userId: req.user._id,
       type,
@@ -45,7 +75,10 @@ export const createDepositWithdrawRequest = async (req, res) => {
 
     res.status(201).json({ message: `${type} request submitted`, request });
   } catch (error) {
-    res.status(500).json({ message: "Error processing request", error });
+    console.error("Error processing request:", error);
+    res
+      .status(500)
+      .json({ message: "Error processing request", error: error.message });
   }
 };
 
@@ -89,7 +122,7 @@ export const addTokens = async (req, res) => {
 
     const numericAmount = Number(amount);
 
-    console.log('the currecy is ' + currency);
+    console.log("the currecy is " + currency);
 
     if (currency === "USDT") {
       wallet.exchangeWallet += numericAmount;
@@ -98,7 +131,10 @@ export const addTokens = async (req, res) => {
         (holding) => holding.asset === currency
       );
       if (!holding) {
-        wallet.exchangeHoldings.push({ asset: currency, quantity: numericAmount });
+        wallet.exchangeHoldings.push({
+          asset: currency,
+          quantity: numericAmount,
+        });
       } else {
         holding.quantity += numericAmount;
       }
@@ -135,20 +171,15 @@ export const approveWithDrawRequest = async (req, res) => {
       return res.status(404).json({ message: "Wallet not found" });
     }
 
-    if (request.currency !== "USDT") {
-      const holding = wallet.exchangeHoldings.find(
-        (holding) => holding.asset === request.currency
-      );
-      if (!holding || holding.quantity < request.amount) {
-        return res.status(400).json({ message: "Insufficient balance" });
-      }
-      holding.quantity -= request.amount;
-    } else {
-      if (wallet.exchangeWallet < request.amount) {
-        return res.status(400).json({ message: "Insufficient balance" });
-      }
-      wallet.exchangeWallet -= request.amount;
+    const index = wallet.frozenAssets.findIndex(
+      (asset) => asset.asset === request.currency
+    );
+
+    if (index === -1) {
+      
+      return res.status(404).json({ message: "Insufficient balance" });
     }
+    wallet.frozenAssets[index].quantity -= request.amount;
 
     wallet.withdrawalHistory.push({
       amount: request.amount,
@@ -164,6 +195,7 @@ export const approveWithDrawRequest = async (req, res) => {
       .status(200)
       .json({ message: `${request.type} request approved`, request });
   } catch (error) {
+    console.log(error.message);
     res
       .status(500)
       .json({ message: "Error approving withdraw request", error });
@@ -195,19 +227,52 @@ export const rejectRequest = async (req, res) => {
     const { adminNote } = req.body;
 
     const request = await DepositWithdrawRequest.findById(requestId);
+
     if (!request || request.status !== "pending") {
       return res.status(400).json({ message: "Invalid request" });
     }
 
+    const wallet = await Wallet.findOne({ userId: request.userId });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
+    }
+
     request.status = "rejected";
     request.adminNote = adminNote || "Request rejected by admin";
+
+    const index = wallet.frozenAssets.findIndex(
+      (asset) => asset.asset === request.currency
+    );
+
+    if (index === -1) {
+      return res.status(404).json({ message: "Insufficient balance" });
+    }
+
+    // Restore frozen assets since the request was rejected
+    wallet.frozenAssets[index].quantity -= request.amount;
+
+    if (request.currency === "USDT") {
+      wallet.exchangeWallet += request.amount;
+    } else {
+      const holdingIndex = wallet.exchangeHoldings.findIndex(
+        (holding) => holding.asset === request.currency
+      );
+      if (holdingIndex === -1) {
+        wallet.exchangeHoldings.push({ asset: request.currency, quantity: request.amount });
+      } else {
+        wallet.exchangeHoldings[holdingIndex].quantity += request.amount;
+      }
+    }
+
     await request.save();
+    await wallet.save(); // Ensure wallet changes are saved
 
     res.status(200).json({ message: "Request rejected", request });
   } catch (error) {
     res.status(500).json({ message: "Error rejecting request", error });
   }
 };
+
 
 export const getAllUsers = async (req, res) => {
   try {

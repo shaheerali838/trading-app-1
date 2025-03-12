@@ -24,6 +24,12 @@ const WalletSchema = new mongoose.Schema({
       quantity: Number,
     },
   ],
+  frozenAssets: [
+    {
+      asset: String,
+      quantity: Number,
+    },
+  ],
   depositHistory: [{ amount: Number, currency: String, createdAt: Date }],
   withdrawalHistory: [{ amount: Number, currency: String, createdAt: Date }],
   transferHistory: [

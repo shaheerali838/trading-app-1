@@ -12,6 +12,7 @@ const Assets = ({ type }) => {
   const { wallet } = useSelector((state) => state.assets);
   const { openPositions } = useSelector((state) => state.futures);
   const { coins } = useSelector((state) => state.market);
+  const [usdtData, setUsdtData] = useState(null);
 
   const [assetType, setAssetType] = useState(type);
   useEffect(() => {
@@ -27,6 +28,12 @@ const Assets = ({ type }) => {
     }
   }, [dispatch, type]);
 
+  useEffect(() => {
+    if (coins.length > 0) {
+      setUsdtData(getCoinData("USDT"));
+    }
+  }, [coins]);
+
   const getCoinData = (symbol) => {
     return coins.find(
       (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
@@ -39,18 +46,13 @@ const Assets = ({ type }) => {
   return (
     <div className="min-h-screen max-w-7xl mx-auto">
       <div className="block md:hidden">
-        <AnimatedHeading>{assetType}</AnimatedHeading>
         {type === "spot" ? (
           wallet?.holdings?.length > 0 ? (
             <>
               {wallet?.holdings?.map((holding, index) => {
                 const coinData = getCoinData(holding.asset);
                 return (
-                  <div
-                    key={index}
-                    className="flex items-center justify-between p-3 border-b text-gray-500"
-                  >
-                    {/* Left Section */}
+                  <div key={index} className=" p-3 border-b text-gray-400">
                     <div className="flex items-center gap-3">
                       <img
                         src={coinData?.image}
@@ -63,20 +65,33 @@ const Assets = ({ type }) => {
                         </h2>
                       </div>
                     </div>
+                    <div className="flex justify-between my-2">
+                      <div className="text-sm text-center flex flex-col gap-2">
+                        <span>Available Balance</span>
 
-                    {/* Middle Section */}
-                    <div className="text-sm text-right flex flex-col">
-                      <span>Available Balance</span>
+                        <p className="font-semibold text-gray-300">
+                          {holding.quantity?.toFixed(2)}
+                        </p>
+                      </div>
+                      <div className="text-sm text-center flex flex-col gap-2">
+                        <span>Frozen Amount</span>
 
-                      <p className="font-semibold text-gray-300">
-                        {holding.quantity?.toFixed(2)}
-                      </p>
-                    </div>
-                    <div className=" text-sm text-right flex flex-col">
-                      <span>Valuation</span>
-                      <p className=" font-semibold text-gray-300">
-                        ≈ ${coinData?.current_price?.toFixed(2) || "0"}
-                      </p>
+                        <p className="font-semibold text-gray-300">
+                          <p className="font-semibold text-gray-300">
+                            {wallet.frozenAssets
+                              .find(
+                                (element) => element.asset === holding.asset
+                              )
+                              ?.quantity?.toFixed(2) || "0"}
+                          </p>
+                        </p>
+                      </div>
+                      <div className=" text-sm text-center flex flex-col gap-2">
+                        <span>Valuation</span>
+                        <p className=" font-semibold text-gray-300">
+                          ≈ ${coinData?.current_price?.toFixed(2) || "0"}
+                        </p>
+                      </div>
                     </div>
                   </div>
                 );
@@ -89,23 +104,9 @@ const Assets = ({ type }) => {
           )
         ) : type === "futures" ? (
           <div className="mt-6 overflow-x-auto">
-            <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-              <h4 className="text-lg font-semibold text-white">
-                Open Positions
-              </h4>
+            <div className="bg-transparent p-2  mb-4">
               {openPositions?.length > 0 ? (
                 <table className="w-full text-white">
-                  <thead>
-                    <tr className="border-b border-gray-700">
-                      <th className="py-2">Name</th>
-                      <th className="py-2">Type</th>
-                      <th className="py-2">Leverage</th>
-                      <th className="py-2">Entry Price</th>
-                      <th className="py-2 hidden md:table-cell">
-                        Liquidation Price
-                      </th>
-                    </tr>
-                  </thead>
                   <tbody>
                     {openPositions.map((trade) => {
                       const coinData = getCoinData(trade.pair.split("USDT")[0]);
@@ -140,16 +141,108 @@ const Assets = ({ type }) => {
               )}
             </div>
           </div>
-        ) : (
-          type === "perpetuals" && (
-            <div className="mt-6 overflow-x-auto">
-              <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
-                <OpenPerpetualPositions
-                  marketPrice={currentMarketPrice}
-                  showBtn={false}
-                />
-              </div>
+        ) : type === "perpetuals" ? (
+          <div className="mt-6 overflow-x-auto">
+            <div className="bg-transparent border border-[#2f2f2f] p-4 mb-4">
+              <OpenPerpetualPositions
+                marketPrice={currentMarketPrice}
+                showBtn={false}
+              />
             </div>
+          </div>
+        ) : (
+          type === "exchange" && (
+            <>
+              <div className=" border-b text-gray-500">
+                {/* Left Section */}
+                <div className="flex items-center gap-3">
+                  <img
+                    src={usdtData?.image}
+                    alt={usdtData?.name}
+                    className="w-8 h-8"
+                  />
+                  <div>
+                    <h2 className="text-white font-bold ">USDT</h2>
+                  </div>
+                </div>
+                <div className="flex justify-between my-2">
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Available Balance</span>
+
+                    <p className="font-semibold text-gray-300">
+                      {wallet?.exchangeWallet?.toFixed(2)}
+                    </p>
+                  </div>
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Frozen Amount</span>
+
+                    <p className="font-semibold text-gray-300">
+                      <p className="font-semibold text-gray-300">
+                        {wallet.frozenAssets
+                          .find((element) => element.asset === "USDT")
+                          ?.quantity?.toFixed(2) || "0"}
+                      </p>
+                    </p>
+                  </div>
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Valuation</span>
+                    <p className=" font-semibold text-gray-300">
+                      ≈ ${usdtData?.current_price?.toFixed(2) || "0"}
+                    </p>
+                  </div>
+                </div>
+              </div>
+              {wallet?.exchangeHoldings?.length > 0 && (
+                <>
+                  {wallet?.holdings?.map((holding, index) => {
+                    const coinData = getCoinData(holding.asset);
+                    return (
+                      <div key={index} className=" p-3 border-b text-gray-400">
+                        {/* Left Section */}
+                        <div className="flex items-center gap-3">
+                          <img
+                            src={coinData?.image}
+                            alt={coinData?.name}
+                            className="w-8 h-8"
+                          />
+                          <div>
+                            <h2 className="text-white font-bold ">
+                              {holding?.asset?.toUpperCase()}
+                            </h2>
+                          </div>
+                        </div>
+                        <div className="flex justify-between my-2">
+                          <div className="text-sm text-center flex flex-col">
+                            <span>Available Balance</span>
+
+                            <p className="font-semibold text-gray-300">
+                              {holding.quantity?.toFixed(2)}
+                            </p>
+                          </div>
+                          <div className="text-sm text-center flex flex-col gap-2">
+                            <span>Frozen Amount</span>
+
+                            <p className="font-semibold text-gray-300">
+                              <p className="font-semibold text-gray-300">
+                                {wallet.frozenAssets
+                                  .find((element) => element.asset === holding.asset)
+                                  ?.quantity?.toFixed(2) || "0"}
+                              </p>
+                            </p>
+                          </div>
+                          <div className=" text-sm text-right flex flex-col">
+                            <span>Valuation</span>
+                            <p className=" font-semibold text-gray-300">
+                              ≈ ${coinData?.current_price?.toFixed(2) || "0"}
+                            </p>
+                          </div>
+                        </div>
+                      </div>
+                    );
+                  })}
+                </>
+              )}
+            </>
           )
         )}
       </div>
