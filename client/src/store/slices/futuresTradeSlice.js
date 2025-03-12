@@ -28,10 +28,7 @@ export const openFuturesTrade = createAsyncThunk(
     {
       pair,
       type,
-      tradeType,
-      time,
       assetsAmount,
-      limitPrice,
       leverage,
       quantity,
       amountInUSDT,
@@ -47,10 +44,7 @@ export const openFuturesTrade = createAsyncThunk(
         {
           pair,
           type,
-          tradeType,
-          time,
           assetsAmount,
-          limitPrice,
           leverage,
           quantity,
           amountInUSDT,

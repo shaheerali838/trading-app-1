@@ -11,14 +11,13 @@ import AnimatedHeading from "../animation/AnimateHeading";
 const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("long");
-  const [leverage, setLeverage] = useState(50);
+  const [leverage, setLeverage] = useState(20);
   const [quantity, setQuantity] = useState("");
-  const [tradeType, setTradeType] = useState("market");
-  const [limitPrice, setLimitPrice] = useState(null);
-  const [time, setTime] = useState("1s");
-  const [openModal, setOpenModal] = useState(false);
   const [assetsAmount, setAssetsAmount] = useState(100);
   const { wallet } = useSelector((state) => state.assets);
+  const [currentTime, setCurrentTime] = useState(
+    new Date().toLocaleTimeString()
+  );
 
   const extractBase = (pair) => {
     if (pair.length <= 3) return pair; // Handle edge cases
@@ -29,6 +28,10 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   useEffect(() => {
     dispatch(getWallet());
   }, [dispatch]);
+
+  useEffect(() => {
+    setCurrentTime(new Date().toLocaleTimeString());
+  }, [marketPrice]);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -41,25 +44,18 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
       openFuturesTrade({
         pair: selectedPair,
         type: orderType,
-        tradeType,
-        time,
         assetsAmount,
-        limitPrice,
         leverage,
-        amountInUSDT:quantity,
+        amountInUSDT: quantity,
         entryPrice: marketPrice,
       })
     );
   };
 
-  const handleLeverageClick = (value) => {
-    setLeverage(value);
-  };
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
   };
 
-  const leverageOptions = [1, 25, 50, 75, 100, 125, 150, 175, 200];
   const assetsOptions = [25, 50, 75, 100];
 
   return (
@@ -91,61 +87,31 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </button>
       </div>
 
-      <div className="mb-2 flex gap-2">
-        <div className="border-[.2px] border-[#2d2d2d] rounded-md w-full p-1">
-          <Dropdown
-            label={tradeType}
-            size="sm"
-            dismissOnClick={false}
-            inline
-            className="bg-transparent text-sm w-[100%]"
-          >
-            <Dropdown.Item
-              onClick={() => {
-                setTradeType("market");
-              }}
-            >
-              Market
-            </Dropdown.Item>
-            <Dropdown.Item
-              onClick={() => {
-                setTradeType("limit");
-              }}
-            >
-              Limit
-            </Dropdown.Item>
-          </Dropdown>
-        </div>
-        <button
-          onClick={() => setOpenModal(true)}
-          className="bg-gray-700 bg-transparent cursor-pointer focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-fit text-center"
-        >
-          {leverage}X
-        </button>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Time:</span>
+        <span className="text-white">
+          {currentTime}
+        </span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Available Amount:</span>
+        <span className="text-white">
+          {wallet?.futuresWallet.toFixed(2) || "0.00"}
+        </span>
+      </div>
+      <div className="flex justify-between text-gray-400 text-sm mb-2">
+        <span>Trading Asset:</span>
+        <span className="text-white">USDT</span>
       </div>
 
-      {tradeType === "limit" ? (
-        <div className="mb-4">
-          <label className="block text-sm text-gray-300 mb-1">
-            Select Limit Price
-          </label>
-          <input
-            type="number"
-            value={limitPrice}
-            onChange={(e) => setLimitPrice(e.target.value)}
-            className="max-w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-2 text-center text-white border border-gray-800"
-          />
-        </div>
-      ) : (
-        <div className="mb-2">
-          <input
-            type="number"
-            className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
-            value={marketPrice?.toFixed(0)}
-            readOnly
-          />
-        </div>
-      )}
+      <div className="mb-2">
+        <input
+          type="number"
+          className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full  text-center"
+          value={marketPrice?.toFixed(0)}
+          readOnly
+        />
+      </div>
 
       <div className="mb-2">
         <label className="block text-sm text-gray-300 mb-1">Cycle</label>
@@ -153,31 +119,31 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
           type="number"
           className="bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 w-full text-center"
           placeholder="0"
-          value={quantity}
-          onChange={(e) => setTime(e.target.value)}
+          value={leverage}
+          onChange={(e) => setLeverage(e.target.value)}
         >
-          <option value="10s" className="bg-[#1a1a1a] ">
+          <option value="20" className="bg-[#1a1a1a] ">
             30s - 20%
           </option>
-          <option value="60s" className="bg-[#1a1a1a] ">
+          <option value="30" className="bg-[#1a1a1a] ">
             60s - 30%
           </option>
-          <option value="120s" className="bg-[#1a1a1a] ">
+          <option value="50" className="bg-[#1a1a1a] ">
             120s - 50%
           </option>
-          <option value="24h" className="bg-[#1a1a1a] ">
+          <option value="60" className="bg-[#1a1a1a] ">
             24h - 60%
           </option>
-          <option value="48h" className="bg-[#1a1a1a] ">
+          <option value="70" className="bg-[#1a1a1a] ">
             48h - 70%
           </option>
-          <option value="72h" className="bg-[#1a1a1a] ">
+          <option value="80" className="bg-[#1a1a1a] ">
             72h - 80%
           </option>
-          <option value="7d" className="bg-[#1a1a1a] ">
+          <option value="90" className="bg-[#1a1a1a] ">
             7d - 90%
           </option>
-          <option value="15d" className="bg-[#1a1a1a] ">
+          <option value="100" className="bg-[#1a1a1a] ">
             15d - 100%
           </option>
         </select>
@@ -210,78 +176,13 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         </div>
       </div>
 
-      <Modal
-        show={openModal}
-        onClose={() => setOpenModal(false)}
-        size="md"
-        className="backdrop-blur-[2px] bg-black/50"
-      >
-        <div className="bg-[#1A1A1A] text-white rounded-lg p-5">
-          <div className="flex justify-between items-center mb-3">
-            <span className="text-base font-medium">
-              {selectedPair}{" "}
-              <span
-                className={`px-1 py-1 rounded-md ${
-                  orderType === "long"
-                    ? "text-[#10D77A] bg-[#163E34]"
-                    : "text-[#E13A29] bg-[#462929]"
-                }`}
-              >
-                Buy {orderType} • {leverage}x
-              </span>
-            </span>
-            <button
-              onClick={() => setOpenModal(false)}
-              className="text-gray-400 hover:text-white"
-            >
-              ✕
-            </button>
-          </div>
-
-          <div className="text-gray-400 text-sm mb-2">
-            Maximum Positions <span className="text-[#00ffcc]">0 Pieces</span>
-          </div>
-
-          <div className="text-white text-sm mb-3">Please select leverage</div>
-
-          <div className="grid grid-cols-4 gap-2">
-            {leverageOptions.map((option) => (
-              <button
-                key={option}
-                onClick={() => handleLeverageClick(option)}
-                className={`w-full py-2 text-sm rounded-md text-white ${
-                  leverage === option ? "bg-[#313131]" : "bg-[#222] "
-                } hover:bg-[#313131] transition`}
-              >
-                {option}x
-              </button>
-            ))}
-          </div>
-
-          <div className="mt-5">
-            <button
-              className="w-full py-2 text-white bg-[#03F0FF] rounded-md text-sm font-medium hover:bg-[#00ffcc] transition"
-              onClick={() => setOpenModal(false)}
-            >
-              Confirm
-            </button>
-          </div>
-        </div>
-      </Modal>
-
-      <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Available USDT:</span>
-        <span className="text-white">
-          {wallet?.futuresWallet.toFixed(2) || "0.00"}
-        </span>
-      </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Latest Price:</span>
         <span className="text-white">{marketPrice?.toFixed(2)}</span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
-        <span>Maximum Positions:</span>
-        <span className="text-white">0</span>
+        <span>Handling Fee:</span>
+        <span className="text-white">0.00</span>
       </div>
 
       <button
