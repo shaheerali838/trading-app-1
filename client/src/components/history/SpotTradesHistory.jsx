@@ -41,7 +41,7 @@ const SpotTradesHistory = ({ trades }) => {
                 Quantity
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
-                Entry Price
+                Price
               </th>
             </tr>
           </thead>
@@ -78,7 +78,7 @@ const SpotTradesHistory = ({ trades }) => {
                   {trade.quantity}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.entryPrice}
+                  {trade.price}
                 </td>
               </tr>
             ))}

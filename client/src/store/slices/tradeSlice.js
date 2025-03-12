@@ -52,7 +52,7 @@ export const fetchPendingOrders = createAsyncThunk(
         withCredentials: true,
       });
 
-      console.log('the resp' + response.data.data);
+      console.log("the resp" + response.data.data);
 
       return response.data.data;
     } catch (error) {
@@ -104,12 +104,31 @@ export const rejectOrder = createAsyncThunk(
 );
 
 export const fetchSpotTradesHistory = createAsyncThunk(
-  "trade/history",
+  "trade/fetchSpotTradesHistory",
   async (_, { dispatch, rejectWithValue }) => {
     try {
       dispatch(setLoading(true));
 
       const response = await API.get("/trade/history", {
+        withCredentials: true,
+      });
+
+      return response.data.trades;
+    } catch (error) {
+      return rejectWithValue(error.response?.data);
+    } finally {
+      dispatch(setLoading(false)); // Stop loading after request
+    }
+  }
+);
+
+export const fetchUsersOpenOrders = createAsyncThunk(
+  "trade/fetchUsersOpenOrders",
+  async (_, { dispatch, rejectWithValue }) => {
+    try {
+      dispatch(setLoading(true));
+
+      const response = await API.get("/trade/open-orders", {
         withCredentials: true,
       });
 
@@ -130,6 +149,7 @@ const tradeSlice = createSlice({
     recentTrades: [],
     trades: [],
     pendingOrders: [],
+    openOrders: [],
     spotHistoryTrades: [], // Add historyTrades to the initial state
     error: null,
   },
@@ -216,6 +236,17 @@ const tradeSlice = createSlice({
         state.loading = false;
         state.error =
           action.payload?.message || "Failed to fetch history trades";
+      })
+      .addCase(fetchUsersOpenOrders.pending, (state) => {
+        state.loading = true;
+      })
+      .addCase(fetchUsersOpenOrders.fulfilled, (state, action) => {
+        state.loading = false;
+        state.openOrders = action.payload;
+      })
+      .addCase(fetchUsersOpenOrders.rejected, (state, action) => {
+        state.loading = false;
+        state.error = action.payload?.message || "Failed to fetch open orders";
       });
   },
 });

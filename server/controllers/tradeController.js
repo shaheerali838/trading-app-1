@@ -6,80 +6,134 @@ import { response } from "express";
 
 export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
-    const { type, orderType, price, usdtAmount, assetsAmount, coin } = req.body; // Added tradeType to specify spot or futures
+    const { type, orderType, price, usdtAmount, assetsAmount, coin } = req.body;
 
+    // Validate required fields
+    if (!type || !orderType || !coin) {
+      return res.status(400).json({ message: "Missing required fields" });
+    }
+
+    // Validate order type
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
     }
 
-    if (usdtAmount <= 0 || (orderType === "limit" && price <= 0)) {
-      return res.status(400).json({ message: "Invalid order details" });
+    // Validate that only one of assetsAmount or usdtAmount is provided
+    if (
+      (assetsAmount <= 0 && usdtAmount <= 0) ||
+      (assetsAmount > 0 && usdtAmount > 0)
+    ) {
+      return res
+        .status(400)
+        .json({
+          message: "Provide either assetsAmount or usdtAmount, not both",
+        });
     }
 
+    // Validate price for limit orders
+    if (orderType === "limit" && (!price || price <= 0)) {
+      return res.status(400).json({ message: "Invalid price for limit order" });
+    }
+
+    // Find the user's wallet
     const wallet = await Wallet.findOne({ userId: req.user._id });
-    if (!wallet) return res.status(404).json({ message: "Wallet not found" });
-
-    let quantity;
-      const marketPrice = price; // Implement this function to get the current market price
-      quantity = usdtAmount / marketPrice;
-
-
-    let totalCost = usdtAmount;
-
-    const usableAssets = (wallet.spotWallet / 100) * assetsAmount;
-
-    // Ensure user has enough Spot Wallet balance for buy orders
-    if (type === "buy" && usableAssets < totalCost) {
-      return res.status(400).json({
-        message:
-          "Insufficient funds in Spot Wallet.",
-      });
+    if (!wallet) {
+      return res.status(404).json({ message: "Wallet not found" });
     }
 
     if (type === "buy") {
+      // Buy logic
+      const marketPrice = price; // Use the provided price or fetch the current market price
+      let quantity, totalCost;
+
+      if (usdtAmount > 0) {
+        // Calculate quantity based on USDT amount
+        quantity = usdtAmount / marketPrice;
+        totalCost = usdtAmount;
+      } else if (assetsAmount > 0) {
+        // Calculate quantity based on assetsAmount (percentage of spot wallet)
+        const usableAssets = (wallet.spotWallet / 100) * assetsAmount;
+        quantity = usableAssets / marketPrice;
+        totalCost = usableAssets;
+      }
+
+      // Ensure user has enough balance in Spot Wallet
+      if (totalCost > wallet.spotWallet) {
+        return res
+          .status(400)
+          .json({ message: "Insufficient funds in Spot Wallet" });
+      }
+
+      // Create and save the trade
       const trade = await Trade.create({
         userId: req.user._id,
         type,
         orderType,
-        price,
-        quantity, // This is the quantity being traded
+        price: marketPrice,
+        quantity,
         totalCost,
-        asset: coin, // Add the asset (coin) being traded
+        asset: coin,
         status: "pending",
       });
-      await trade.save();
+
+      // Emit trade update
       io.emit("tradeUpdate", trade);
     } else {
-      // Use the `coin` from the request to find the correct holding
+      // Sell logic
       const holding = wallet.holdings.find((h) => h.asset === coin);
-      if (!holding || holding.quantity < quantity) {
+      if (!holding) {
         return res.status(400).json({ message: "Insufficient crypto balance" });
       }
 
+      let sellableQuantity;
+
+      if (assetsAmount > 0) {
+        // Calculate sellable quantity based on assetsAmount (percentage of holding)
+        sellableQuantity = (holding.quantity / 100) * assetsAmount;
+      } else if (usdtAmount > 0) {
+        // Calculate sellable quantity based on USDT amount
+        sellableQuantity = usdtAmount;
+      }
+
+      // Ensure user has enough crypto balance
+      if (sellableQuantity > holding.quantity) {
+        return res.status(400).json({ message: "Insufficient crypto balance" });
+      }
+
+      // Calculate total cost (USDT value of the sold assets)
+      const totalCost = sellableQuantity * price;
+
+      // Create and save the trade
       const trade = await Trade.create({
         userId: req.user._id,
         type,
         orderType,
         price,
-        quantity, // This is the quantity being traded
+        quantity: sellableQuantity,
         totalCost,
-        asset: coin, // Add the asset (coin) being traded
+        asset: coin,
         status: "pending",
       });
-      await trade.save();
+
+      // Emit trade update
       io.emit("tradeUpdate", trade);
     }
 
     res.status(200).json({ message: "Order Successful" });
   } catch (error) {
-    res.status(500).json({ message: "Server error", error });
+    console.error("Error placing order:", error);
+    res.status(500).json({ message: "Server error", error: error.message });
   }
 });
 
 // Get User Trade History
 export const getTradeHistory = async (req, res) => {
   try {
-    const trades = await Trade.find({ userId: req.user.userId }).sort({
+    clog("got a trade history request" + req.user.userId);
+    const trades = await Trade.find({
+      userId: req.user.userId,
+      status: "approved",
+    }).sort({
       createdAt: -1,
     });
     res.json(trades);
@@ -160,9 +214,7 @@ export const transferFunds = catchAsyncErrors(async (req, res) => {
 
       // Validate if fromHoldings is empty
       if (fromHoldings.length === 0) {
-        return res
-          .status(400)
-          .json({ message: "Insufficient crypto balance" });
+        return res.status(400).json({ message: "Insufficient crypto balance" });
       }
 
       const fromHolding = fromHoldings.find(
@@ -209,14 +261,26 @@ export const getSpotTradesHistory = async (req, res) => {
     const userId = req.user._id;
     const trades = await Trade.find({
       userId,
-      status: { $in: ["approved", "pending", "rejected"] },
+      status: "approved",
     });
-    console.log(
-      "got a history request and this is a spot complete object: " + trades
-    );
 
     res.status(200).json({ message: "Trades fetched successfully", trades });
   } catch (error) {
     res.status(500).json({ message: "Error fetching trades", error });
+  }
+};
+export const fetchOpenOrders = async (req, res, next) => {
+  try {
+    const userId = req.user._id;
+    const trades = await Trade.find({ userId, status: "pending" });
+    console.log("got fetch open orders req" + trades);
+    return res.status(200).json({
+      success: true,
+      trades,
+    });
+  } catch (error) {
+    return res
+      .status(500)
+      .json({ message: "Error fetching open orders", error });
   }
 };

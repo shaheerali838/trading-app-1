@@ -83,11 +83,17 @@ const Navbar = () => {
                 id="tradingPair"
                 value={location.pathname.slice(1)}
                 onChange={(e) => navigate(`/${e.target.value}`)}
-                className="bg-black text-tertiary3 p-2 focus:outline-none mr-4"
+                className=" text-tertiary3 p-2 focus:outline-none mr-4"
               >
-                <option value="trade">Spot</option>
-                <option value="perpetual">Perpetual</option>
-                <option value="futures">Trading</option>
+                <option className="bg-[#1a1a1a]" value="trade">
+                  Spot
+                </option>
+                <option className="bg-[#1a1a1a]" value="perpetual">
+                  Perpetual
+                </option>
+                <option className="bg-[#1a1a1a]" value="futures">
+                  Trading
+                </option>
               </select>
               <div
                 className="text-2xl text-gray-400 cursor-pointer"
@@ -314,9 +320,7 @@ const Navbar = () => {
         >
           <div className="bg-[#1A1A1A] rounded-lg p-5">
             <div>
-              <p >
-                Are you sure you want to logout from this account?
-              </p>
+              <p>Are you sure you want to logout from this account?</p>
             </div>
             <div className="mt-2 w-full flex justify-end">
               <Button

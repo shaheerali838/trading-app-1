@@ -60,16 +60,17 @@ function FuturesTrade() {
         );
         const data = await response.json();
 
-        setMarketData(
-          data.map((candle) => ({
-            time: Math.floor(candle[0] / 1000),
-            open: parseFloat(candle[1]),
-            high: parseFloat(candle[2]),
-            low: parseFloat(candle[3]),
-            close: parseFloat(candle[4]),
-            volume: parseFloat(candle[5]),
-          }))
-        );
+        const formattedData = data.map((candle) => ({
+          time: Math.floor(candle[0] / 1000),
+          open: parseFloat(candle[1]),
+          high: parseFloat(candle[2]),
+          low: parseFloat(candle[3]),
+          close: parseFloat(candle[4]),
+          volume: parseFloat(candle[5]),
+        }));
+
+        setMarketData(formattedData);
+
       } catch (error) {
         console.error("Error fetching market data:", error);
       }
@@ -78,6 +79,29 @@ function FuturesTrade() {
     const interval = setInterval(fetchMarketData, 60000);
     return () => clearInterval(interval);
   }, [selectedPair, selectedInterval]);
+    // WebSocket for real-time updates
+    useEffect(() => {
+      const ws = new WebSocket(
+        `wss://stream.binance.com:9443/ws/${selectedPair.toLowerCase()}@kline_${selectedInterval}`
+      );
+  
+      ws.onmessage = (event) => {
+        const response = JSON.parse(event.data);
+        const kline = response.k;
+        const newCandle = {
+          time: Math.floor(kline.t / 1000),
+          open: parseFloat(kline.o),
+          high: parseFloat(kline.h),
+          low: parseFloat(kline.l),
+          close: parseFloat(kline.c),
+          volume: parseFloat(kline.v),
+        };
+  
+        setMarketData((prevData) => [...prevData, newCandle]);
+      };
+  
+      return () => ws.close();
+    }, [selectedPair, selectedInterval]);
 
   const currentMarketPrice =
     marketData.length > 0 ? marketData[marketData.length - 1].close : 0;

@@ -1,9 +1,7 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import {
-  fetchSpotTradesHistory,
-  fetchPendingOrders,
-} from "../../store/slices/tradeSlice";
+  fetchSpotTradesHistory} from "../../store/slices/tradeSlice";
 import SpotTradesHistory from "../history/SpotTradesHistory";
 import { fetchFuturesTradesHistory } from "../../store/slices/futuresTradeSlice";
 import { fetchPerpetualTradesHistory } from "../../store/slices/perpetualSlice";
@@ -11,12 +9,13 @@ import FuturesOpenPosition from "./FuturesOpenPositions";
 import OpenPerpetualPositions from "./OpenPerpetualPositions";
 import FuturesTradeHistory from "../history/FuturesTradeHistory";
 import PerpetualsTradeHistory from "../history/PerpetualsTradeHistory";
+import { fetchUsersOpenOrders } from "../../store/slices/tradeSlice";
 
 const OrdersRecord = ({ type, marketData }) => {
   const dispatch = useDispatch();
   const [activeTab, setActiveTab] = useState("pending");
 
-  const { pendingOrders, spotHistoryTrades, loading } = useSelector(
+  const { openOrders, spotHistoryTrades, loading } = useSelector(
     (state) => state.trade
   );
   const { futuresHistoryTrades } = useSelector((state) => state.futures);
@@ -25,7 +24,7 @@ const OrdersRecord = ({ type, marketData }) => {
   useEffect(() => {
     if (type === "spot") {
       dispatch(fetchSpotTradesHistory());
-      dispatch(fetchPendingOrders());
+      dispatch(fetchUsersOpenOrders());
     } else if (type === "futures") {
       dispatch(fetchFuturesTradesHistory());
     } else if (type === "perpetual") {
@@ -72,7 +71,7 @@ const OrdersRecord = ({ type, marketData }) => {
               </tr>
             ) : activeTab === "pending" ? (
               type === "spot" ? (
-                <SpotTradesHistory trades={pendingOrders} />
+                <SpotTradesHistory trades={openOrders} />
               ) : type === "futures" ? (
                 <FuturesOpenPosition marketData={marketData} />
               ) : (

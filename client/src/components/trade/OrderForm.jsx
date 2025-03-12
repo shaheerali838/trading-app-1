@@ -15,7 +15,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [side, setSide] = useState("buy");
   const [price, setPrice] = useState(marketPrice);
   const [usdtAmount, setUsdtAmount] = useState("");
-  const [assetsAmount, setAssetsAmount] = useState(100);
+  const [assetsAmount, setAssetsAmount] = useState(0);
 
   const [availableAssetAmount, setAvailableAssetAmount] = useState(0);
   const { status, error } = useSelector((state) => state.trade);
@@ -33,6 +33,18 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
     "LTCUSDT",
   ];
   const assetsOptions = [25, 50, 75, 100];
+
+  useEffect(() => {
+    if (assetsAmount > 0) {
+      setUsdtAmount(0);
+    }
+  }, [assetsAmount]);
+  
+  useEffect(() => {
+    if (usdtAmount > 0) {
+      setAssetsAmount(0);
+    }
+  }, [usdtAmount]);
 
   const extractBase = (pair) => {
     if (pair === "MATICUSDT") {
@@ -80,21 +92,40 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
   const handleSubmit = async () => {
-    if (!usdtAmount || usdtAmount <= 0)
-      return toast.error("Enter a valid amount");
-    if (orderType === "limit" && (!price || price <= 0)) {
-      return alert("Enter a valid price");
+    // Check if both assetsAmount and usdtAmount are set
+    if (assetsAmount > 0 && usdtAmount > 0) {
+      return toast.error("Please enter either Assets Amount or USDT Amount, not both.");
     }
-
+  
+    // Check if neither assetsAmount nor usdtAmount is set
+    if (assetsAmount <= 0 && usdtAmount <= 0) {
+      return toast.error("Please enter either Assets Amount or USDT Amount.");
+    }
+  
+    // Check if usdtAmount is set but invalid
+    if (usdtAmount > 0 && usdtAmount <= 0) {
+      return toast.error("Enter a valid USDT amount.");
+    }
+  
+    // Check if assetsAmount is set but invalid
+    if (assetsAmount > 0 && assetsAmount <= 0) {
+      return toast.error("Enter a valid Assets amount.");
+    }
+  
+    // Check if orderType is limit and price is invalid
+    if (orderType === "limit" && (!price || price <= 0)) {
+      return toast.error("Enter a valid price.");
+    }
+  
     const orderData = {
       type: side,
       orderType,
-      price: marketPrice,
-      usdtAmount,
-      assetsAmount,
+      price: orderType === "market" ? marketPrice : price,
+      usdtAmount: usdtAmount > 0 ? usdtAmount : 0,
+      assetsAmount: assetsAmount > 0 ? assetsAmount : 0,
       coin: extractBase(selectedPair),
     };
-
+  
     dispatch(placeOrder(orderData))
       .unwrap()
       .then((response) => {

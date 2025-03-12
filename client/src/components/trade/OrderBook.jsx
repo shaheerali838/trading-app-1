@@ -47,7 +47,7 @@ const OrderBook = ({ selectedPair }) => {
 
   return (
     <div className="w-full p-4">
-      <span className="text-[.85rem] text-gray-500 flex justify-between">
+      <span className="text-[.85rem] text-gray-500 flex justify-between md:hidden">
         <p>Price (USDT)</p>
         <p>{`Amount (${extractBase(selectedPair)})`}</p>
       </span>

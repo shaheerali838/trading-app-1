@@ -174,9 +174,9 @@ function Trade() {
             </div>
           </div>
         </div>
-          <div>
-            <OrdersRecord type={"spot"} />
-          </div>
+        <div>
+          <OrdersRecord type={"spot"} />
+        </div>
       </motion.div>
     </div>
   );
