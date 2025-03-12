@@ -9,7 +9,7 @@ import OrderBook from "../components/trade/OrderBook";
 import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import { MdCandlestickChart } from "react-icons/md";
-import SpotOrders from "../components/trade/SpotOrders";
+import OrdersRecord from "../components/trade/OrdersRecord";
 
 function Trade() {
   const [marketData, setMarketData] = useState([]);
@@ -175,7 +175,7 @@ function Trade() {
           </div>
         </div>
           <div>
-            <SpotOrders />
+            <OrdersRecord type={"spot"} />
           </div>
       </motion.div>
     </div>

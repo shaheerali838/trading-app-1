@@ -64,8 +64,7 @@ function FuturesOpenPosition() {
 
   return (
     <div className="mt-6">
-      <div className="hidden md:block bg-transparent border border-[#2f2f2f] p-4 mb-4">
-        <h4 className="text-lg font-semibold text-white">Open Positions</h4>
+      <div className="hidden md:block bg-transparent mb-4">
         {openPositions.length > 0 ? (
           <table className="w-full text-white">
             <thead>
@@ -105,17 +104,14 @@ function FuturesOpenPosition() {
       </div>
 
       {/* for mobile screens */}
-      <div className="md:hidden m-4">
-        <h4 className="text-lg font-semibold text-white mb-4">
-          Open Positions
-        </h4>
+      <div className="md:hidden">
 
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openPositions.map((trade) => (
               <div
                 key={trade._id}
-                className="bg-[#1C1C1C] border border-[#2f2f2f] p-4 rounded-lg shadow-md"
+                className=" border-b border-[.1px]-[#2f2f2f] p-4 shadow-md"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-green-400 font-semibold">

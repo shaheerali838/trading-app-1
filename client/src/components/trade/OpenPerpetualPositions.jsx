@@ -75,12 +75,9 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
     <div>
       <div>
         <Card className=" bg-transparent text-white min-w-[100%] hidden md:flex">
-          <h2 className="text-lg font-semibold mb-4 hidden md:block">
-            Close Trade
-          </h2>
 
           <table className="text-sm text-left text-gray-400">
-            <thead className="text-xs text-gray-400 uppercase bg-[#1a1a1a]">
+            <thead className="text-xs text-gray-400 uppercase ">
               <tr>
                 <th className="py-2">Pair</th>
                 <th className="py-2">Type</th>
@@ -95,7 +92,7 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
                 )}
               </tr>
             </thead>
-            <tbody>
+            <tbody className="min-w-full">
               {openTrades?.length > 0 ? (
                 openTrades?.map((trade) => {
                   const coinData = getCoinData(trade.pair.split("USDT")[0]);
@@ -103,7 +100,7 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
                   return (
                     <tr
                       key={trade._id}
-                      className=" border-b bg-transparent border-gray-700"
+                      className=" border-t bg-transparent border-gray-700"
                     >
                       <td className="px-6 py-4 flex items-center gap-3">
                         <img
@@ -145,8 +142,8 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
                   );
                 })
               ) : (
-                <tr className="border-b bg-[#1a1a1a] border-gray-700">
-                  <td colSpan={4} className="px-6 py-4 text-center">
+                <tr className="border-y  border-gray-700">
+                  <td colSpan={8} className="px-6 py-4 text-center">
                     No open trades
                   </td>
                 </tr>
@@ -157,17 +154,14 @@ const OpenPerpetualPositions = ({ marketPrice, showBtn }) => {
       </div>
 
       {/* for mobile screens */}
-      <div className="md:hidden m-4">
-        <h4 className="text-lg font-semibold text-white mb-4">
-          Open Positions
-        </h4>
+      <div className="md:hidden">
 
         {openTrades.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openTrades.map((trade) => (
               <div
                 key={trade._id}
-                className="bg-[#1C1C1C] border border-[#2f2f2f] p-4 rounded-lg shadow-md"
+                className="border-b border-[#2f2f2f] p-4 shadow-md"
               >
                 <div className="flex justify-between items-center">
                   <span className="text-green-400 font-semibold">

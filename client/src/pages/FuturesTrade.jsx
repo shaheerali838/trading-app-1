@@ -10,6 +10,7 @@ import AnimatedHeading from "../components/animation/AnimateHeading";
 import { useNavigate } from "react-router-dom";
 import { MdCandlestickChart } from "react-icons/md";
 import FuturesOpenPosition from "../components/trade/FuturesOpenPositions";
+import OrdersRecord from "../components/trade/OrdersRecord";
 
 const socket = io(import.meta.env.VITE_API_URL);
 
@@ -142,7 +143,7 @@ function FuturesTrade() {
           </div>
         </div>
 
-        <FuturesOpenPosition marketData={marketData} />
+        <OrdersRecord type={"futures"} marketData={marketData} />
       </motion.div>
     </div>
   );

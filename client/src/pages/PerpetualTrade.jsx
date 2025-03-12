@@ -9,6 +9,7 @@ import { motion } from "framer-motion";
 import io from "socket.io-client";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 import OpenPerpetualPositions from "../components/trade/OpenPerpetualPositions";
+import OrdersRecord from "../components/trade/OrdersRecord";
 const socket = io(import.meta.env.VITE_API_URL);
 
 const PerpetualTrade = () => {
@@ -155,10 +156,7 @@ const PerpetualTrade = () => {
           </div>
         </div>
         <div className="bg-[#0f0f0f] md:bg-transparent h-full mb-4">
-          <OpenPerpetualPositions
-            marketPrice={currentMarketPrice}
-            showBtn={true}
-          />
+          <OrdersRecord type={"perpetual"} marketData={marketData} />
         </div>
       </motion.div>
     </div>
