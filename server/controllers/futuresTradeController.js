@@ -25,9 +25,7 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     !pair ||
     !type ||
     !leverage ||
-    !time ||
     !entryPrice ||
-    !tradeType ||
     !assetsAmount ||
     (!quantity && !amountInUSDT) // Require either quantity or amountInUSDT
   ) {
