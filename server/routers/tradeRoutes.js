@@ -9,7 +9,7 @@ import { fetchPendingOrders } from "../controllers/tradeController.js";
 const router = express.Router();
 
 router.post("/placeOrder", isUserAuthenticated, placeOrder);
-router.get("/pending-orders", isAdminAuthenticated, fetchPendingOrders);
+router.get("/pending-orders", fetchPendingOrders);
 router.get("/history", isUserAuthenticated, getSpotTradesHistory);
 
 

@@ -32,10 +32,10 @@ const SpotTradesHistory = ({ trades }) => {
                 Asset
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
-                Leverage
+                Time
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
-                Status
+                Type
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Quantity
@@ -46,7 +46,7 @@ const SpotTradesHistory = ({ trades }) => {
             </tr>
           </thead>
           <tbody className="divide-y divide-gray-700">
-            {trades.map((trade, index) => (
+            {trades?.map((trade, index) => (
               <tr key={index} className="hover:bg-gray-800 transition-colors">
                 <td className="px-4 py-2 text-sm text-gray-200 flex items-center gap-3">
                   <img
@@ -61,17 +61,17 @@ const SpotTradesHistory = ({ trades }) => {
                   </div>
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.leverage}
+                  {new Date(trade.executedAt).toLocaleString()}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      trade.status === "Open"
+                      trade.type === "buy"
                         ? "bg-green-500 text-green-100"
                         : "bg-red-500 text-red-100"
                     }`}
                   >
-                    {trade.status}
+                    {trade.type}
                   </span>
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
@@ -88,7 +88,7 @@ const SpotTradesHistory = ({ trades }) => {
 
       {/* Mobile Cards */}
       <div className="md:hidden space-y-4">
-        {trades.map((trade, index) => (
+        {trades?.map((trade, index) => (
           <div
             key={trade._id}
             className=" border-b border-[#2f2f2f] p-4 shadow-md"
@@ -105,7 +105,8 @@ const SpotTradesHistory = ({ trades }) => {
                     {extractBase(trade.asset).toUpperCase()}
                   </h2>
                 </div>
-              </span>
+              </span >
+              <span className= "text-stone-400">{new Date(trade.executedAt).toLocaleString()}</span>
             </div>
 
             <div className="mt-2 text-white text-sm">
@@ -123,9 +124,13 @@ const SpotTradesHistory = ({ trades }) => {
               </div>
 
               <div className="flex justify-between mt-1">
-                <span className="text-red-400">Status</span>
-                <span className="border border-red-400 px-2 py-1 rounded-md">
-                  {trade.status?.toUpperCase()}
+                <span className="text-white">Order Type</span>
+                <span
+                  className={`border ${
+                    trade.type === "buy" ? "border-green-500" : "border-red-500"
+                  }  px-2 py-1 rounded-md`}
+                >
+                  {trade.type.toUpperCase()}
                 </span>
               </div>
             </div>

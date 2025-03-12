@@ -52,6 +52,8 @@ export const fetchPendingOrders = createAsyncThunk(
         withCredentials: true,
       });
 
+      console.log('the resp' + response.data.data);
+
       return response.data.data;
     } catch (error) {
       return rejectWithValue(error.response.data);
@@ -110,7 +112,7 @@ export const fetchSpotTradesHistory = createAsyncThunk(
       const response = await API.get("/trade/history", {
         withCredentials: true,
       });
-      
+
       return response.data.trades;
     } catch (error) {
       return rejectWithValue(error.response?.data);
