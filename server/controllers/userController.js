@@ -95,13 +95,14 @@ export const logoutAdmin = catchAsyncErrors(async (req, res, next) => {
  */
 export const getProfile = async (req, res) => {
   try {
-    const user = await User.findById(req.user.userId).select("-password");
+    const user = await User.findById(req.user._id).select("-password");
+    console.log(user);
+    
     if (!user)
       return res
         .status(404)
         .json({ success: false, message: "User not found" });
-
-    res.json(user);
+    res.status(200).json({ success: true, user, message: "User successfully" });
   } catch (error) {
     res.status(500).json({ success: false, message: "Server Error", error });
   }
@@ -263,7 +264,7 @@ export const swapCrypto = async (req, res) => {
     if (fromAsset === "USDT") {
       // Check if the user has enough USDT in the exchangeWallet
       if (userWallet.exchangeWallet < amount) {
-        return res.status(400).json({ message: "Insufficient balance" }); 
+        return res.status(400).json({ message: "Insufficient balance" });
       }
       // Deduct from exchangeWallet
       userWallet.exchangeWallet -= amount;
@@ -273,8 +274,13 @@ export const swapCrypto = async (req, res) => {
         (holding) => holding.asset === fromAsset
       );
 
-      if (fromAssetIndex === -1 || userWallet.exchangeHoldings[fromAssetIndex].quantity < amount) {
-        return res.status(400).json({ message: "Insufficient balance in exchange wallet" });
+      if (
+        fromAssetIndex === -1 ||
+        userWallet.exchangeHoldings[fromAssetIndex].quantity < amount
+      ) {
+        return res
+          .status(400)
+          .json({ message: "Insufficient balance in exchange wallet" });
       }
       // Deduct from the existing asset balance
       userWallet.exchangeHoldings[fromAssetIndex].quantity -= amount;
@@ -292,7 +298,10 @@ export const swapCrypto = async (req, res) => {
 
       if (toAssetIndex === -1) {
         // If the asset doesn't exist, add it to the assets array
-        userWallet.exchangeHoldings.push({ asset: toAsset, quantity: toAmount });
+        userWallet.exchangeHoldings.push({
+          asset: toAsset,
+          quantity: toAmount,
+        });
       } else {
         // If the asset exists, increment its balance
         userWallet.exchangeHoldings[toAssetIndex].quantity += toAmount;

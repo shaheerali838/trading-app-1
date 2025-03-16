@@ -30,6 +30,7 @@ import BottomNavbar from "./components/layout/BottomNavbar.jsx";
 import LiquidateOpenTrades from "./pages/admin/LiquidateOpenTrades.jsx";
 import HistoryPage from "./pages/finance/HistoryPage.jsx";
 import SendPnL from "./pages/admin/SendPnL.jsx";
+import Profile from "./pages/Profile.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -70,6 +71,7 @@ const App = () => {
             </Route>
             <Route element={<ProtectedRoute />}>
               <Route path="/wallet" element={<Wallet />} />
+              <Route path="/profile" element={<Profile />} />
               <Route path="/wallet/deposit" element={<Deposit />} />
               <Route path="/wallet/withdraw" element={<Withdraw />} />
               <Route

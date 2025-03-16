@@ -1,5 +1,6 @@
 import { NavLink } from "react-router-dom";
 import { FiHome, FiBarChart2, FiTrendingUp, FiBriefcase } from "react-icons/fi";
+import { MdOutlinePersonOutline } from "react-icons/md";
 
 const BottomNavbar = () => {
   return (
@@ -54,6 +55,17 @@ const BottomNavbar = () => {
       >
         <FiBriefcase className="text-xl" />
         <span className="text-sm">Assets</span>
+      </NavLink>
+      <NavLink
+        to="/profile"
+        className={({ isActive }) =>
+          `flex flex-col items-center ${
+            isActive ? "text-blue-400" : "text-gray-400"
+          }`
+        }
+      >
+        <MdOutlinePersonOutline className="text-xl" />
+        <span className="text-sm">Profile</span>
       </NavLink>
     </div>
   );
