@@ -40,7 +40,20 @@ const validPairs = {
   XRP: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "DOT"],
   DOT: ["USDT", "ETH", "BTC", "BNB", "ADA", "SOL", "XRP"],
 };
-const transferablePairs = ["USDT", "USDC", "ETH", "BTC"];
+const transferablePairs = [
+  "USDT",
+  "USDC",
+  "ETH",
+  "BTC",
+  "BNB",
+  "SOL",
+  "XRP",
+  "ADA",
+  "DOGE",
+  "MATIC",
+  "DOTUS",
+  "LTC",
+];
 const Wallet = () => {
   const [open, setOpen] = useState(false);
   const [fromAsset, setFromAsset] = useState("");
@@ -61,6 +74,7 @@ const Wallet = () => {
   const [showAssets, setShowAssets] = useState(false);
   const [assetsType, setAssetsType] = useState("");
   const [transferAsset, setTransferAsset] = useState("USDT");
+  const [totalValue, setTotalValue] = useState(0);
 
   useEffect(() => {
     if (assetsType === "spot") {
@@ -73,17 +87,20 @@ const Wallet = () => {
       return () => clearInterval(interval); // Cleanup
     }
   }, [dispatch, assetsType]);
-  let totalValue;
-  if (coins.length > 0) {
-    totalValue = wallet?.holdings.reduce((total, holding) => {
-      const coin = coins.find((c) => c.symbol === holding.asset.toLowerCase());
+  useEffect(() => {
+    calculateTotalValue();
+  }, [coins, wallet]);
+  const calculateTotalValue = () => {
+    const value = wallet?.holdings?.reduce((total, holding) => {
+      const coin = coins?.find((c) => c.symbol === holding.asset.toLowerCase());
       if (!coin) {
         console.warn(`Coin data not found for asset: ${holding.asset}`);
         return total;
       }
       return total + coin.current_price * holding.quantity;
     }, 0);
-  }
+    setTotalValue(value + wallet?.spotWallet);
+  };
 
   useEffect(() => {
     dispatch(getWallet());
@@ -96,6 +113,7 @@ const Wallet = () => {
     return () => clearInterval(interval);
   }, [dispatch, fromAsset, toAsset]);
   useEffect(() => {
+    calculateTotalValue();
     setShowAssets(false);
   }, []);
   useEffect(() => {
@@ -199,7 +217,7 @@ const Wallet = () => {
             </div>
             <div className="bg-[#242424] p-6 rounded-lg mb-6">
               <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Futures Asset
+                Trading Asset
               </h2>
               <div className="flex flex-col md:flex-row justify-between items-center">
                 <div>
@@ -443,7 +461,7 @@ const Wallet = () => {
                   }}
                 >
                   <div>
-                    <p className="text-lg"> Futures Asset</p>
+                    <p className="text-lg"> Trading Asset</p>
                     <p className="text-2xl font-bold">
                       ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
@@ -577,7 +595,7 @@ const Wallet = () => {
                   Spot Wallet
                 </option>
                 <option className="bg-[#1a1a1a]" value="futuresWallet">
-                  Futures Wallet
+                  Trading Wallet
                 </option>
                 <option className="bg-[#1a1a1a]" value="perpetualsWallet">
                   Perpetual Wallet
@@ -604,7 +622,7 @@ const Wallet = () => {
                   Spot Wallet
                 </option>
                 <option className="bg-[#1a1a1a]" value="futuresWallet">
-                  Futures Wallet
+                  Trading Wallet
                 </option>
                 <option className="bg-[#1a1a1a]" value="perpetualsWallet">
                   Perpetual Wallet

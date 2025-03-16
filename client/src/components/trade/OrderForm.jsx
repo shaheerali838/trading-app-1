@@ -34,18 +34,6 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   ];
   const assetsOptions = [25, 50, 75, 100];
 
-  useEffect(() => {
-    if (assetsAmount > 0) {
-      setUsdtAmount(0);
-    }
-  }, [assetsAmount]);
-
-  useEffect(() => {
-    if (usdtAmount > 0) {
-      setAssetsAmount(0);
-    }
-  }, [usdtAmount]);
-
   const extractBase = (pair) => {
     if (pair === "MATICUSDT") {
       return "MATIC";
@@ -92,12 +80,6 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
   const handleSubmit = async () => {
-    // Check if both assetsAmount and usdtAmount are set
-    if (assetsAmount > 0 && usdtAmount > 0) {
-      return toast.error(
-        "Please enter either Assets Amount or USDT Amount, not both."
-      );
-    }
 
     // Check if neither assetsAmount nor usdtAmount is set
     if (assetsAmount <= 0 && usdtAmount <= 0) {
@@ -128,6 +110,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       coin: extractBase(selectedPair),
     };
 
+  
     dispatch(placeOrder(orderData))
       .unwrap()
       .then((response) => {
@@ -135,16 +118,18 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         toast.success("Order placed successfully!");
       })
       .catch((error) => {
+        console.log(error.message)
         toast.error(error.message);
       });
   };
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
+    setUsdtAmount((wallet.spotWallet / 100) * value);
   };
   return (
     <Card className="md:p-4 bg-transparent text-white w-full text-lg  flex justify-center">
       <AnimatedHeading>
-        <h2 className="hidden md:block">Spot</h2>
+        <p className="hidden md:block">Spot</p>
       </AnimatedHeading>
       <div className="mb-2">
         <div className=" p-1 rounded-md flex gap-2">
@@ -223,7 +208,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
         <input
           type="number"
           value={usdtAmount}
-          onChange={(e) => setUsdtAmount(e.target.value)}
+          onChange={(e) => {
+            setUsdtAmount(e.target.value);
+            setAssetsAmount(0);
+          }}
           className="w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 pr-16 text-left"
           placeholder="Enter Quantity"
         />

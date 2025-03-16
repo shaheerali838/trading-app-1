@@ -28,9 +28,10 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   useEffect(() => {
     dispatch(getWallet());
   }, [dispatch]);
-
   useEffect(() => {
-    setCurrentTime(new Date().toLocaleTimeString());
+    const now = new Date();
+    const gmtTime = now.toISOString().split("T")[1].split(".")[0]; // Extracts HH:MM:SS from ISO string
+    setCurrentTime(gmtTime);
   }, [marketPrice]);
 
   const handleSubmit = (e) => {
@@ -89,9 +90,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
 
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Time:</span>
-        <span className="text-white">
-          {currentTime}
-        </span>
+        <span className="text-white">{currentTime}</span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Available Amount:</span>
@@ -178,7 +177,7 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
 
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Latest Price:</span>
-        <span className="text-white">{marketPrice?.toFixed(2)}</span>
+        <span className="text-white">{marketPrice?.toFixed(5)}</span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Handling Fee:</span>

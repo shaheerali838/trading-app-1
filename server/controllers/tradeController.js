@@ -8,6 +8,9 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
   try {
     const { type, orderType, price, usdtAmount, assetsAmount, coin } = req.body;
 
+    console.log("GOT A PLACE ORDER REQUEST \n" + JSON.stringify(req.body));
+    
+
     // Validate required fields
     if (!type || !orderType || !coin) {
       return res.status(400).json({ message: "Missing required fields" });
@@ -16,18 +19,6 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
     // Validate order type
     if (!["buy", "sell"].includes(type)) {
       return res.status(400).json({ message: "Invalid order type" });
-    }
-
-    // Validate that only one of assetsAmount or usdtAmount is provided
-    if (
-      (assetsAmount <= 0 && usdtAmount <= 0) ||
-      (assetsAmount > 0 && usdtAmount > 0)
-    ) {
-      return res
-        .status(400)
-        .json({
-          message: "Provide either assetsAmount or usdtAmount, not both",
-        });
     }
 
     // Validate price for limit orders
@@ -46,7 +37,11 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
       const marketPrice = price; // Use the provided price or fetch the current market price
       let quantity, totalCost;
 
-      if (usdtAmount > 0) {
+      if (usdtAmount > 0 && assetsAmount > 0) {
+        // Prioritize usdtAmount over assetsAmount
+        quantity = usdtAmount / marketPrice;
+        totalCost = usdtAmount;
+      } else if (usdtAmount > 0) {
         // Calculate quantity based on USDT amount
         quantity = usdtAmount / marketPrice;
         totalCost = usdtAmount;
@@ -55,6 +50,8 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
         const usableAssets = (wallet.spotWallet / 100) * assetsAmount;
         quantity = usableAssets / marketPrice;
         totalCost = usableAssets;
+      } else {
+        return res.status(400).json({ message: "Invalid amount" });
       }
 
       // Ensure user has enough balance in Spot Wallet
@@ -87,12 +84,17 @@ export const placeOrder = catchAsyncErrors(async (req, res) => {
 
       let sellableQuantity;
 
-      if (assetsAmount > 0) {
+      if (usdtAmount > 0 && assetsAmount > 0) {
+        // Prioritize usdtAmount over assetsAmount
+        sellableQuantity = usdtAmount;
+      } else if (assetsAmount > 0) {
         // Calculate sellable quantity based on assetsAmount (percentage of holding)
         sellableQuantity = (holding.quantity / 100) * assetsAmount;
       } else if (usdtAmount > 0) {
         // Calculate sellable quantity based on USDT amount
         sellableQuantity = usdtAmount;
+      } else {
+        return res.status(400).json({ message: "Invalid amount" });
       }
 
       // Ensure user has enough crypto balance

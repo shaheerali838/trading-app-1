@@ -34,6 +34,8 @@ export const placeOrder = createAsyncThunk(
       });
       return response.data;
     } catch (error) {
+      console.log(error.response.data);
+      
       return rejectWithValue(error.response.data);
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
@@ -52,7 +54,6 @@ export const fetchPendingOrders = createAsyncThunk(
         withCredentials: true,
       });
 
-      console.log("the resp" + response.data.data);
 
       return response.data.data;
     } catch (error) {

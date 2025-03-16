@@ -189,7 +189,7 @@ const PerpetualOrderForm = ({ selectedPair, marketPrice }) => {
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Latest Price:</span>
-        <span className="text-white">{marketPrice?.toFixed(2)}</span>
+        <span className="text-white">{marketPrice?.toFixed(5)}</span>
       </div>
       <div className="flex justify-between text-gray-400 text-sm mb-2">
         <span>Maximum Positions:</span>
