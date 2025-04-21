@@ -192,12 +192,6 @@ function Deposit() {
                   </option>
                   <option
                     className="text-black hover:bg-tertiary3"
-                    value="Aptos"
-                  >
-                    Aptos
-                  </option>
-                  <option
-                    className="text-black hover:bg-tertiary3"
                     value="Polygon POS"
                   >
                     Polygon POS
