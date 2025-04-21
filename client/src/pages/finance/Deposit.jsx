@@ -67,67 +67,65 @@ function Deposit() {
     if (currency === "USDT") {
       switch (network) {
         case "Tron (TRC20)":
-          return "TDuXRdKfexXUY8Cx6ohNTVSwovpW8CiCs7";
+          return "TQeJdv3B7sgBgBPgagNRqYmvBAMv5PrPVi";
         case "Arbitrum One":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
-        case "Aptos":
-          return "0xcbc936f8a5c694c2218cd5f6690d4d7d8a4a9892d5ca6e4bff5cd44d2d7467c4";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Polygon POS":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Ethereum (ERC20)":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         default:
           return "";
       }
     } else if (currency === "USDC") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Polygon POS":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Solana":
-          return "HXCrdd3hitq5tf64m6q5o6YCABrNxkRFRHm4tEdG5D8u";
+          return "GvpTvu7Gh5Uf92kjatksmVoy6q8sVbhtnWzHNn6AkBax";
         case "Arbitrum One":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         default:
           return "";
       }
     } else if (currency === "ETH") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Arbitrum One":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         default:
           return "";
       }
     } else if (currency === "Solana") {
       switch (network) {
         case "Solana":
-          return "HXCrdd3hitq5tf64m6q5o6YCABrNxkRFRHm4tEdG5D8u";
+          return "GvpTvu7Gh5Uf92kjatksmVoy6q8sVbhtnWzHNn6AkBax";
         default:
           return "";
       }
     } else if (currency === "TRX") {
       switch (network) {
         case "Tron (TRC20)":
-          return "TDuXRdKfexXUY8Cx6ohNTVSwovpW8CiCs7";
+          return "TQeJdv3B7sgBgBPgagNRqYmvBAMv5PrPVi";
         case "Ethereum (ERC20)":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         default:
           return "";
       }
     } else if (currency === "POL") {
       switch (network) {
         case "Ethereum (ERC20)":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         case "Polygon POS":
-          return "0xE3c1D4989eaF636027367624B0D63E56675d4d8a";
+          return "0x78f2F7AD3761c4f9d444B643A0AfC52302BCf87a";
         default:
           return "";
       }
     } else if (currency === "BTC") {
-      return "bc1qmyx7nmyn76xm67umkydhyt4s2ynuen89cm8w83";
+      return "bc1qq3asuwkt49w4gwwpvjh6le5427e3cpq4uhz425";
     }
     return "";
   };
@@ -376,10 +374,10 @@ function Deposit() {
           <h3 className="text-yellow-200">⚠️Important Notice</h3>
           <ol className="text-gray-500 ">
             <li>
-              1. The above deposit address is the official payment address of
-              the platform. Please ensure you use the official deposit address
-              of the platform. Any loss of funds caused by incorrect charging
-              shall be borne by yourself.
+              1. If you have already deposited the selected amount in the given
+              wallet address but your wallet is not updated yet, then kindly
+              click on the given link at the end of the page for request and
+              your wallet will be updated within 24 hours.
             </li>
             <li>
               2. Please make sure that your computer and browser are safe to
@@ -396,10 +394,10 @@ function Deposit() {
               retrieved.
             </li>
             <li>
-              5. If you have already deposited the selected amount in the given
-              wallet address but your wallet is not updated yet, then kindly
-              click on the given link at the end of the page for request and
-              your wallet will be updated within 24 hours.
+              5. The above deposit address is the official payment address of
+              the platform. Please ensure you use the official deposit address
+              of the platform. Any loss of funds caused by incorrect charging
+              shall be borne by yourself.
             </li>
           </ol>
         </div>

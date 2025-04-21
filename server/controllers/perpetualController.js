@@ -101,7 +101,18 @@ export const closePerpetualPosition = catchAsyncErrors(async (req, res) => {
       ? (closePrice - trade.entryPrice) * trade.quantity
       : (trade.entryPrice - closePrice) * trade.quantity;
 
-  wallet.perpetualsWallet += trade.marginUsed + profitLoss;
+  // Make sure we're adding valid numbers to the wallet
+  if (isNaN(profitLoss)) {
+    profitLoss = 0;
+  }
+
+  // Ensure we're adding a valid number to perpetualsWallet
+  const updatedBalance =
+    wallet.perpetualsWallet + trade.marginUsed + profitLoss;
+  wallet.perpetualsWallet = isNaN(updatedBalance)
+    ? wallet.perpetualsWallet
+    : updatedBalance;
+
   if (wallet.balanceUSDT < 0) {
     wallet.balanceUSDT = 0;
   }
@@ -126,9 +137,10 @@ export const applyFundingRates = async () => {
     const fundingFee = (trade.marginUsed * rate) / 100;
 
     const wallet = await Wallet.findOne({ userId: trade.userId });
+    if (!wallet) continue;
 
     if (trade.type === "long") {
-      wallet.balanceUSDT -= fundingFee;
+      wallet.balanceUSDT = Math.max(0, wallet.balanceUSDT - fundingFee);
     } else {
       wallet.balanceUSDT += fundingFee;
     }
