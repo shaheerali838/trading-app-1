@@ -93,23 +93,6 @@ export const logoutAdmin = createAsyncThunk(
     }
   }
 );
-// export const getProfile = createAsyncThunk(
-//   "user/profile",
-//   async (_, { dispatch, rejectWithValue }) => {
-//     try {
-//       dispatch(setLoading(true));
-
-//       const response = await API.post("/user/profile", {});
-//       // Remove user data from local storage
-//       return response.data.user ;
-//     } catch (error) {
-//       toast.error(error.response.data.message);
-//       return rejectWithValue(error.response.data);
-//     } finally {
-//       dispatch(setLoading(false)); // Stop loading after request
-//     }
-//   }
-// );
 
 // Initial state
 const initialState = {

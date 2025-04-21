@@ -1,5 +1,5 @@
-import React, { useState, useEffect } from "react";
-import { Link, useLocation, useNavigate } from "react-router-dom";
+import { useState, useEffect } from "react";
+import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "../../assets/logo.png";
 import { motion } from "framer-motion";
 import {
@@ -10,16 +10,17 @@ import {
   Button,
 } from "@material-tailwind/react";
 import { Modal } from "flowbite-react";
-
+import { useTranslation } from "react-i18next";
 import { VscChevronDown } from "react-icons/vsc";
 import { useDispatch, useSelector } from "react-redux";
 import { logoutAdmin, logoutUser } from "../../store/slices/userSlice";
 import { AiOutlineClose, AiOutlineMenu } from "react-icons/ai";
-import { MdCandlestickChart } from "react-icons/md";
+import { MdCandlestickChart, MdOutlinePersonOutline } from "react-icons/md";
 import { setShowChart } from "../../store/slices/globalSlice";
 import { LuMessageCircleQuestion } from "react-icons/lu";
 
 const Navbar = () => {
+  const { t } = useTranslation();
   const { user } = useSelector((state) => state.user);
   const [openMenu, setOpenMenu] = useState(false);
   const [openTradeMenu, setOpenTradeMenu] = useState(false);
@@ -86,13 +87,13 @@ const Navbar = () => {
                 className=" text-tertiary3 p-2 focus:outline-none mr-4"
               >
                 <option className="bg-[#1a1a1a]" value="trade">
-                  Spot
+                  {t("spot")}
                 </option>
                 <option className="bg-[#1a1a1a]" value="perpetual">
-                  Perpetual
+                  {t("perpetual")}
                 </option>
                 <option className="bg-[#1a1a1a]" value="futures">
-                  Trading
+                  {t("trading")}
                 </option>
               </select>
               <div
@@ -111,15 +112,15 @@ const Navbar = () => {
                 to={"/admin/dashboard"}
                 className="text-white hover:text-[#00FF7F]"
               >
-                Admin Panel
+                {t("admin_panel")}
               </Link>
             )}
 
             <Link to={"/"} className="text-white hover:text-[#00FF7F]">
-              Home
+              {t("home")}
             </Link>
             <Link to={"/market"} className="text-white hover:text-[#00FF7F]">
-              Market
+              {t("market")}
             </Link>
             <Menu
               open={openTradeMenu}
@@ -132,7 +133,7 @@ const Navbar = () => {
                   variant="text"
                   className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
                 >
-                  <span className="text-[16px]">Trade</span>
+                  <span className="text-[16px]">{t("trade")}</span>
                   <VscChevronDown
                     strokeWidth={2.5}
                     className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
@@ -147,7 +148,7 @@ const Navbar = () => {
                     to={"/trade"}
                     className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    Spot
+                    {t("spot")}
                   </Link>
                 </MenuItem>
                 <MenuItem>
@@ -155,7 +156,7 @@ const Navbar = () => {
                     to={"/futures"}
                     className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    Trading
+                    {t("trading")}
                   </Link>
                 </MenuItem>
                 <MenuItem>
@@ -163,16 +164,16 @@ const Navbar = () => {
                     to={"/perpetual"}
                     className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                   >
-                    Perpetual
+                    {t("perpetual")}
                   </Link>
                 </MenuItem>
               </MenuList>
             </Menu>
             <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
-              Wallet
+              {t("wallet")}
             </Link>
             <Link to={"/about"} className="text-white hover:text-[#00FF7F]">
-              About
+              {t("about")}
             </Link>
           </div>
 
@@ -180,12 +181,12 @@ const Navbar = () => {
             <div className="w-fit flex items-center space-x-4">
               <Link to={"/login"}>
                 <div className="min-w-[10vw] sm:w-[7vw] px-3 py-1 flex justify-center cursor-pointer rounded-full bg-transparent border-2 border-[#1E90FF]">
-                  <button className="text-[#1E90FF]">Login</button>
+                  <button className="text-[#1E90FF]">{t("login")}</button>
                 </div>
               </Link>
               <Link to={"/register"}>
                 <div className="min-w-[10vw] sm:w-[7vw] px-2 py-1 flex justify-center cursor-pointer rounded-full bg-[#1E90FF] text-white">
-                  <button>Register</button>
+                  <button>{t("register")}</button>
                 </div>
               </Link>
             </div>
@@ -202,7 +203,7 @@ const Navbar = () => {
                     variant="text"
                     className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
                   >
-                    <span className="text-[16px]">Profile</span>
+                    <span className="text-[16px]">{t("profile")}</span>
                     <VscChevronDown
                       strokeWidth={2.5}
                       className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
@@ -222,7 +223,7 @@ const Navbar = () => {
                       to={"/wallet"}
                       className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                     >
-                      Assets Wallet
+                      {t("assets_wallet")}
                     </Link>
                   </MenuItem>
                   <MenuItem>
@@ -230,7 +231,7 @@ const Navbar = () => {
                       onClick={handleLogoutDialog}
                       className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
                     >
-                      Logout
+                      {t("logout")}
                     </p>
                   </MenuItem>
                 </MenuList>
@@ -243,10 +244,24 @@ const Navbar = () => {
             </>
           )}
         </div>
-        <div className="sm:hidden">
-          <button onClick={toggleMenu} className="text-white text-2xl">
-            {mobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
-          </button>
+        <div className="flex items-center gap-4">
+          <div className="sm:hidden">
+            <button onClick={toggleMenu} className="text-white text-2xl">
+              {mobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
+            </button>
+          </div>
+          {user && (
+            <NavLink
+              to="/profile"
+              className={({ isActive }) =>
+                `flex items-center pb-2 ${
+                  isActive ? "text-blue-400" : "text-gray-400"
+                }`
+              }
+            >
+              <MdOutlinePersonOutline className="text-3xl" />
+            </NavLink>
+          )}
         </div>
 
         {mobileMenuOpen && (
@@ -270,44 +285,44 @@ const Navbar = () => {
                 className="py-3"
                 onClick={toggleMenu}
               >
-                Admin Panel
+                {t("admin_panel")}
               </Link>
             )}
             <Link to={"/"} className="py-3" onClick={toggleMenu}>
-              Home
+              {t("home")}
             </Link>
             <Link to={"/market"} className="py-3" onClick={toggleMenu}>
-              Market
+              {t("market")}
             </Link>
             <Link to={"/trade"} className="py-3" onClick={toggleMenu}>
-              Spot Trading
+              {t("spot")}
             </Link>
             <Link to={"/futures"} className="py-3" onClick={toggleMenu}>
-              Trading
+              {t("trading")}
             </Link>
             <Link to={"/perpetual"} className="py-3" onClick={toggleMenu}>
-              Perpetual Trading
+              {t("perpetual")}
             </Link>
             <Link to={"/wallet"} className="py-3" onClick={toggleMenu}>
-              Wallet
+              {t("wallet")}
             </Link>
             <Link to={"/about"} className="py-3" onClick={toggleMenu}>
-              About
+              {t("about")}
             </Link>
 
             {!user ? (
               <>
                 <Link to={"/login"} className="py-3" onClick={toggleMenu}>
-                  Login
+                  {t("login")}
                 </Link>
                 <Link to={"/register"} className="py-3" onClick={toggleMenu}>
-                  Register
+                  {t("register")}
                 </Link>
               </>
             ) : (
               <>
                 <p onClick={handleLogoutDialog} className="py-3 cursor-pointer">
-                  Logout
+                  {t("logout")}
                 </p>
               </>
             )}
@@ -320,7 +335,7 @@ const Navbar = () => {
         >
           <div className="bg-[#1A1A1A] rounded-lg p-5">
             <div>
-              <p>Are you sure you want to logout from this account?</p>
+              <p>{t("logout_confirmation")}</p>
             </div>
             <div className="mt-2 w-full flex justify-end">
               <Button
@@ -329,13 +344,13 @@ const Navbar = () => {
                 onClick={handleLogoutDialog}
                 className="mr-1"
               >
-                <span>Cancel</span>
+                <span>{t("cancel")}</span>
               </Button>
               <button
                 onClick={handleLogout}
                 className="bg-green-500 hover:bg-green-400 rounded-md px-3 py-1"
               >
-                <span>Confirm</span>
+                <span>{t("confirm")}</span>
               </button>
             </div>
           </div>

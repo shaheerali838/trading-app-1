@@ -1,4 +1,4 @@
-import React, { useState } from "react";
+import { useTranslation } from "react-i18next";
 import Hero from "../components/home/Hero.jsx";
 import CryptoCarousel from "../components/home/CryptoCarousel.jsx";
 import Testimonials from "../components/home/Testimonials.jsx";
@@ -8,6 +8,9 @@ import Slider from "../components/home/Slider.jsx";
 import AnimatedSection from "../components/animation/AnimateSection.jsx";
 
 const Home = () => {
+  // Initialize translation for child components to access
+  useTranslation();
+
   return (
     <>
       <div className="home">

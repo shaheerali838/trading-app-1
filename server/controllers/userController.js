@@ -96,7 +96,7 @@ export const logoutAdmin = catchAsyncErrors(async (req, res, next) => {
 export const getProfile = async (req, res) => {
   try {
     const user = await User.findById(req.user._id).select("-password");
-    console.log(user);
+
     
     if (!user)
       return res

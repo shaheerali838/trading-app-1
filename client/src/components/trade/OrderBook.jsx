@@ -1,6 +1,9 @@
 import { useEffect, useState, useRef } from "react";
+import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 
 const OrderBook = ({ selectedPair }) => {
+  const { t } = useTranslation();
   const [bids, setBids] = useState([]);
   const [asks, setAsks] = useState([]);
   const wsRef = useRef(null);
@@ -37,28 +40,30 @@ const OrderBook = ({ selectedPair }) => {
   }, [selectedPair]);
 
   const maxBidAmount = Math.max(
-    ...bids.map(([_, amount]) => parseFloat(amount)),
+    ...bids.map(([, amount]) => parseFloat(amount)),
     1
   );
   const maxAskAmount = Math.max(
-    ...asks.map(([_, amount]) => parseFloat(amount)),
+    ...asks.map(([, amount]) => parseFloat(amount)),
     1
   );
 
   return (
     <div className="w-full p-4">
       <span className="text-[.85rem] text-gray-500 flex justify-between md:hidden">
-        <p>Price (USDT)</p>
-        <p>{`Amount (${extractBase(selectedPair)})`}</p>
+        <p>{t("price_usdt")}</p>
+        <p>{`${t("amount")} (${extractBase(selectedPair)})`}</p>
       </span>
 
       {/* Large Screen View */}
       <table className="hidden sm:table w-full text-[.7rem]">
         <thead>
           <tr className="border-b border-gray-600 text-gray-500 w-full">
-            <th className="text-left p-2 w-1/3">Price (USDT)</th>
-            <th className="text-left p-2 w-1/3">Amount (BTC)</th>
-            <th className="text-left p-2 w-1/3">Total (USDT)</th>
+            <th className="text-left p-2 w-1/3">{t("price_usdt")}</th>
+            <th className="text-left p-2 w-1/3">{`${t("amount")} (${extractBase(
+              selectedPair
+            )})`}</th>
+            <th className="text-left p-2 w-1/3">{t("total_usdt")}</th>
           </tr>
         </thead>
         <tbody className="text-gray-500">
@@ -142,6 +147,10 @@ const OrderBook = ({ selectedPair }) => {
       </div>
     </div>
   );
+};
+
+OrderBook.propTypes = {
+  selectedPair: PropTypes.string.isRequired,
 };
 
 export default OrderBook;

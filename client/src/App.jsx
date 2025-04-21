@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import { useEffect } from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -31,6 +31,9 @@ import LiquidateOpenTrades from "./pages/admin/LiquidateOpenTrades.jsx";
 import HistoryPage from "./pages/finance/HistoryPage.jsx";
 import SendPnL from "./pages/admin/SendPnL.jsx";
 import Profile from "./pages/Profile.jsx";
+import KycVerification from "./pages/KycVerification.jsx";
+import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
+import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -43,65 +46,78 @@ const App = () => {
     }
   }, [dispatch]);
   return (
-    <div className="bg-gradient text-white overflow-hidden">
-      <Router>
-        <Navbar />
-        <main className="pt-[82px]">
-          {loading && <Loader />}
-          <Routes>
-            <Route path="/" element={<Home />} />
-            <Route path="/login" element={<LogIn />} />
-            <Route path="/register" element={<SignUp />} />
-            <Route path="/about" element={<About />} />
-            <Route path="/market" element={<Market />} />
-            <Route element={<AdminProtectedRoute />}>
-              <Route path="/admin/dashboard" element={<AdminDashboard />} />
-              <Route path="/admin/users/manage" element={<ManageUser />} />
-              <Route
-                path="/admin/transaction/manage"
-                element={<ManageTransactions />}
-              />
-              <Route path="/admin/orders/manage" element={<ManageOrders />} />
-              <Route
-                path="/admin/users/add-tokens/:userId"
-                element={<AddTokens />}
-              />
-              <Route path="/admin/liquidate/open-trades" element={<LiquidateOpenTrades />} />
-              <Route path="/admin/send-pnl/:tradeId/:marketPrice/:type" element={<SendPnL />} />
-            </Route>
-            <Route element={<ProtectedRoute />}>
-              <Route path="/wallet" element={<Wallet />} />
-              <Route path="/profile" element={<Profile />} />
-              <Route path="/wallet/deposit" element={<Deposit />} />
-              <Route path="/wallet/withdraw" element={<Withdraw />} />
-              <Route
-                path="/wallet/request-release-funds"
-                element={<RequestRelease />}
-              />
-              <Route path="/wallet/withdraw" element={<Withdraw />} />
-              <Route path="/wallet/histories" element={<HistoryPage />} />
-              <Route path="/trade" element={<Trade />} />
-              <Route path="/futures" element={<FuturesTrade />} />
-              <Route path="/perpetual" element={<PerpetualTrade />} />
-            </Route>
-          </Routes>
-        </main>
-        <Footer />
-        <BottomNavbar />
-        <ToastContainer
-          position="top-right"
-          autoClose={5000}
-          hideProgressBar={false}
-          newestOnTop
-          closeOnClick
-          rtl={false}
-          pauseOnFocusLoss
-          draggable
-          pauseOnHover
-          theme="dark"
-        />
-      </Router>
-    </div>
+    <TranslationWrapper>
+      <div className="bg-gradient text-white overflow-hidden">
+        <Router>
+          <Navbar />
+          <main className="pt-[82px]">
+            {loading && <Loader />}
+            <Routes>
+              <Route path="/" element={<Home />} />
+              <Route path="/login" element={<LogIn />} />
+              <Route path="/register" element={<SignUp />} />
+              <Route path="/about" element={<About />} />
+              <Route path="/market" element={<Market />} />
+              <Route element={<AdminProtectedRoute />}>
+                <Route path="/admin/dashboard" element={<AdminDashboard />} />
+                <Route path="/admin/users/manage" element={<ManageUser />} />
+                <Route
+                  path="/admin/transaction/manage"
+                  element={<ManageTransactions />}
+                />
+                <Route path="/admin/orders/manage" element={<ManageOrders />} />
+                <Route
+                  path="/admin/users/add-tokens/:userId"
+                  element={<AddTokens />}
+                />
+                <Route
+                  path="/admin/liquidate/open-trades"
+                  element={<LiquidateOpenTrades />}
+                />
+                <Route
+                  path="/admin/send-pnl/:tradeId/:marketPrice/:type"
+                  element={<SendPnL />}
+                />
+                <Route
+                  path="/admin/kyc/verification"
+                  element={<KycVerificationApproval />}
+                />
+              </Route>
+              <Route element={<ProtectedRoute />}>
+                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/profile" element={<Profile />} />
+                <Route path="/wallet/deposit" element={<Deposit />} />
+                <Route path="/wallet/withdraw" element={<Withdraw />} />
+                <Route
+                  path="/wallet/request-release-funds"
+                  element={<RequestRelease />}
+                />
+                <Route path="/wallet/withdraw" element={<Withdraw />} />
+                <Route path="/wallet/histories" element={<HistoryPage />} />
+                <Route path="/trade" element={<Trade />} />
+                <Route path="/futures" element={<FuturesTrade />} />
+                <Route path="/perpetual" element={<PerpetualTrade />} />
+                <Route path="/kyc-verification" element={<KycVerification />} />
+              </Route>
+            </Routes>
+          </main>
+          <Footer />
+          <BottomNavbar />
+          <ToastContainer
+            position="top-right"
+            autoClose={5000}
+            hideProgressBar={false}
+            newestOnTop
+            closeOnClick
+            rtl={false}
+            pauseOnFocusLoss
+            draggable
+            pauseOnHover
+            theme="dark"
+          />
+        </Router>
+      </div>
+    </TranslationWrapper>
   );
 };
 

@@ -1,26 +1,30 @@
 import React from "react";
+import { useTranslation } from "react-i18next";
 import CountUp from "react-countup";
 import HeroImgSrc from "../../assets/hero.png";
+import PropTypes from "prop-types";
 
 const Hero = () => {
+  const { t } = useTranslation();
+
   const counts = [
     {
       index: 1,
       end: 73,
       symbol: "M $",
-      text: "24-hour trading volume",
+      text: t("trading_volume"),
     },
     {
       index: 2,
       end: 30,
       symbol: "+",
-      text: "Integrated Trade",
+      text: t("integrated_trade"),
     },
     {
       index: 3,
       end: 20,
       symbol: "M +",
-      text: "Users",
+      text: t("users"),
     },
   ];
   return (
@@ -29,16 +33,16 @@ const Hero = () => {
         <div className="first text-center md:text-left md:mr-8">
           <div className="heading flex flex-col items-end">
             <h1 className="text-4xl md:text-6xl font-bold text-white">
-              The Most Trusted Website
+              {t("trusted_trading")}
             </h1>
             <p className="text-4xl md:text-5xl text-primary mt-4">
-              Trade safely, quickly and easily
+              {t("trade_safely")}
             </p>
           </div>
         </div>
         <div className="second mt-8 md:mt-0">
           <div className="heroImage w-[50vw] md:w-[25vw] rotate-[-27deg] animate-up-down">
-            <img src={HeroImgSrc} alt="Hero" />
+            <img src={HeroImgSrc} alt={t("hero")} />
           </div>
         </div>
       </div>

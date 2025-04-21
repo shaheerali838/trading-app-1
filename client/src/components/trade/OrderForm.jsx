@@ -1,6 +1,8 @@
 import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { Card, Button } from "@material-tailwind/react";
+import { useTranslation } from "react-i18next";
+import PropTypes from "prop-types";
 import io from "socket.io-client";
 import { toast } from "react-toastify";
 import { placeOrder } from "../../store/slices/tradeSlice";
@@ -10,6 +12,7 @@ import { getWallet } from "../../store/slices/assetsSlice";
 const socket = io(import.meta.env.VITE_WEB_SOCKET_URL);
 
 const OrderForm = ({ marketPrice, selectedPair }) => {
+  const { t } = useTranslation();
   const dispatch = useDispatch();
   const [orderType, setOrderType] = useState("market");
   const [side, setSide] = useState("buy");
@@ -18,20 +21,8 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   const [assetsAmount, setAssetsAmount] = useState(0);
 
   const [availableAssetAmount, setAvailableAssetAmount] = useState(0);
-  const { status, error } = useSelector((state) => state.trade);
   const { wallet } = useSelector((state) => state.assets);
-  const tradingPairs = [
-    "BTCUSDT",
-    "ETHUSDT",
-    "BNBUSDT",
-    "SOLUSDT",
-    "XRPUSDT",
-    "ADAUSDT",
-    "DOGEUSDT",
-    "MATICUSDT",
-    "DOTUSDT",
-    "LTCUSDT",
-  ];
+
   const assetsOptions = [25, 50, 75, 100];
 
   const extractBase = (pair) => {
@@ -53,7 +44,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
 
   useEffect(() => {
     // Listen for real-time trade updates
-    socket.on("tradeUpdate", (trade) => {
+    socket.on("tradeUpdate", () => {
       // Handle trade updates
     });
 
@@ -61,9 +52,10 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       socket.off("tradeUpdate");
     };
   }, []);
+
   useEffect(() => {
     dispatch(getWallet());
-  }, []);
+  }, [dispatch]);
 
   useEffect(() => {
     if (!wallet?.holdings) return; // Prevents running if wallet is not loaded
@@ -80,25 +72,24 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
   }, [selectedPair, wallet?.holdings]); // Only runs when `selectedPair` or `wallet.holdings` changes
 
   const handleSubmit = async () => {
-
     // Check if neither assetsAmount nor usdtAmount is set
     if (assetsAmount <= 0 && usdtAmount <= 0) {
-      return toast.error("Please enter either Assets Amount or USDT Amount.");
+      return toast.error(t("enter_amount"));
     }
 
     // Check if usdtAmount is set but invalid
     if (usdtAmount > 0 && usdtAmount <= 0) {
-      return toast.error("Enter a valid USDT amount.");
+      return toast.error(t("enter_valid_usdt"));
     }
 
     // Check if assetsAmount is set but invalid
     if (assetsAmount > 0 && assetsAmount <= 0) {
-      return toast.error("Enter a valid Assets amount.");
+      return toast.error(t("enter_valid_assets"));
     }
 
     // Check if orderType is limit and price is invalid
     if (orderType === "limit" && (!price || price <= 0)) {
-      return toast.error("Enter a valid price.");
+      return toast.error(t("enter_valid_price"));
     }
 
     const orderData = {
@@ -110,26 +101,27 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       coin: extractBase(selectedPair),
     };
 
-  
     dispatch(placeOrder(orderData))
       .unwrap()
       .then((response) => {
         socket.emit("placeOrder", response.trade);
-        toast.success("Order placed successfully!");
+        toast.success(t("order_placed_success"));
       })
       .catch((error) => {
-        console.log(error.message)
+        console.log(error.message);
         toast.error(error.message);
       });
   };
+
   const handleAssetsClick = (value) => {
     setAssetsAmount(value);
     setUsdtAmount((wallet.spotWallet / 100) * value);
   };
+
   return (
     <Card className="md:p-4 bg-transparent text-white w-full text-lg  flex justify-center">
       <AnimatedHeading>
-        <p className="hidden md:block">Spot</p>
+        <p className="hidden md:block">{t("spot")}</p>
       </AnimatedHeading>
       <div className="mb-2">
         <div className=" p-1 rounded-md flex gap-2">
@@ -141,7 +133,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
                 : "text-gray-400 bg-[#232323]"
             }`}
           >
-            Buy
+            {t("buy")}
           </button>
           <button
             onClick={() => setSide("sell")}
@@ -151,7 +143,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
                 : "text-gray-400 bg-[#232323]"
             }`}
           >
-            Sell
+            {t("sell")}
           </button>
         </div>
       </div>
@@ -166,7 +158,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
                 : "text-gray-400 bg-[#232323]"
             }`}
           >
-            Market
+            {t("market_order")}
           </button>
           <button
             onClick={() => setOrderType("limit")}
@@ -176,7 +168,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
                 : "text-gray-400 bg-[#232323]"
             }`}
           >
-            Limit
+            {t("limit")}
           </button>
         </div>
       </div>
@@ -184,7 +176,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
       {orderType === "limit" ? (
         <div className="mb-4">
           <label className="block text-sm text-gray-300 mb-1">
-            Select Limit Price
+            {t("select_limit_price")}
           </label>
           <input
             type="number"
@@ -213,7 +205,7 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
             setAssetsAmount(0);
           }}
           className="w-full bg-gray-700 bg-transparent focus:outline-none rounded-md px-2 py-1 text-white border border-gray-800 pr-16 text-left"
-          placeholder="Enter Quantity"
+          placeholder={t("enter_quantity")}
         />
         <span className="absolute right-3 top-1/2 transform -translate-y-1/2 text-gray-400">
           {side === "buy" ? "USDT" : extractBase(selectedPair)}
@@ -244,24 +236,28 @@ const OrderForm = ({ marketPrice, selectedPair }) => {
           side === "buy" ? "bg-[#26bb8c]" : "bg-[#ff5e5a]"
         }`}
       >
-        {side === "buy" ? "Buy" : "Sell"}
+        {side === "buy" ? t("buy") : t("sell")}
       </Button>
       <div className="flex gap-1 text-gray-400 text-sm mb-2">
-        <span>Market Price</span>
-        <span className="text-gray-300">${marketPrice}</span>
+        <span>{t("market_price")}</span>
+        <span>:</span>
+        <span>{marketPrice?.toFixed(2)}</span>
       </div>
-      <div className="flex gap-1 text-gray-400 text-sm mb-2">
-        <span>Available </span>
-        <span className="text-gray-300">
-          {wallet?.spotWallet.toFixed(2) || "0.00"} USDT
+      <div className="flex gap-1 text-gray-400 text-sm">
+        <span>{t("available_balance")}</span>
+        <span>:</span>
+        <span className="truncate">
+          {side === "buy" ? wallet?.spotWallet : availableAssetAmount}
+          {side === "buy" ? " USDT" : ` ${extractBase(selectedPair)}`}
         </span>
-      </div>
-      <div className="flex gap-1 text-gray-400 text-sm mb-2">
-        <span>Max Buy </span>
-        <span className="text-gray-300">0 {extractBase(selectedPair)}</span>
       </div>
     </Card>
   );
+};
+
+OrderForm.propTypes = {
+  marketPrice: PropTypes.number,
+  selectedPair: PropTypes.string.isRequired,
 };
 
 export default OrderForm;

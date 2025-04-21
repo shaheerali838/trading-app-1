@@ -14,6 +14,7 @@ import depositWithdrawRouter from "./routers/depositWithdrawRoutes.js";
 import futuresTradeRouter from "./routers/futuresTradeRoutes.js";
 import perpetualTradeRouter from "./routers/perpetualRoutes.js";
 import walletRouter from "./routers/walletRoutes.js";
+import kycRouter from "./routers/kycRoutes.js";
 
 const app = express();
 
@@ -43,6 +44,7 @@ app.use("/api/admin", adminRouter);
 app.use("/api/funds", depositWithdrawRouter);
 app.use("/api/futures", futuresTradeRouter);
 app.use("/api/perpetual", perpetualTradeRouter);
+app.use("/api/kyc", kycRouter);
 
 // Wallet routes
 app.use("/api/wallet", walletRouter);

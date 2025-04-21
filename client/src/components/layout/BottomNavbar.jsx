@@ -1,8 +1,10 @@
 import { NavLink } from "react-router-dom";
+import { useTranslation } from "react-i18next";
 import { FiHome, FiBarChart2, FiTrendingUp, FiBriefcase } from "react-icons/fi";
-import { MdOutlinePersonOutline } from "react-icons/md";
 
 const BottomNavbar = () => {
+  const { t } = useTranslation();
+
   return (
     <div className="fixed bottom-0 left-0 z-50 w-full bg-[#1C1C1C] text-white flex justify-around py-3 md:hidden border-t border-gray-700">
       {/* Home */}
@@ -15,7 +17,7 @@ const BottomNavbar = () => {
         }
       >
         <FiHome className="text-xl" />
-        <span className="text-sm">Home</span>
+        <span className="text-sm">{t("home")}</span>
       </NavLink>
 
       {/* Markets */}
@@ -28,7 +30,7 @@ const BottomNavbar = () => {
         }
       >
         <FiBarChart2 className="text-xl" />
-        <span className="text-sm">Markets</span>
+        <span className="text-sm">{t("market")}</span>
       </NavLink>
 
       {/* Trade */}
@@ -41,7 +43,7 @@ const BottomNavbar = () => {
         }
       >
         <FiTrendingUp className="text-xl" />
-        <span className="text-sm">Trade</span>
+        <span className="text-sm">{t("trade")}</span>
       </NavLink>
 
       {/* Wallet / Assets */}
@@ -54,18 +56,7 @@ const BottomNavbar = () => {
         }
       >
         <FiBriefcase className="text-xl" />
-        <span className="text-sm">Assets</span>
-      </NavLink>
-      <NavLink
-        to="/profile"
-        className={({ isActive }) =>
-          `flex flex-col items-center ${
-            isActive ? "text-blue-400" : "text-gray-400"
-          }`
-        }
-      >
-        <MdOutlinePersonOutline className="text-xl" />
-        <span className="text-sm">Profile</span>
+        <span className="text-sm">{t("assets")}</span>
       </NavLink>
     </div>
   );

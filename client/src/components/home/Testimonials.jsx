@@ -15,14 +15,14 @@ const Testimonials = () => {
   const testimonials = [
     {
       id: 1,
-      name: "Malik Noman",
+      name: "Wood",
       avatar: avatarIImg,
       testimonial:
         "I am extremely satisfied with the services provided by this company. Their team is professional, efficient, and always goes above and beyond to meet my needs. I highly recommend them to anyone in need of reliable and high-quality services.",
     },
     {
       id: 2,
-      name: "Muhammad Raza",
+      name: "Chris",
       avatar: avatarIIImg,
       testimonial:
         "I have been using the services of this company for several years now, and I have always been impressed with their quality and reliability. Their team is knowledgeable and always provides excellent customer service. I would not hesitate to recommend them to anyone in need of professional services.",
@@ -34,7 +34,7 @@ const Testimonials = () => {
       testimonial: "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and high-quality services."
     }, {
       id: 4,
-      name: "Ali",
+      name: "James",
       avatar: avatarIVImg,
       testimonial:
         "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and professional services.",

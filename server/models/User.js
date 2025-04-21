@@ -18,6 +18,17 @@ const UserSchema = new mongoose.Schema(
     withdrawalHistory: [
       { type: mongoose.Schema.Types.ObjectId, ref: "Transaction" },
     ],
+    kycDocuments: {
+      idFront: { type: String }, // URL to front ID image in Cloudinary
+      idBack: { type: String }, // URL to back ID image in Cloudinary
+      uploadedAt: { type: Date },
+      verificationStatus: {
+        type: String,
+        enum: ["pending", "verified", "rejected"],
+        default: "pending",
+      },
+      rejectionReason: { type: String },
+    },
     createdAt: { type: Date, default: Date.now },
   },
   { timestamps: true }

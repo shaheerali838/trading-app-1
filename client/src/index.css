@@ -15,7 +15,6 @@
   --background-gradient-reverse: linear-gradient(to top, #000000, #181818);
 }
 
-
 .text-primary {
   color: var(--primary-color);
 }
@@ -81,8 +80,7 @@
   transition: all 0.2s ease-in-out;
 }
 .shadow-top {
-  box-shadow: 0 -4px 6px -1px #1e90ff,
-    0 -2px 4px -1px #1e90ff;
+  box-shadow: 0 -4px 6px -1px #1e90ff, 0 -2px 4px -1px #1e90ff;
 }
 
 .border-primary {
