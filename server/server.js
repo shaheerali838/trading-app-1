@@ -4,7 +4,10 @@ import WebSocket from "ws";
 import axios from "axios";
 import dotenv from "dotenv";
 import app from "./app.js";
-import { checkLiquidations } from "./controllers/futuresTradeController.js";
+import {
+  checkLiquidations,
+  checkExpiredTrades,
+} from "./controllers/futuresTradeController.js";
 
 dotenv.config();
 
@@ -13,8 +16,8 @@ const server = http.createServer(app);
 
 // Initialize WebSocket server for real-time updates
 const io = new Server(server, {
-  cors: {                               
-    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
+  cors: {
+    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
     credentials: true,
     methods: ["GET", "POST", "PUT", "DELETE"],
     allowedHeaders: ["Content-Type", "Authorization"],
@@ -136,6 +139,12 @@ setInterval(async () => {
   console.log("🔄 Running periodic liquidation check...");
   await checkLiquidations(marketPrices);
 }, 30000);
+
+// Run expired trades check every minute
+setInterval(async () => {
+  console.log("⏱️ Checking for expired trades...");
+  await checkExpiredTrades();
+}, 60000);
 
 console.log("process.env.PORT----", process.env.PORT);
 // Start the server

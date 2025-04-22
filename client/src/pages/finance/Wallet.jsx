@@ -25,8 +25,6 @@ import {
   DialogHeader,
 } from "@material-tailwind/react";
 import { AiOutlineArrowDown, AiOutlineArrowUp } from "react-icons/ai";
-import Loader from "../../components/layout/Loader";
-import API from "../../utils/api";
 import Assets from "../../components/wallet/Assets";
 import { fetchMarketData } from "../../store/slices/marketSlice";
 
@@ -61,9 +59,7 @@ const Wallet = () => {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const [amount, setAmount] = useState(1);
-  const { wallet, status, error, exchangeRate } = useSelector(
-    (state) => state.assets
-  );
+  const { wallet, exchangeRate } = useSelector((state) => state.assets);
   const { coins } = useSelector((state) => state.market);
 
   // Handle Fund Transfer
@@ -91,15 +87,27 @@ const Wallet = () => {
     calculateTotalValue();
   }, [coins, wallet]);
   const calculateTotalValue = () => {
-    const value = wallet?.holdings?.reduce((total, holding) => {
-      const coin = coins?.find((c) => c.symbol === holding.asset.toLowerCase());
-      if (!coin) {
-        console.warn(`Coin data not found for asset: ${holding.asset}`);
-        return total;
-      }
-      return total + coin.current_price * holding.quantity;
-    }, 0);
-    setTotalValue(value + wallet?.spotWallet);
+    // Calculate value of spot holdings
+    const holdingsValue =
+      wallet?.holdings?.reduce((total, holding) => {
+        const coin = coins?.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) {
+          console.warn(`Coin data not found for asset: ${holding.asset}`);
+          return total;
+        }
+        return total + coin.current_price * holding.quantity;
+      }, 0) || 0;
+
+    // Sum all wallet balances
+    const totalWalletValue =
+      (wallet?.spotWallet || 0) +
+      (wallet?.exchangeWallet || 0) +
+      (wallet?.futuresWallet || 0) +
+      (wallet?.perpetualsWallet || 0);
+
+    setTotalValue(holdingsValue + totalWalletValue);
   };
 
   useEffect(() => {
@@ -136,7 +144,7 @@ const Wallet = () => {
         swapAssets({ fromAsset, toAsset, amount, exchangeRate })
       ).unwrap();
       setOpen(false);
-    } catch (error) {
+    } catch {
       setOpen(false);
     }
   };
@@ -168,7 +176,7 @@ const Wallet = () => {
       setToWallet("");
       setTransferAsset("USDT");
       setTransferAmount("");
-    } catch (error) {
+    } catch {
       setTransferOpen(false);
     }
   };
@@ -187,186 +195,271 @@ const Wallet = () => {
         <div className="hidden md:block">
           <h1 className="text-4xl font-bold text-white mb-6">My Wallet</h1>
 
-          {/* Total Balance Section */}
-          <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
-            <div className="bg-[#242424] p-6 rounded-lg mb-6">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Exchange Balance
-              </h2>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                  <p className="text-3xl font-bold text-white">
-                    ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">USDT</span>
-                  </p>
+          {!showAssets ? (
+            <>
+              {/* Total Assets Section */}
+              <div className="bg-[#242424] p-6 rounded-lg mb-6">
+                <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                  Total Assets
+                </h2>
+                <div className="flex flex-col md:flex-row justify-between items-center">
+                  <div>
+                    <p className="text-3xl font-bold text-white">
+                      ${totalValue?.toFixed(2) || "0.00"}{" "}
+                      <span className="text-gray-400 text-sm">USDT</span>
+                    </p>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-[#242424] p-6 rounded-lg mb-6">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Spot Asset
-              </h2>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                  <p className="text-3xl font-bold text-white">
-                    ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">USDT</span>
-                  </p>
+
+              {/* My Account Section */}
+              <div className="mb-6">
+                <h2 className="text-2xl font-semibold text-white mb-4">
+                  My Account
+                </h2>
+                <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4">
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    onClick={() => handleAssetsRendering("exchange")}
+                  >
+                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                      Exchange Wallet
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                      <div>
+                        <p className="text-3xl font-bold text-white">
+                          ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
+                          <span className="text-gray-400 text-sm">USDT</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    onClick={() => handleAssetsRendering("spot")}
+                  >
+                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                      Spot Asset
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                      <div>
+                        <p className="text-3xl font-bold text-white">
+                          ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                          <span className="text-gray-400 text-sm">USDT</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    onClick={() => handleAssetsRendering("futures")}
+                  >
+                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                      Trading Asset
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                      <div>
+                        <p className="text-3xl font-bold text-white">
+                          ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                          <span className="text-gray-400 text-sm">USDT</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                  <div
+                    className="bg-[#242424] p-6 rounded-lg cursor-pointer hover:bg-[#2a2a2a] transition-colors"
+                    onClick={() => handleAssetsRendering("perpetuals")}
+                  >
+                    <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                      Perpetual Asset
+                    </h2>
+                    <div className="flex flex-col md:flex-row justify-between items-center">
+                      <div>
+                        <p className="text-3xl font-bold text-white">
+                          ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                          <span className="text-gray-400 text-sm">USDT</span>
+                        </p>
+                      </div>
+                    </div>
+                  </div>
                 </div>
               </div>
-            </div>
-            <div className="bg-[#242424] p-6 rounded-lg mb-6">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Trading Asset
-              </h2>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                  <p className="text-3xl font-bold text-white">
-                    ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">USDT</span>
-                  </p>
-                </div>
+
+              <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
+                <button
+                  onClick={() => navigate("/wallet/deposit")}
+                  className="btn bg-[#1E90FF] px-4 py-2 text-white rounded-md hover:bg-[#1C86EE] transition duration-300"
+                >
+                  Deposit
+                </button>
+                <button
+                  onClick={() => navigate("/wallet/withdraw")}
+                  className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
+                >
+                  Withdraw
+                </button>
+                <button
+                  className="bg-green-500 text-white px-4 py-2 rounded"
+                  onClick={() => setOpen(true)}
+                >
+                  Swap
+                </button>
+                <button
+                  className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
+                  onClick={() => setTransferOpen(true)}
+                >
+                  Transfer
+                </button>
               </div>
-            </div>
-            <div className="bg-[#242424] p-6 rounded-lg mb-6">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Perpetual Asset
-              </h2>
-              <div className="flex flex-col md:flex-row justify-between items-center">
-                <div>
-                  <p className="text-3xl font-bold text-white">
-                    ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
-                    <span className="text-gray-400 text-sm">USDT</span>
-                  </p>
-                </div>
+
+              {/* Holdings Section */}
+              <Card className="bg-[#242424] p-6 rounded-lg mb-6">
+                <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                  Your Holdings
+                </h2>
+                <CardBody>
+                  {wallet?.holdings?.length > 0 ? (
+                    <table className="w-full text-left text-white">
+                      <thead>
+                        <tr className="text-gray-400 border-b border-gray-700">
+                          <th className="py-2">Asset</th>
+                          <th className="py-2">Quantity</th>
+                        </tr>
+                      </thead>
+                      <tbody>
+                        {wallet.holdings.map((holding, index) => (
+                          <tr
+                            key={index}
+                            className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+                          >
+                            <td className="py-2">{holding.asset}</td>
+                            <td className="py-2">{holding.quantity}</td>
+                            {/* <td className="py-2">${holding.value.toFixed(2)}</td> */}
+                          </tr>
+                        ))}
+                      </tbody>
+                    </table>
+                  ) : (
+                    <p className="text-gray-400">
+                      No assets found in your wallet.
+                    </p>
+                  )}
+                </CardBody>
+              </Card>
+
+              {/* Deposit & Withdrawal History */}
+              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+                {/* Deposit History */}
+                <Card className="bg-[#242424] p-6 rounded-lg">
+                  <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                    Deposit History
+                  </h2>
+                  <CardBody>
+                    {wallet?.depositHistory?.length > 0 ? (
+                      <ul className="text-white">
+                        {wallet.depositHistory.map((tx, index) => (
+                          <li
+                            key={index}
+                            className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+                          >
+                            <span>
+                              {new Date(tx.createdAt).toLocaleString()}
+                            </span>
+                            <span>{tx.currency}</span>
+                            <span className="text-green-500">
+                              <AiOutlineArrowDown className="inline-block" /> $
+                              {tx.amount?.toFixed(2)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400">No deposits yet.</p>
+                    )}
+                  </CardBody>
+                </Card>
+
+                {/* Withdrawal History */}
+                <Card className="bg-[#242424] p-6 rounded-lg">
+                  <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                    Withdrawal History
+                  </h2>
+                  <CardBody>
+                    {wallet?.withdrawalHistory?.length > 0 ? (
+                      <ul className="text-white">
+                        {wallet.withdrawalHistory.map((tx, index) => (
+                          <li
+                            key={index}
+                            className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+                          >
+                            <span>
+                              {new Date(tx.createdAt).toLocaleString()}
+                            </span>
+                            <span className="text-red-500">
+                              <AiOutlineArrowUp className="inline-block" /> $
+                              {tx.amount?.toFixed(2)}
+                            </span>
+                          </li>
+                        ))}
+                      </ul>
+                    ) : (
+                      <p className="text-gray-400">No withdrawals yet.</p>
+                    )}
+                  </CardBody>
+                </Card>
               </div>
+            </>
+          ) : (
+            <div className="mb-6">
+              <div className="flex items-center mb-4">
+                <button
+                  onClick={() => setShowAssets(false)}
+                  className="mr-3 text-gray-400 hover:text-white flex items-center"
+                >
+                  <span>←</span> <span className="ml-1">Back to Wallet</span>
+                </button>
+                <h2 className="text-2xl font-semibold text-white">
+                  {assetsType === "spot"
+                    ? "Spot Assets"
+                    : assetsType === "futures"
+                    ? "Trading Assets"
+                    : assetsType === "perpetuals"
+                    ? "Perpetual Assets"
+                    : "Exchange Wallet"}
+                </h2>
+              </div>
+              <Assets type={assetsType} />
             </div>
-          </div>
-
-          <div className="flex flex-col sm:flex-row gap-4 justify-center mb-6">
-            <button
-              onClick={() => navigate("/wallet/deposit")}
-              className="btn bg-[#1E90FF] px-4 py-2 text-white rounded-md hover:bg-[#1C86EE] transition duration-300"
-            >
-              Deposit
-            </button>
-            <button
-              onClick={() => navigate("/wallet/withdraw")}
-              className="btn bg-[#D32F2F] px-4 py-2 text-white rounded-md hover:bg-[#C62828] transition duration-300"
-            >
-              Withdraw
-            </button>
-            <button
-              className="bg-green-500 text-white px-4 py-2 rounded"
-              onClick={() => setOpen(true)}
-            >
-              Swap
-            </button>
-            <button
-              className="bg-[#f78667] text-white px-4 py-2 rounded hover:bg-[#EA6A47] transition"
-              onClick={() => setTransferOpen(true)}
-            >
-              Transfer
-            </button>
-          </div>
-
-          {/* Holdings Section */}
-          <Card className="bg-[#242424] p-6 rounded-lg mb-6">
-            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-              Your Holdings
-            </h2>
-            <CardBody>
-              {wallet?.holdings?.length > 0 ? (
-                <table className="w-full text-left text-white">
-                  <thead>
-                    <tr className="text-gray-400 border-b border-gray-700">
-                      <th className="py-2">Asset</th>
-                      <th className="py-2">Quantity</th>
-                    </tr>
-                  </thead>
-                  <tbody>
-                    {wallet.holdings.map((holding, index) => (
-                      <tr
-                        key={index}
-                        className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                      >
-                        <td className="py-2">{holding.asset}</td>
-                        <td className="py-2">{holding.quantity}</td>
-                        {/* <td className="py-2">${holding.value.toFixed(2)}</td> */}
-                      </tr>
-                    ))}
-                  </tbody>
-                </table>
-              ) : (
-                <p className="text-gray-400">No assets found in your wallet.</p>
-              )}
-            </CardBody>
-          </Card>
-
-          {/* Deposit & Withdrawal History */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Deposit History */}
-            <Card className="bg-[#242424] p-6 rounded-lg">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Deposit History
-              </h2>
-              <CardBody>
-                {wallet?.depositHistory?.length > 0 ? (
-                  <ul className="text-white">
-                    {wallet.depositHistory.map((tx, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                      >
-                        <span>{new Date(tx.createdAt).toLocaleString()}</span>
-                        <span>{tx.currency}</span>
-                        <span className="text-green-500">
-                          <AiOutlineArrowDown className="inline-block" /> $
-                          {tx.amount?.toFixed(2)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-400">No deposits yet.</p>
-                )}
-              </CardBody>
-            </Card>
-
-            {/* Withdrawal History */}
-            <Card className="bg-[#242424] p-6 rounded-lg">
-              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-                Withdrawal History
-              </h2>
-              <CardBody>
-                {wallet?.withdrawalHistory?.length > 0 ? (
-                  <ul className="text-white">
-                    {wallet.withdrawalHistory.map((tx, index) => (
-                      <li
-                        key={index}
-                        className="flex justify-between py-2 border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                      >
-                        <span>{new Date(tx.createdAt).toLocaleString()}</span>
-                        <span className="text-red-500">
-                          <AiOutlineArrowUp className="inline-block" /> $
-                          {tx.amount?.toFixed(2)}
-                        </span>
-                      </li>
-                    ))}
-                  </ul>
-                ) : (
-                  <p className="text-gray-400">No withdrawals yet.</p>
-                )}
-              </CardBody>
-            </Card>
-          </div>
+          )}
         </div>
         {/* for mobile screens */}
         <div className="md:hidden bg-darkGray min-h-screen p-4 text-lightGray">
           {/* My Assets */}
           <div className="max-w-lg mx-auto">
             <div className="flex justify-between items-center mb-4">
-              <h2 className="text-xl font-semibold mb-2">My assets</h2>
+              <h2 className="text-xl font-semibold mb-2">
+                {showAssets ? (
+                  <div className="flex items-center">
+                    <button
+                      onClick={() => setShowAssets(false)}
+                      className="mr-2 text-gray-400 hover:text-white"
+                    >
+                      ← Back
+                    </button>
+                    <span>
+                      {assetsType === "spot"
+                        ? "Spot Assets"
+                        : assetsType === "futures"
+                        ? "Trading Assets"
+                        : assetsType === "perpetuals"
+                        ? "Perpetual Assets"
+                        : "Exchange Wallet"}
+                    </span>
+                  </div>
+                ) : (
+                  "My assets"
+                )}
+              </h2>
               <div
                 className="flex gap-1 items-center text-gray-600 cursor-pointer"
                 onClick={() => {
@@ -377,57 +470,50 @@ const Wallet = () => {
                 <MdHistory />
               </div>
             </div>
-            <div
-              className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md"
-              onClick={() => {
-                handleAssetsRendering("exchange");
-              }}
-            >
-              <p className="text-lg">
-                {assetsType === "spot"
-                  ? "Total Spot Assets"
-                  : " Exchange Balance"}
-              </p>
-              <p className="text-3xl font-bold text-white">
-                {assetsType === "spot"
-                  ? totalValue?.toFixed(2)
-                  : wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
-                <span className="text-gray-400 text-sm">USDT</span>
-              </p>
-            </div>
+            {!showAssets && (
+              <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md">
+                <p className="text-lg">Total Assets</p>
+                <p className="text-3xl font-bold text-white">
+                  ${totalValue?.toFixed(2) || "0.00"}{" "}
+                  <span className="text-gray-400 text-sm">USDT</span>
+                </p>
+              </div>
+            )}
 
             {/* Action Buttons */}
-            <div className="flex justify-between my-4">
-              <button
-                className="flex flex-col items-center p-2 hover:text-electricBlue transition"
-                onClick={() => navigate("/wallet/withdraw")}
-              >
-                <FaArrowUp size={20} />
-                Withdraw
-              </button>
-              <button
-                className="flex flex-col items-center p-2 hover:text-electricBlue transition"
-                onClick={() => navigate("/wallet/deposit")}
-              >
-                <FaArrowDown size={20} />
-                Deposit
-              </button>
+            {!showAssets && (
+              <div className="flex justify-between my-4">
+                <button
+                  className="flex flex-col items-center p-2 hover:text-electricBlue transition"
+                  onClick={() => navigate("/wallet/withdraw")}
+                >
+                  <FaArrowUp size={20} />
+                  Withdraw
+                </button>
+                <button
+                  className="flex flex-col items-center p-2 hover:text-electricBlue transition"
+                  onClick={() => navigate("/wallet/deposit")}
+                >
+                  <FaArrowDown size={20} />
+                  Deposit
+                </button>
 
-              <button
-                className="flex flex-col items-center p-2 hover:text-electricBlue transition"
-                onClick={() => setOpen(true)}
-              >
-                <FaSyncAlt size={20} />
-                Swap
-              </button>
-              <button
-                className="flex flex-col items-center p-2 hover:text-electricBlue transition"
-                onClick={() => setTransferOpen(true)}
-              >
-                <FaExchangeAlt size={20} />
-                Transfer
-              </button>
-            </div>
+                <button
+                  className="flex flex-col items-center p-2 hover:text-electricBlue transition"
+                  onClick={() => setOpen(true)}
+                >
+                  <FaSyncAlt size={20} />
+                  Swap
+                </button>
+                <button
+                  className="flex flex-col items-center p-2 hover:text-electricBlue transition"
+                  onClick={() => setTransferOpen(true)}
+                >
+                  <FaExchangeAlt size={20} />
+                  Transfer
+                </button>
+              </div>
+            )}
           </div>
 
           {/* My wallets Section */}
@@ -440,13 +526,30 @@ const Wallet = () => {
                 <div
                   className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
                   onClick={() => {
+                    handleAssetsRendering("exchange");
+                  }}
+                >
+                  <div>
+                    <p className="text-lg">Exchange Wallet</p>
+                    <p className="text-2xl font-bold">
+                      ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
+                      <span className="text-sm">USDT</span>
+                    </p>
+                  </div>
+                  <div className="text-3xl">
+                    <IoIosArrowForward />
+                  </div>
+                </div>
+                <div
+                  className="bg-transparent border-[.1px] border-[#393939] p-4 rounded-2xl shadow-md hover:bg-gray-700 transition cursor-pointer flex justify-between items-center"
+                  onClick={() => {
                     handleAssetsRendering("spot");
                   }}
                 >
                   <div>
-                    <p className="text-lg"> Spot Asset</p>
+                    <p className="text-lg">Spot Asset</p>
                     <p className="text-2xl font-bold">
-                      ${totalValue?.toFixed(2) || "0.00"}{" "}
+                      ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>
@@ -461,7 +564,7 @@ const Wallet = () => {
                   }}
                 >
                   <div>
-                    <p className="text-lg"> Trading Asset</p>
+                    <p className="text-lg">Trading Asset</p>
                     <p className="text-2xl font-bold">
                       ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
@@ -478,7 +581,7 @@ const Wallet = () => {
                   }}
                 >
                   <div>
-                    <p className="text-lg"> Perpetual Asset</p>
+                    <p className="text-lg">Perpetual Asset</p>
                     <p className="text-2xl font-bold">
                       ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>

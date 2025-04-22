@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from "react";
+import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { fetchOpenPositions } from "../../store/slices/futuresTradeSlice";
 import io from "socket.io-client";
@@ -8,6 +8,7 @@ const socket = io(import.meta.env.VITE_API_URL);
 function FuturesOpenPosition() {
   const [pnlData, setPnlData] = useState({});
   const [marketPrice, setMarketPrice] = useState(null);
+  const [countdowns, setCountdowns] = useState({});
   const { openPositions } = useSelector((state) => state.futures);
   const dispatch = useDispatch();
 
@@ -17,7 +18,12 @@ function FuturesOpenPosition() {
 
   useEffect(() => {
     socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));
-    return () => socket.off("liquidationUpdate");
+    socket.on("tradeExpired", () => dispatch(fetchOpenPositions()));
+
+    return () => {
+      socket.off("liquidationUpdate");
+      socket.off("tradeExpired");
+    };
   }, [dispatch]);
 
   useEffect(() => {
@@ -62,6 +68,80 @@ function FuturesOpenPosition() {
     setPnlData(newPnlData);
   }, [marketPrice, openPositions]);
 
+  // Update countdowns every second
+  useEffect(() => {
+    if (openPositions.length === 0) return;
+
+    // Initialize countdown values
+    const initialCountdowns = {};
+    openPositions.forEach((trade) => {
+      if (trade.expiryTime) {
+        initialCountdowns[trade._id] = getTimeRemaining(
+          new Date(trade.expiryTime)
+        );
+      }
+    });
+    setCountdowns(initialCountdowns);
+
+    // Update countdowns every second
+    const interval = setInterval(() => {
+      setCountdowns((prevCountdowns) => {
+        const newCountdowns = { ...prevCountdowns };
+
+        openPositions.forEach((trade) => {
+          if (trade.expiryTime) {
+            newCountdowns[trade._id] = getTimeRemaining(
+              new Date(trade.expiryTime)
+            );
+          }
+        });
+
+        return newCountdowns;
+      });
+    }, 1000);
+
+    return () => clearInterval(interval);
+  }, [openPositions]);
+
+  // Calculate remaining time
+  const getTimeRemaining = (expiryTime) => {
+    const total = expiryTime - new Date();
+
+    if (total <= 0) {
+      return { total: 0, days: 0, hours: 0, minutes: 0, seconds: 0 };
+    }
+
+    const seconds = Math.floor((total / 1000) % 60);
+    const minutes = Math.floor((total / 1000 / 60) % 60);
+    const hours = Math.floor((total / (1000 * 60 * 60)) % 24);
+    const days = Math.floor(total / (1000 * 60 * 60 * 24));
+
+    return { total, days, hours, minutes, seconds };
+  };
+
+  // Format countdown display
+  const formatCountdown = (countdown, trade) => {
+    // If the trade is marked as expired by the system
+    if (trade.isExpired) {
+      return "0s";
+    }
+
+    // If countdown is invalid or time is up
+    if (!countdown || countdown.total <= 0) {
+      return "0s";
+    }
+
+    if (countdown.days > 0) {
+      return `${countdown.days}d ${countdown.hours}h`;
+    } else if (countdown.hours > 0) {
+      return `${countdown.hours}h ${countdown.minutes}m`;
+    } else if (countdown.minutes > 0) {
+      return `${countdown.minutes}m ${countdown.seconds}s`;
+    } else {
+      return `${countdown.seconds}s`;
+    }
+  };
+
   return (
     <div className="mt-6">
       <div className="hidden md:block bg-transparent mb-4">
@@ -75,11 +155,15 @@ function FuturesOpenPosition() {
                 <th className="py-2">Entry Price</th>
                 <th className="py-2 hidden md:table-cell">Liquidation Price</th>
                 <th className="py-2">PNL (USDT)</th>
+                <th className="py-2">Time Remaining</th>
               </tr>
             </thead>
             <tbody>
               {openPositions.map((trade) => (
-                <tr key={trade._id} className="border-b border-gray-700 text-center">
+                <tr
+                  key={trade._id}
+                  className="border-b border-gray-700 text-center"
+                >
                   <td className="py-2">{trade.pair}</td>
                   <td className="py-2 capitalize">{trade.type}</td>
                   <td className="py-2">{trade.leverage}x</td>
@@ -94,6 +178,9 @@ function FuturesOpenPosition() {
                   >
                     {pnlData[trade._id] ? pnlData[trade._id]?.toFixed(2) : "--"}{" "}
                   </td>
+                  <td className="py-2 text-yellow-400">
+                    {formatCountdown(countdowns[trade._id], trade)}
+                  </td>
                 </tr>
               ))}
             </tbody>
@@ -105,7 +192,6 @@ function FuturesOpenPosition() {
 
       {/* for mobile screens */}
       <div className="md:hidden">
-
         {openPositions.length > 0 ? (
           <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
             {openPositions.map((trade) => (
@@ -152,6 +238,13 @@ function FuturesOpenPosition() {
                     <span className="text-red-400">Liquidation Price</span>
                     <span className="border border-red-400 px-2 py-1 rounded-md">
                       {trade.liquidationPrice?.toFixed(2)}
+                    </span>
+                  </div>
+
+                  <div className="flex justify-between mt-1">
+                    <span className="text-yellow-400">Time Remaining</span>
+                    <span className="border border-yellow-400 px-2 py-1 rounded-md">
+                      {formatCountdown(countdowns[trade._id], trade)}
                     </span>
                   </div>
                 </div>

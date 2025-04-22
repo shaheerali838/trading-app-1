@@ -16,6 +16,8 @@ const FuturesTradeSchema = new mongoose.Schema({
     enum: ["open", "closed", "liquidated"],
     default: "open",
   },
+  expiryTime: { type: Date }, // Time when trade is set to expire
+  isExpired: { type: Boolean, default: false }, // Flag to indicate if trade has expired but not closed
   createdAt: { type: Date, default: Date.now },
   closedAt: { type: Date },
 });

@@ -4,7 +4,7 @@ import FundingRate from "../models/FundingRate.js";
 import { catchAsyncErrors } from "../middlewares/catchAsyncErrors.js";
 import PerpetualTrade from "../models/PerpetualTrade.js";
 import { io } from "../server.js"; // Import WebSocket instance
-
+import axios from "axios";
 
 export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
   const {
@@ -70,6 +70,37 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     liquidationPrice = entryPrice * (1 + 1 / leverage);
   }
 
+  // Calculate expiry time based on leverage value
+  let expiryTime = new Date();
+  switch (leverage.toString()) {
+    case "20": // 30s
+      expiryTime.setSeconds(expiryTime.getSeconds() + 30);
+      break;
+    case "30": // 60s
+      expiryTime.setMinutes(expiryTime.getMinutes() + 1);
+      break;
+    case "50": // 120s
+      expiryTime.setMinutes(expiryTime.getMinutes() + 2);
+      break;
+    case "60": // 24h
+      expiryTime.setHours(expiryTime.getHours() + 24);
+      break;
+    case "70": // 48h
+      expiryTime.setHours(expiryTime.getHours() + 48);
+      break;
+    case "80": // 72h
+      expiryTime.setHours(expiryTime.getHours() + 72);
+      break;
+    case "90": // 7d
+      expiryTime.setDate(expiryTime.getDate() + 7);
+      break;
+    case "100": // 15d
+      expiryTime.setDate(expiryTime.getDate() + 15);
+      break;
+    default:
+      expiryTime.setHours(expiryTime.getHours() + 24); // Default 24h
+  }
+
   // Deduct margin from user's wallet
   wallet.futuresWallet -= marginUsed;
   await wallet.save();
@@ -87,6 +118,7 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     quantity: calculatedQuantity, // Use calculated quantity
     marginUsed,
     liquidationPrice,
+    expiryTime, // Add expiry time
     status: "open",
   });
 
@@ -198,5 +230,32 @@ export const checkLiquidations = async (marketPrices) => {
       await trade.save();
       io.emit("liquidationUpdate", trade);
     }
+  }
+};
+
+// Check for expired trades and close them
+export const checkExpiredTrades = async () => {
+  try {
+    const now = new Date();
+
+    // Find all open futures trades that have expired but don't have expired flag
+    const expiredTrades = await FuturesTrade.find({
+      status: "open",
+      expiryTime: { $lte: now },
+      isExpired: { $ne: true }, // Only get trades that aren't already marked as expired
+    });
+
+    for (const trade of expiredTrades) {
+      // Update the trade to mark it as expired but don't close it
+      trade.isExpired = true;
+      await trade.save();
+
+      // Notify clients about expired trade status
+      io.emit("tradeExpired", trade);
+    }
+
+    console.log(`Checked and marked ${expiredTrades.length} trades as expired`);
+  } catch (error) {
+    console.error("Error checking expired trades:", error);
   }
 };

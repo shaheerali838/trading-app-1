@@ -130,7 +130,7 @@ const HistoryPage = () => {
                 }`}
                 onClick={() => setTradeTab("futures")}
               >
-                Futures History
+                Trading History
               </button>
               <button
                 className={`py-2 px-4 text-sm font-medium ${

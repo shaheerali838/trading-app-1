@@ -75,7 +75,7 @@ const Navbar = () => {
         <div className="logo-container flex items-center">
           <Link to={"/"} className="">
             <i>
-              <img className="w-[50px]" src={logoSrc} alt="LOGO" />
+              <img className="w-[100px]" src={logoSrc} alt="LOGO" />
             </i>
           </Link>
           {showSelectOption && (
