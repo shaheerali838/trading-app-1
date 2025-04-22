@@ -15,6 +15,7 @@ import futuresTradeRouter from "./routers/futuresTradeRoutes.js";
 import perpetualTradeRouter from "./routers/perpetualRoutes.js";
 import walletRouter from "./routers/walletRoutes.js";
 import kycRouter from "./routers/kycRoutes.js";
+import newsRouter from "./routers/newsRoutes.js";
 
 const app = express();
 
@@ -27,7 +28,7 @@ config({ path: envPath });
 
 app.use(
   cors({
-    origin: [process.env.FRONTEND_URL, "http://localhost:5173"],
+    origin: [process.env.FRONTEND_URL, "https://cryptonexus.live"],
     credentials: true,
     methods: "GET,POST,PUT,DELETE",
     allowedHeaders: "Content-Type,Authorization",
@@ -45,6 +46,7 @@ app.use("/api/funds", depositWithdrawRouter);
 app.use("/api/futures", futuresTradeRouter);
 app.use("/api/perpetual", perpetualTradeRouter);
 app.use("/api/kyc", kycRouter);
+app.use("/api/news", newsRouter);
 
 // Wallet routes
 app.use("/api/wallet", walletRouter);

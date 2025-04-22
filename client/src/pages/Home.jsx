@@ -6,6 +6,7 @@ import WhyChoosUs from "../components/home/WhyChoosUs.jsx";
 import Faqs from "../components/home/Faqs.jsx";
 import Slider from "../components/home/Slider.jsx";
 import AnimatedSection from "../components/animation/AnimateSection.jsx";
+import NewsSection from "../components/home/NewsSection.jsx";
 
 const Home = () => {
   // Initialize translation for child components to access
@@ -19,6 +20,7 @@ const Home = () => {
           <CryptoCarousel />
           <Testimonials />
           <WhyChoosUs />
+          <NewsSection />
           <Faqs />
           <Slider />
         </AnimatedSection>
