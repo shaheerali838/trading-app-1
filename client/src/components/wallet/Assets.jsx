@@ -34,20 +34,37 @@ const Assets = ({ type }) => {
   }, [type, wallet, coins, openPositions]);
 
   const calculateWalletValue = () => {
-    if (!wallet) return;
+    if (!wallet || !coins.length) return;
 
     let value = 0;
 
     switch (type) {
       case "exchange":
+        // Add base USDT value
         value = wallet.exchangeWallet || 0;
+
+        // Add value of all exchange holdings
+        if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
+          const holdingsValue = wallet.exchangeHoldings.reduce(
+            (total, holding) => {
+              const coin = coins.find(
+                (c) => c.symbol === holding.asset.toLowerCase()
+              );
+              if (!coin) return total;
+              return total + coin.current_price * holding.quantity;
+            },
+            0
+          );
+          value += holdingsValue;
+        }
         break;
+
       case "spot":
         // Calculate spot value: wallet balance plus holdings
         value = wallet.spotWallet || 0;
         if (wallet.holdings && wallet.holdings.length > 0) {
           const holdingsValue = wallet.holdings.reduce((total, holding) => {
-            const coin = coins?.find(
+            const coin = coins.find(
               (c) => c.symbol === holding.asset.toLowerCase()
             );
             if (!coin) return total;
@@ -56,12 +73,22 @@ const Assets = ({ type }) => {
           value += holdingsValue;
         }
         break;
+
       case "futures":
+        // Base USDT value
         value = wallet.futuresWallet || 0;
+
+        // Could add value of open positions here if needed
+        // Currently not implementing as it would require complex PnL calculations
         break;
+
       case "perpetuals":
+        // Base USDT value
         value = wallet.perpetualsWallet || 0;
+
+        // Could add value of perpetual positions here if needed
         break;
+
       default:
         value = 0;
     }
@@ -92,14 +119,13 @@ const Assets = ({ type }) => {
     return pair;
   };
 
+  console.log("the wallet is", wallet);
 
   return (
     <div className="min-h-screen max-w-7xl mx-auto">
       {/* Display wallet-specific total valuation at the top */}
       <div className="bg-[#1a1a1a] p-4 rounded-2xl shadow-md mb-4">
-        <p className="text-lg text-gray-400">
-          Total
-        </p>
+        <p className="text-lg text-gray-400">Total</p>
         <p className="text-3xl font-bold text-white">
           ${walletValue.toFixed(2) || "0.00"}{" "}
           <span className="text-gray-400 text-sm">USDT</span>
@@ -108,7 +134,8 @@ const Assets = ({ type }) => {
 
       <div className="block md:hidden">
         {type === "spot" ? (
-          wallet?.holdings?.length > 0 ? (
+          wallet?.holdings?.length > 0 ||
+          (wallet?.spotWallet && wallet.spotWallet > 0) ? (
             <>
               <div className=" border-b text-gray-500">
                 {/* Left Section */}
@@ -207,45 +234,103 @@ const Assets = ({ type }) => {
             </div>
           )
         ) : type === "exchange" ? (
-          <div className="mt-6 overflow-x-auto">
-            <div className="border-b text-gray-500">
-              {/* Left Section */}
-              <div className="flex items-center gap-3">
-                <img
-                  src={usdtData?.image}
-                  alt={usdtData?.name}
-                  className="w-8 h-8"
-                />
-                <div>
-                  <h2 className="text-white font-bold">USDT</h2>
+          wallet?.exchangeHoldings?.length > 0 ||
+          (wallet?.exchangeWallet && wallet.exchangeWallet > 0) ? (
+            <div className="mt-6 overflow-x-auto">
+              <div className="border-b text-gray-500">
+                {/* Left Section */}
+                <div className="flex items-center gap-3">
+                  <img
+                    src={usdtData?.image}
+                    alt={usdtData?.name}
+                    className="w-8 h-8"
+                  />
+                  <div>
+                    <h2 className="text-white font-bold">USDT</h2>
+                  </div>
                 </div>
-              </div>
-              <div className="flex justify-between my-2">
-                <div className="text-sm text-center flex flex-col gap-2">
-                  <span>Available Balance</span>
-                  <p className="font-semibold text-gray-300">
-                    {wallet?.exchangeWallet?.toFixed(2)}
-                  </p>
-                </div>
-                <div className="text-sm text-center flex flex-col gap-2">
-                  <span>Frozen Amount</span>
-                  <p className="font-semibold text-gray-300">
+                <div className="flex justify-between my-2">
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Available Balance</span>
                     <p className="font-semibold text-gray-300">
-                      {wallet.frozenAssets
-                        .find((element) => element.asset === "USDT")
-                        ?.quantity?.toFixed(2) || "0"}
+                      {wallet?.exchangeWallet?.toFixed(2)}
                     </p>
-                  </p>
-                </div>
-                <div className="text-sm text-center flex flex-col gap-2">
-                  <span>Valuation</span>
-                  <p className="font-semibold text-gray-300">
-                    ≈ ${wallet?.exchangeWallet?.toFixed(2) || "0"}
-                  </p>
+                  </div>
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Frozen Amount</span>
+                    <p className="font-semibold text-gray-300">
+                      <p className="font-semibold text-gray-300">
+                        {wallet.frozenAssets
+                          .find((element) => element.asset === "USDT")
+                          ?.quantity?.toFixed(2) || "0"}
+                      </p>
+                    </p>
+                  </div>
+                  <div className="text-sm text-center flex flex-col gap-2">
+                    <span>Valuation</span>
+                    <p className="font-semibold text-gray-300">
+                      ≈ ${wallet?.exchangeWallet?.toFixed(2) || "0"}
+                    </p>
+                  </div>
                 </div>
               </div>
+              {wallet?.exchangeHoldings?.map((holding, index) => {
+                const coinData = getCoinData(holding.asset);
+                return (
+                  <div key={index} className=" p-3 border-b text-gray-400">
+                    <div className="flex items-center gap-3">
+                      <img
+                        src={coinData?.image}
+                        alt={coinData?.name}
+                        className="w-8 h-8"
+                      />
+                      <div>
+                        <h2 className="text-white font-bold ">
+                          {holding?.asset?.toUpperCase()}
+                        </h2>
+                      </div>
+                    </div>
+                    <div className="flex justify-between my-2">
+                      <div className="text-sm text-center flex flex-col gap-2">
+                        <span>Available Balance</span>
+
+                        <p className="font-semibold text-gray-300">
+                          {holding.quantity?.toFixed(5)}
+                        </p>
+                      </div>
+                      <div className="text-sm text-center flex flex-col gap-2">
+                        <span>Frozen Amount</span>
+
+                        <p className="font-semibold text-gray-300">
+                          <p className="font-semibold text-gray-300">
+                            {wallet.frozenAssets
+                              .find(
+                                (element) => element.asset === holding.asset
+                              )
+                              ?.quantity?.toFixed(2) || "0"}
+                          </p>
+                        </p>
+                      </div>
+                      <div className=" text-sm text-center flex flex-col gap-2">
+                        <span>Valuation</span>
+                        <p className=" font-semibold text-gray-300">
+                          ≈ $
+                          {calculateValue(
+                            coinData?.current_price,
+                            holding.quantity
+                          ).toFixed(5) || "0"}
+                        </p>
+                      </div>
+                    </div>
+                  </div>
+                );
+              })}
             </div>
-          </div>
+          ) : (
+            <div className={`px-3 py-1 rounded-md bg-red-500`}>
+              <p>You Have No Assets Yet</p>
+            </div>
+          )
         ) : type === "futures" ? (
           <div className="mt-6 overflow-x-auto">
             <div className=" border-b text-gray-500">
@@ -281,8 +366,8 @@ const Assets = ({ type }) => {
                 </div>
                 <div className="text-sm text-center flex flex-col gap-2">
                   <span>Valuation</span>
-                  <p className=" font-semibold text-gray-300">
-                    ≈ ${usdtData?.current_price?.toFixed(2) || "0"}
+                  <p className="font-semibold text-gray-300">
+                    ≈ ${wallet?.futuresWallet?.toFixed(2) || "0"}
                   </p>
                 </div>
               </div>
@@ -360,8 +445,8 @@ const Assets = ({ type }) => {
                 </div>
                 <div className="text-sm text-center flex flex-col gap-2">
                   <span>Valuation</span>
-                  <p className=" font-semibold text-gray-300">
-                    ≈ ${usdtData?.current_price?.toFixed(2) || "0"}
+                  <p className="font-semibold text-gray-300">
+                    ≈ ${wallet?.perpetualsWallet?.toFixed(2) || "0"}
                   </p>
                 </div>
               </div>
@@ -387,56 +472,88 @@ const Assets = ({ type }) => {
           </div>
         </div>
 
-        {type === "spot" && wallet?.holdings?.length > 0 && (
-          <div className="bg-[#242424] p-6 rounded-lg mb-6">
-            <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
-              Your Holdings
-            </h2>
-            <div className="mt-4">
-              <table className="w-full text-left text-white">
-                <thead>
-                  <tr className="text-gray-400 border-b border-gray-700">
-                    <th className="py-2">Asset</th>
-                    <th className="py-2">Quantity</th>
-                    <th className="py-2">Valuation (USDT)</th>
-                  </tr>
-                </thead>
-                <tbody>
-                  {wallet.holdings.map((holding, index) => {
-                    const coinData = getCoinData(holding.asset);
-                    const assetValue = calculateValue(
-                      coinData?.current_price,
-                      holding.quantity
-                    );
-
-                    return (
-                      <tr
-                        key={index}
-                        className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
-                      >
+        {type === "spot" &&
+          (wallet?.holdings?.length > 0 ||
+            (wallet?.spotWallet && wallet.spotWallet > 0)) && (
+            <div className="bg-[#242424] p-6 rounded-lg mb-6">
+              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                Your Holdings
+              </h2>
+              <div className="mt-4">
+                <table className="w-full text-left text-white">
+                  <thead>
+                    <tr className="text-gray-400 border-b border-gray-700">
+                      <th className="py-2">Asset</th>
+                      <th className="py-2">Quantity</th>
+                      <th className="py-2">Valuation (USDT)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Always show USDT if it has a balance */}
+                    {wallet?.spotWallet > 0 && (
+                      <tr className="border-b border-gray-700 font-semibold">
                         <td className="py-2 flex items-center gap-2">
                           <img
-                            src={coinData?.image}
-                            alt={coinData?.name}
+                            src={usdtData?.image}
+                            alt="USDT"
                             className="w-6 h-6"
                           />
-                          {holding.asset}
+                          USDT
                         </td>
-                        <td className="py-2">{holding.quantity.toFixed(5)}</td>
-                        <td className="py-2">${assetValue.toFixed(2)}</td>
+                        <td className="py-2">
+                          {wallet.spotWallet?.toFixed(2)}
+                        </td>
+                        <td className="py-2">
+                          ${wallet.spotWallet?.toFixed(2)}
+                        </td>
                       </tr>
-                    );
-                  })}
-                  <tr className="border-b border-gray-700 font-semibold">
-                    <td className="py-2">USDT</td>
-                    <td className="py-2">{wallet.spotWallet?.toFixed(2)}</td>
-                    <td className="py-2">${wallet.spotWallet?.toFixed(2)}</td>
-                  </tr>
-                </tbody>
-              </table>
+                    )}
+
+                    {/* Show other crypto holdings */}
+                    {wallet?.holdings?.map((holding, index) => {
+                      const coinData = getCoinData(holding.asset);
+                      const assetValue = calculateValue(
+                        coinData?.current_price,
+                        holding.quantity
+                      );
+
+                      return (
+                        <tr
+                          key={index}
+                          className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+                        >
+                          <td className="py-2 flex items-center gap-2">
+                            <img
+                              src={coinData?.image}
+                              alt={coinData?.name}
+                              className="w-6 h-6"
+                            />
+                            {holding.asset}
+                          </td>
+                          <td className="py-2">
+                            {holding.quantity.toFixed(5)}
+                          </td>
+                          <td className="py-2">${assetValue.toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
             </div>
-          </div>
-        )}
+          )}
+
+        {type === "spot" &&
+          !(
+            wallet?.holdings?.length > 0 ||
+            (wallet?.spotWallet && wallet.spotWallet > 0)
+          ) && (
+            <div className="bg-[#242424] p-6 rounded-lg mb-6">
+              <h2 className="bg-transparent text-lg font-semibold text-red-500">
+                You Have No Assets Yet
+              </h2>
+            </div>
+          )}
 
         {type === "futures" && openPositions?.length > 0 && (
           <div className="bg-[#242424] p-6 rounded-lg mb-6">
@@ -495,6 +612,89 @@ const Assets = ({ type }) => {
             </div>
           </div>
         )}
+
+        {type === "exchange" &&
+          (wallet?.exchangeHoldings?.length > 0 ||
+            (wallet?.exchangeWallet && wallet.exchangeWallet > 0)) && (
+            <div className="bg-[#242424] p-6 rounded-lg mb-6">
+              <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
+                Exchange Holdings
+              </h2>
+              <div className="mt-4">
+                <table className="w-full text-left text-white">
+                  <thead>
+                    <tr className="text-gray-400 border-b border-gray-700">
+                      <th className="py-2">Asset</th>
+                      <th className="py-2">Quantity</th>
+                      <th className="py-2">Valuation (USDT)</th>
+                    </tr>
+                  </thead>
+                  <tbody>
+                    {/* Always show USDT if it has a balance */}
+                    {wallet?.exchangeWallet > 0 && (
+                      <tr className="border-b border-gray-700 font-semibold">
+                        <td className="py-2 flex items-center gap-2">
+                          <img
+                            src={usdtData?.image}
+                            alt="USDT"
+                            className="w-6 h-6"
+                          />
+                          USDT
+                        </td>
+                        <td className="py-2">
+                          {wallet.exchangeWallet?.toFixed(2)}
+                        </td>
+                        <td className="py-2">
+                          ${wallet.exchangeWallet?.toFixed(2)}
+                        </td>
+                      </tr>
+                    )}
+
+                    {/* Show other exchange holdings */}
+                    {wallet?.exchangeHoldings?.map((holding, index) => {
+                      const coinData = getCoinData(holding.asset);
+                      const assetValue = calculateValue(
+                        coinData?.current_price,
+                        holding.quantity
+                      );
+
+                      return (
+                        <tr
+                          key={index}
+                          className="border-b border-gray-700 hover:bg-gray-800 transition duration-300"
+                        >
+                          <td className="py-2 flex items-center gap-2">
+                            <img
+                              src={coinData?.image}
+                              alt={coinData?.name}
+                              className="w-6 h-6"
+                            />
+                            {holding.asset}
+                          </td>
+                          <td className="py-2">
+                            {holding.quantity.toFixed(5)}
+                          </td>
+                          <td className="py-2">${assetValue.toFixed(2)}</td>
+                        </tr>
+                      );
+                    })}
+                  </tbody>
+                </table>
+              </div>
+            </div>
+          )}
+
+        {type === "exchange" &&
+          !(
+            wallet?.exchangeHoldings?.length > 0 ||
+            (wallet?.exchangeWallet && wallet.exchangeWallet > 0)
+          ) && (
+            <div className="bg-[#242424] p-6 rounded-lg mb-6">
+              <h2 className="bg-transparent text-lg font-semibold text-red-500">
+                You Have No Assets Yet
+              </h2>
+            </div>
+          )}
       </div>
     </div>
   );

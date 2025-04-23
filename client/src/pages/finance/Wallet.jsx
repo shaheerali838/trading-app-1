@@ -72,20 +72,75 @@ const Wallet = () => {
   const [transferAsset, setTransferAsset] = useState("USDT");
   const [totalValue, setTotalValue] = useState(0);
 
+  const [walletValueExchange, setWalletValueExchange] = useState(0);
+  const [walletValueSpot, setWalletValueSpot] = useState(0);
+  const [walletValueFutures, setWalletValueFutures] = useState(0);
+  const [walletValuePerpetuals, setWalletValuePerpetuals] = useState(0);
+
   useEffect(() => {
-    if (assetsType === "spot") {
-      dispatch(fetchMarketData()); // Initial fetch
+    // Initial data fetch
+    dispatch(fetchMarketData());
+    dispatch(getWallet());
 
-      const interval = setInterval(() => {
-        dispatch(fetchMarketData()); // Poll every 10 seconds
-      }, 10000);
+    // Set up only one interval for all data refreshes to reduce API calls
+    const interval = setInterval(() => {
+      dispatch(getWallet());
 
-      return () => clearInterval(interval); // Cleanup
-    }
-  }, [dispatch, assetsType]);
+      // Only fetch market data every 30 seconds to avoid rate limiting
+      // We're using a timestamp comparison to throttle the API calls
+      const lastFetchTime = localStorage.getItem("lastMarketDataFetch");
+      const currentTime = Date.now();
+
+      if (!lastFetchTime || currentTime - lastFetchTime > 30000) {
+        dispatch(fetchMarketData());
+        localStorage.setItem("lastMarketDataFetch", currentTime);
+      }
+    }, 10000);
+
+    return () => clearInterval(interval); // Cleanup
+  }, [dispatch]);
+
   useEffect(() => {
     calculateTotalValue();
+    calculateWalletValues();
   }, [coins, wallet]);
+
+  const calculateWalletValues = () => {
+    if (!wallet || !coins.length) return;
+
+    // Calculate Exchange Wallet Value
+    let exchangeValue = wallet.exchangeWallet || 0;
+    if (wallet.exchangeHoldings && wallet.exchangeHoldings.length > 0) {
+      const holdingsValue = wallet.exchangeHoldings.reduce((total, holding) => {
+        const coin = coins.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) return total;
+        return total + coin.current_price * holding.quantity;
+      }, 0);
+      exchangeValue += holdingsValue;
+    }
+    setWalletValueExchange(exchangeValue);
+
+    // Calculate Spot Wallet Value
+    let spotValue = wallet.spotWallet || 0;
+    if (wallet.holdings && wallet.holdings.length > 0) {
+      const holdingsValue = wallet.holdings.reduce((total, holding) => {
+        const coin = coins.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) return total;
+        return total + coin.current_price * holding.quantity;
+      }, 0);
+      spotValue += holdingsValue;
+    }
+    setWalletValueSpot(spotValue);
+
+    // Futures and Perpetuals are just their USDT balance for now
+    setWalletValueFutures(wallet.futuresWallet || 0);
+    setWalletValuePerpetuals(wallet.perpetualsWallet || 0);
+  };
+
   const calculateTotalValue = () => {
     // Calculate value of spot holdings
     const holdingsValue =
@@ -100,6 +155,18 @@ const Wallet = () => {
         return total + coin.current_price * holding.quantity;
       }, 0) || 0;
 
+    // Calculate value of exchange holdings
+    const exchangeHoldingsValue =
+      wallet?.exchangeHoldings?.reduce((total, holding) => {
+        const coin = coins?.find(
+          (c) => c.symbol === holding.asset.toLowerCase()
+        );
+        if (!coin) {
+          return total;
+        }
+        return total + coin.current_price * holding.quantity;
+      }, 0) || 0;
+
     // Sum all wallet balances
     const totalWalletValue =
       (wallet?.spotWallet || 0) +
@@ -107,23 +174,9 @@ const Wallet = () => {
       (wallet?.futuresWallet || 0) +
       (wallet?.perpetualsWallet || 0);
 
-    setTotalValue(holdingsValue + totalWalletValue);
+    setTotalValue(holdingsValue + exchangeHoldingsValue + totalWalletValue);
   };
 
-  useEffect(() => {
-    dispatch(getWallet());
-    // Auto-refresh every 30 seconds
-    const interval = setInterval(() => {
-      dispatch(getWallet());
-    }, 10000);
-
-    dispatch(fetchExchangeRate({ fromAsset, toAsset }));
-    return () => clearInterval(interval);
-  }, [dispatch, fromAsset, toAsset]);
-  useEffect(() => {
-    calculateTotalValue();
-    setShowAssets(false);
-  }, []);
   useEffect(() => {
     if (fromAsset && validPairs[fromAsset]) {
       // Reset 'toAsset' to the first valid option if the current 'toAsset' is invalid
@@ -132,6 +185,10 @@ const Wallet = () => {
       }
     }
   }, [fromAsset, toAsset]);
+
+  useEffect(() => {
+    dispatch(fetchExchangeRate({ fromAsset, toAsset }));
+  }, [dispatch, fromAsset, toAsset]);
 
   const handleSwap = async () => {
     if (!amount) {
@@ -184,7 +241,32 @@ const Wallet = () => {
   const handleAssetsRendering = (type) => {
     setAssetsType(type);
     setShowAssets(true);
+
+    // Optional: We could also store this in localStorage to persist the state
+    // even if the page refreshes
+    localStorage.setItem("selectedWalletType", type);
+    localStorage.setItem("showAssets", "true");
   };
+
+  // Add this effect to restore wallet view state on component mount
+  useEffect(() => {
+    // Check if we have saved state in localStorage
+    const savedWalletType = localStorage.getItem("selectedWalletType");
+    const savedShowAssets = localStorage.getItem("showAssets");
+
+    if (savedShowAssets === "true" && savedWalletType) {
+      setAssetsType(savedWalletType);
+      setShowAssets(true);
+    }
+  }, []);
+
+  // Add a handler function for the back button
+  const handleBackToWallet = () => {
+    setShowAssets(false);
+    localStorage.removeItem("selectedWalletType");
+    localStorage.removeItem("showAssets");
+  };
+
   return (
     <div className="min-h-[100vh] mx-auto md:px-6 py-4">
       <motion.div
@@ -228,7 +310,7 @@ const Wallet = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                       <div>
                         <p className="text-3xl font-bold text-white">
-                          ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
+                          ${walletValueExchange?.toFixed(2) || "0.00"}{" "}
                           <span className="text-gray-400 text-sm">USDT</span>
                         </p>
                       </div>
@@ -244,7 +326,7 @@ const Wallet = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                       <div>
                         <p className="text-3xl font-bold text-white">
-                          ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                          ${walletValueSpot?.toFixed(2) || "0.00"}{" "}
                           <span className="text-gray-400 text-sm">USDT</span>
                         </p>
                       </div>
@@ -260,7 +342,7 @@ const Wallet = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                       <div>
                         <p className="text-3xl font-bold text-white">
-                          ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                          ${walletValueFutures?.toFixed(2) || "0.00"}{" "}
                           <span className="text-gray-400 text-sm">USDT</span>
                         </p>
                       </div>
@@ -276,7 +358,7 @@ const Wallet = () => {
                     <div className="flex flex-col md:flex-row justify-between items-center">
                       <div>
                         <p className="text-3xl font-bold text-white">
-                          ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                          ${walletValuePerpetuals?.toFixed(2) || "0.00"}{" "}
                           <span className="text-gray-400 text-sm">USDT</span>
                         </p>
                       </div>
@@ -413,7 +495,7 @@ const Wallet = () => {
             <div className="mb-6">
               <div className="flex items-center mb-4">
                 <button
-                  onClick={() => setShowAssets(false)}
+                  onClick={handleBackToWallet}
                   className="mr-3 text-gray-400 hover:text-white flex items-center"
                 >
                   <span>←</span> <span className="ml-1">Back to Wallet</span>
@@ -441,7 +523,7 @@ const Wallet = () => {
                 {showAssets ? (
                   <div className="flex items-center">
                     <button
-                      onClick={() => setShowAssets(false)}
+                      onClick={handleBackToWallet}
                       className="mr-2 text-gray-400 hover:text-white"
                     >
                       ← Back
@@ -532,7 +614,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg">Exchange Wallet</p>
                     <p className="text-2xl font-bold">
-                      ${wallet?.exchangeWallet?.toFixed(2) || "0.00"}{" "}
+                      ${walletValueExchange?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>
@@ -549,7 +631,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg">Spot Asset</p>
                     <p className="text-2xl font-bold">
-                      ${wallet?.spotWallet?.toFixed(2) || "0.00"}{" "}
+                      ${walletValueSpot?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>
@@ -566,7 +648,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg">Trading Asset</p>
                     <p className="text-2xl font-bold">
-                      ${wallet?.futuresWallet?.toFixed(2) || "0.00"}{" "}
+                      ${walletValueFutures?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>
@@ -583,7 +665,7 @@ const Wallet = () => {
                   <div>
                     <p className="text-lg">Perpetual Asset</p>
                     <p className="text-2xl font-bold">
-                      ${wallet?.perpetualsWallet?.toFixed(2) || "0.00"}{" "}
+                      ${walletValuePerpetuals?.toFixed(2) || "0.00"}{" "}
                       <span className="text-sm">USDT</span>
                     </p>
                   </div>

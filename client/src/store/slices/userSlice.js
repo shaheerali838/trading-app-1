@@ -1,5 +1,4 @@
 import { createSlice, createAsyncThunk } from "@reduxjs/toolkit";
-import axios from "axios";
 import API from "../../utils/api.js";
 import { toast } from "react-toastify";
 import { setLoading } from "./globalSlice.js";
@@ -156,4 +155,10 @@ const userSlice = createSlice({
 
 // Export actions and reducer
 export const { setUser, clearUser } = userSlice.actions;
+
+// Simple logout action creator that dispatches the logoutUser thunk
+export const logout = () => (dispatch) => {
+  return dispatch(logoutUser());
+};
+
 export default userSlice.reducer;

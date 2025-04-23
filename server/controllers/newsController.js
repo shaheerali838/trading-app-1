@@ -36,12 +36,40 @@ export const getAllNews = catchAsyncErrors(async (req, res) => {
 // Get all news items (for admin)
 export const getAllNewsAdmin = catchAsyncErrors(async (req, res) => {
   const news = await News.find().sort({ createdAt: -1 });
-
+    console.log("the news are", news);
+    
   res.status(200).json({
     success: true,
     news,
   });
 });
+
+// Get a single news item by ID
+// export const getSingleNews = catchAsyncErrors(async (req, res) => {
+//   const { id } = req.params;
+
+//   const news = await News.findById(id);
+
+//   if (!news) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "News not found",
+//     });
+//   }
+
+//   // If the news is not active and the requester is not an admin, do not return it
+//   if (!news.isActive && !req.isAdmin) {
+//     return res.status(404).json({
+//       success: false,
+//       message: "News not found",
+//     });
+//   }
+
+//   res.status(200).json({
+//     success: true,
+//     news,
+//   });
+// });
 
 // Update news
 export const updateNews = catchAsyncErrors(async (req, res) => {

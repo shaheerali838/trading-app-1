@@ -4,9 +4,11 @@ import { openFuturesTrade } from "../../store/slices/futuresTradeSlice";
 import { toast } from "react-toastify";
 import { getWallet } from "../../store/slices/assetsSlice";
 import { Card } from "@material-tailwind/react";
-
+import io from "socket.io-client";
 import { Button, Modal, Dropdown } from "flowbite-react";
 import AnimatedHeading from "../animation/AnimateHeading";
+
+const socket = io(import.meta.env.VITE_API_URL);
 
 const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
   const dispatch = useDispatch();
@@ -29,10 +31,18 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
     dispatch(getWallet());
   }, [dispatch]);
   useEffect(() => {
-    const now = new Date();
-    const gmtTime = now.toISOString().split("T")[1].split(".")[0]; // Extracts HH:MM:SS from ISO string
-    setCurrentTime(gmtTime);
-  }, [marketPrice]);
+    const interval = setInterval(() => {
+      const now = new Date();
+      const localTime = now.toLocaleTimeString("en-US", {
+        hour12: false,
+        hour: "2-digit",
+        minute: "2-digit",
+        second: "2-digit",
+      });
+      setCurrentTime(localTime);
+    }, 1000);
+    return () => clearInterval(interval);
+  }, []);
 
   const handleSubmit = (e) => {
     e.preventDefault();
@@ -50,7 +60,12 @@ const FuturesOrderForm = ({ marketPrice, selectedPair }) => {
         amountInUSDT: quantity,
         entryPrice: marketPrice,
       })
-    );
+    ).then((result) => {
+      if (result.meta.requestStatus === "fulfilled") {
+        // Emit a socket event to notify about the new position
+        socket.emit("newPosition", result.payload);
+      }
+    });
   };
 
   const handleAssetsClick = (value) => {

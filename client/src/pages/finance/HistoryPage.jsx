@@ -31,8 +31,7 @@ const HistoryPage = () => {
     dispatch(fetchPerpetualTradesHistory());
     dispatch(fetchSpotTradesHistory());
   }, [dispatch]);
-  
-  
+
   if (status === "loading") {
     return <Loader />;
   }
@@ -101,11 +100,9 @@ const HistoryPage = () => {
 
             {/* Transaction History Content */}
             {transactionTab === "deposits" ? (
-              <DepositHistory transactions={wallet?.depositHistory } />
+              <DepositHistory transactions={wallet?.depositHistory} />
             ) : (
-              <WithdrawalHistory
-                transactions={wallet?.withdrawalHistory }
-              />
+              <WithdrawalHistory transactions={wallet?.withdrawalHistory} />
             )}
           </>
         ) : (
@@ -146,11 +143,11 @@ const HistoryPage = () => {
 
             {/* Trade History Content */}
             {tradeTab === "spot" ? (
-              <SpotTradesHistory trades={spotHistoryTrades } />
+              <SpotTradesHistory trades={spotHistoryTrades} />
             ) : tradeTab === "futures" ? (
-              <FuturesTradeHistory trades={futuresHistoryTrades } />
+              <FuturesTradeHistory trades={futuresHistoryTrades} />
             ) : (
-              <PerpetualsTradeHistory trades={perpetualsHistoryTrades } />
+              <PerpetualsTradeHistory trades={perpetualsHistoryTrades} />
             )}
           </>
         )}

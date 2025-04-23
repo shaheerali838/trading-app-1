@@ -122,8 +122,9 @@ export const openFuturesPosition = catchAsyncErrors(async (req, res) => {
     status: "open",
   });
 
-  // Emit event for real-time updates
+  // Emit events for real-time updates
   io.emit("newFuturesTrade", futuresTrade);
+  io.emit("newPosition", futuresTrade);
 
   res.status(201).json({
     message: "Futures position opened successfully",
@@ -163,14 +164,17 @@ export const closeFuturesPosition = catchAsyncErrors(async (req, res) => {
   wallet.futuresWallet += trade.marginUsed + profitLoss;
   await wallet.save();
 
-  // Close the trade
+  // Close the trade and store PNL information
   trade.status = "closed";
   trade.closedAt = new Date();
+  trade.profitLoss = profitLoss;
+  trade.closePrice = closePrice;
   await trade.save();
 
   res.status(200).json({
     message: "Futures position closed successfully",
     profitLoss,
+    tradeId,
   });
 });
 
@@ -218,6 +222,9 @@ export const checkLiquidations = async (marketPrices) => {
       (trade.type === "long" && marketPrice <= trade.liquidationPrice) ||
       (trade.type === "short" && marketPrice >= trade.liquidationPrice)
     ) {
+      // Calculate profit/loss for the liquidated trade (always negative)
+      const profitLoss = -trade.marginUsed; // Full loss of margin
+
       // Liquidate the trade
       const wallet = await Wallet.findOne({ userId: trade.userId });
       if (wallet) {
@@ -227,6 +234,8 @@ export const checkLiquidations = async (marketPrices) => {
 
       trade.status = "liquidated";
       trade.closedAt = new Date();
+      trade.profitLoss = profitLoss;
+      trade.closePrice = marketPrice;
       await trade.save();
       io.emit("liquidationUpdate", trade);
     }
@@ -246,9 +255,42 @@ export const checkExpiredTrades = async () => {
     });
 
     for (const trade of expiredTrades) {
-      // Update the trade to mark it as expired but don't close it
-      trade.isExpired = true;
-      await trade.save();
+      // Get current market price for PNL calculation
+      try {
+        // Fetch current price from Binance API
+        const response = await axios.get(
+          `https://api.binance.com/api/v3/ticker/price?symbol=${trade.pair}`
+        );
+        const currentPrice = parseFloat(response.data.price);
+
+        // Calculate PNL
+        let profitLoss;
+        if (trade.type === "long") {
+          profitLoss = (currentPrice - trade.entryPrice) * trade.quantity;
+        } else {
+          profitLoss = (trade.entryPrice - currentPrice) * trade.quantity;
+        }
+
+        // Update wallet with PNL
+        const wallet = await Wallet.findOne({ userId: trade.userId });
+        if (wallet) {
+          wallet.futuresWallet += trade.marginUsed + profitLoss;
+          await wallet.save();
+        }
+
+        // Update the trade to mark it as closed with PNL data
+        trade.isExpired = true;
+        trade.status = "closed";
+        trade.closedAt = now;
+        trade.profitLoss = profitLoss;
+        trade.closePrice = currentPrice;
+        await trade.save();
+      } catch (error) {
+        console.error("Error fetching price for expired trade:", error);
+        // If we can't get the price, just mark as expired without PNL calculation
+        trade.isExpired = true;
+        await trade.save();
+      }
 
       // Notify clients about expired trade status
       io.emit("tradeExpired", trade);

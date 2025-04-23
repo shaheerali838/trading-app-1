@@ -10,7 +10,13 @@ const PerpetualTradeSchema = new mongoose.Schema({
   marginUsed: { type: Number, required: true },
   liquidationPrice: { type: Number, required: true },
   fundingFee: { type: Number, default: 0 }, // Funding fee applied periodically
-  status: { type: String, enum: ["open", "closed", "liquidated"], default: "open" },
+  profitLoss: { type: Number, default: 0 }, // PNL for the trade
+  closePrice: { type: Number }, // Price at which position was closed
+  status: {
+    type: String,
+    enum: ["open", "closed", "liquidated"],
+    default: "open",
+  },
   createdAt: { type: Date, default: Date.now },
   closedAt: { type: Date },
 });

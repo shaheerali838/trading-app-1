@@ -34,6 +34,7 @@ import Profile from "./pages/Profile.jsx";
 import KycVerification from "./pages/KycVerification.jsx";
 import KycVerificationApproval from "./pages/admin/KycVerificationApproval.jsx";
 import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
+import ManageNews from "./pages/admin/ManageNews.jsx";
 
 const App = () => {
   const dispatch = useDispatch();
@@ -58,6 +59,7 @@ const App = () => {
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/market" element={<Market />} />
+              <Route path="/trade" element={<Trade />} />
               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />
@@ -82,6 +84,7 @@ const App = () => {
                   path="/admin/kyc/verification"
                   element={<KycVerificationApproval />}
                 />
+                <Route path="/admin/news/manage" element={<ManageNews />} />
               </Route>
               <Route element={<ProtectedRoute />}>
                 <Route path="/wallet" element={<Wallet />} />

@@ -6,15 +6,24 @@ import {
   updateNews,
   deleteNews,
 } from "../controllers/newsController.js";
-import { isUserAuthenticated, isAdminAuthenticated } from "../middlewares/auth.js";
+import {
+  isUserAuthenticated,
+  isAdminAuthenticated,
+} from "../middlewares/auth.js";
 
 const router = express.Router();
 
 // Public routes
 router.get("/", getAllNews);
+// router.get("/:id", getSingleNews);
 
 // Admin routes
-router.get("/admin", isUserAuthenticated, isAdminAuthenticated, getAllNewsAdmin);
+router.get(
+  "/admin",
+  isUserAuthenticated,
+  isAdminAuthenticated,
+  getAllNewsAdmin
+);
 router.post("/", isUserAuthenticated, isAdminAuthenticated, createNews);
 router.put("/:id", isUserAuthenticated, isAdminAuthenticated, updateNews);
 router.delete("/:id", isUserAuthenticated, isAdminAuthenticated, deleteNews);

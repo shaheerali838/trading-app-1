@@ -245,11 +245,13 @@ const Navbar = () => {
           )}
         </div>
         <div className="flex items-center gap-4">
-          <div className="sm:hidden">
-            <button onClick={toggleMenu} className="text-white text-2xl">
-              {mobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
-            </button>
-          </div>
+          {!user && (
+            <div className="sm:hidden">
+              <button onClick={toggleMenu} className="text-white text-2xl">
+                {mobileMenuOpen ? <AiOutlineClose /> : <AiOutlineMenu />}
+              </button>
+            </div>
+          )}
           {user && (
             <NavLink
               to="/profile"

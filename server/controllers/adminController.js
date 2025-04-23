@@ -105,16 +105,16 @@ export const fetchOpenTrades = async (req, res) => {
     // Fetch open futures trades and add category field
     const futuresTrades = await FuturesTrade.find({ status: "open" })
       .populate("userId", "firstName") // Fetch user firstName
-      .lean() // Converts Mongoose documents to plain objects
+      .lean(); // Converts Mongoose documents to plain objects
 
-    futuresTrades.forEach(trade => trade.category = "Futures");
+    futuresTrades.forEach((trade) => (trade.category = "Futures"));
 
     // Fetch open perpetual trades and add category field
     const perpetualTrades = await PerpetualTrade.find({ status: "open" })
       .populate("userId", "firstName")
       .lean();
 
-    perpetualTrades.forEach(trade => trade.category = "Perpetual");
+    perpetualTrades.forEach((trade) => (trade.category = "Perpetual"));
 
     // Combine both trade lists
     const openTrades = [...futuresTrades, ...perpetualTrades];
@@ -128,7 +128,6 @@ export const fetchOpenTrades = async (req, res) => {
     res.status(500).json({ message: "Error fetching open trades" });
   }
 };
-
 
 export const liquidateTrade = async (req, res) => {
   try {
@@ -166,7 +165,8 @@ export const liquidateTrade = async (req, res) => {
     // **Calculate Profit/Loss**
 
     let profitLoss;
-    profitLoss = type === "profit"? amount * trade.leverage: -amount * trade.leverage;
+    profitLoss =
+      type === "profit" ? amount * trade.leverage : -amount * trade.leverage;
 
     // **Update User Wallet Balance**
     if (category === "futures") {
@@ -192,7 +192,7 @@ export const liquidateTrade = async (req, res) => {
     });
   } catch (error) {
     console.log(error.message);
-    
+
     res
       .status(500)
       .json({ message: "Error liquidating trade", error: error.message });

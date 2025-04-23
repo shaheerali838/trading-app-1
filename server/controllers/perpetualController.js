@@ -118,13 +118,17 @@ export const closePerpetualPosition = catchAsyncErrors(async (req, res) => {
   }
   await wallet.save();
 
+  // Store PNL information in the trade record
   trade.status = "closed";
   trade.closedAt = new Date();
+  trade.profitLoss = profitLoss;
+  trade.closePrice = closePrice;
   await trade.save();
 
   res.status(200).json({
     message: "Perpetual position closed successfully",
     profitLoss,
+    tradeId,
   });
 });
 

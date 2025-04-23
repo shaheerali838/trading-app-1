@@ -1,7 +1,6 @@
 import { useEffect, useState } from "react";
 import { useDispatch, useSelector } from "react-redux";
-import {
-  fetchSpotTradesHistory} from "../../store/slices/tradeSlice";
+import { fetchSpotTradesHistory } from "../../store/slices/tradeSlice";
 import SpotTradesHistory from "../history/SpotTradesHistory";
 import { fetchFuturesTradesHistory } from "../../store/slices/futuresTradeSlice";
 import { fetchPerpetualTradesHistory } from "../../store/slices/perpetualSlice";
@@ -44,8 +43,7 @@ const OrdersRecord = ({ type, marketData }) => {
           }`}
           onClick={() => setActiveTab("pending")}
         >
-          {type === "spot" ? "Orders" : "Position Orders"
-          }
+          {type === "spot" ? "Orders" : "Position Orders"}
         </button>
         <button
           className={`px-4 py-2 text-sm font-semibold ${

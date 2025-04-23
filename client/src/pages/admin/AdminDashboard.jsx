@@ -1,10 +1,6 @@
-import { useState, useEffect } from "react";
 import { Card } from "@material-tailwind/react";
 import { Link } from "react-router-dom";
-import API from "../../utils/api";
-import { fetchRequests, fetchUsers } from "../../store/slices/adminSlice";
-import { useDispatch } from "react-redux";
-import { FaIdCard } from "react-icons/fa";
+import { FaIdCard, FaNewspaper } from "react-icons/fa";
 
 const AdminDashboard = () => {
   return (
@@ -67,6 +63,17 @@ const AdminDashboard = () => {
           <Link to={"/admin/kyc/verification"}>
             <p className="text-blue-500 hover:underline cursor-pointer">
               Manage KYC Verifications
+            </p>
+          </Link>
+        </Card>
+        <Card className="rounded-lg bg-[#2A2A2A] text-gray-500 p-6 hover:scale-105 transition duration-300 ease-in-out">
+          <h2 className="text-2xl font-bold mb-2 text-white flex items-center">
+            <FaNewspaper className="mr-2" /> News Management
+          </h2>
+          <p>Create, update, and manage news items shown on the homepage</p>
+          <Link to={"/admin/news/manage"}>
+            <p className="text-blue-500 hover:underline cursor-pointer">
+              Manage News Items
             </p>
           </Link>
         </Card>

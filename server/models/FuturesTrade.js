@@ -11,6 +11,8 @@ const FuturesTradeSchema = new mongoose.Schema({
   quantity: { type: Number, required: true }, // Contract quantity
   marginUsed: { type: Number, required: true }, // Margin reserved for trade
   liquidationPrice: { type: Number, required: true }, // Price at which liquidation occurs
+  profitLoss: { type: Number, default: 0 }, // PNL for the trade
+  closePrice: { type: Number }, // Price at which position was closed
   status: {
     type: String,
     enum: ["open", "closed", "liquidated"],

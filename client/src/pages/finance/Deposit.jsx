@@ -2,11 +2,12 @@ import { useState, useEffect } from "react";
 import { useDispatch, useSelector } from "react-redux";
 import { motion, AnimatePresence } from "framer-motion";
 import { toast } from "react-toastify";
-import bankQr from "../../assets/transaction-qr.png";
-import easypaisaQr from "../../assets/transaction-qr.png";
-import jazzcashQr from "../../assets/transaction-qr.png";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { Link } from "react-router-dom";
+import ethQr from "../../assets/etherium-qr.jpeg";
+import btcQr from "../../assets/btc-qr.jpeg";
+import solanaQr from "../../assets/solana-qr.jpeg";
+import tronQr from "../../assets/tron-qr.jpeg";
 
 function Deposit() {
   const dispatch = useDispatch();
@@ -130,6 +131,20 @@ function Deposit() {
     return "";
   };
 
+  const getQrCode = () => {
+    if (network === "Bitcoin") {
+      return btcQr;
+    } else if (network === "Ethereum (ERC20)" || network === "Arbitrum One" || network === "Polygon POS") {
+      return ethQr;
+    } else if (network === "Solana") {
+      return solanaQr;
+    } else if (network === "Tron (TRC20)") {
+      return tronQr;
+    }
+    // Default to tron QR for other networks
+    return tronQr;
+  };
+
   return (
     <div className="w-full min-h-screen p-6 bg-gradient">
       <div className="flex flex-col sm:flex-row gap-4 justify-evenly">
@@ -169,6 +184,7 @@ function Deposit() {
               </option>
             </select>
           </div>
+
           <div>
             <label className="block text-sm font-medium mb-2">Network</label>
             <select
@@ -300,7 +316,16 @@ function Deposit() {
               )}
             </select>
           </div>
-
+          {/* QR Code Display */}
+          <div className="mt-4 flex flex-col items-start">
+            <div className="bg-white p-1 rounded-md">
+              <img
+                src={getQrCode()}
+                alt={`${currency} QR Code`}
+                className="max-w-[100px] max-h-[100px]"
+              />
+            </div>
+          </div>
           <div className="w-full ">
             <div className="relative">
               <label htmlFor="wallet-address" className="sr-only">
@@ -360,6 +385,7 @@ function Deposit() {
               </div>
             </div>
           </div>
+
           <Link to={"/wallet/request-release-funds"} className="text-blue-400">
             Already made a transaction? Send a request to release funds.
           </Link>

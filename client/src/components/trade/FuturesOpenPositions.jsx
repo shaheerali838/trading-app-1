@@ -17,12 +17,18 @@ function FuturesOpenPosition() {
   }, [dispatch]);
 
   useEffect(() => {
+    // Listen for various socket events that should trigger a refresh
     socket.on("liquidationUpdate", () => dispatch(fetchOpenPositions()));
     socket.on("tradeExpired", () => dispatch(fetchOpenPositions()));
+    socket.on("newPosition", () => {
+      // When a new position is created, immediately update positions
+      dispatch(fetchOpenPositions());
+    });
 
     return () => {
       socket.off("liquidationUpdate");
       socket.off("tradeExpired");
+      socket.off("newPosition");
     };
   }, [dispatch]);
 

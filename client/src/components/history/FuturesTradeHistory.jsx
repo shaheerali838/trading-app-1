@@ -9,16 +9,25 @@ const FuturesTradeHistory = ({ trades }) => {
   useEffect(() => {
     dispatch(fetchMarketData());
   }, [dispatch]);
+
   const getCoinImage = (symbol) => {
     let foundCoin = coins.find(
       (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
     );
     return foundCoin?.image;
   };
+
   const extractBase = (pair) => {
     if (pair.length <= 3) return pair;
     const base = pair.slice(0, 3);
     return `${base}`;
+  };
+
+  const formatPnL = (pnl) => {
+    if (!pnl && pnl !== 0) return "--";
+
+    const formattedValue = pnl.toFixed(2);
+    return `${pnl >= 0 ? "+" : ""}${formattedValue}`;
   };
 
   return (
@@ -32,16 +41,22 @@ const FuturesTradeHistory = ({ trades }) => {
                 Pair
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
+                Type
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Leverage
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
                 Status
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
-                Quantity
+                Entry Price
               </th>
               <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
-                Entry Price
+                Close Price
+              </th>
+              <th className="px-4 py-2 text-left text-sm font-medium text-gray-300">
+                PNL (USDT)
               </th>
             </tr>
           </thead>
@@ -60,25 +75,41 @@ const FuturesTradeHistory = ({ trades }) => {
                     </h2>
                   </div>
                 </td>
+                <td className="px-4 py-2 text-sm text-gray-200 capitalize">
+                  {trade.type}
+                </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.leverage}
+                  {trade.leverage}x
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
                   <span
                     className={`inline-flex items-center px-2.5 py-0.5 rounded-full text-xs font-medium ${
-                      trade.status === "Open"
+                      trade.status === "open"
                         ? "bg-green-500 text-green-100"
-                        : "bg-red-500 text-red-100"
+                        : trade.status === "liquidated"
+                        ? "bg-red-500 text-red-100"
+                        : "bg-blue-500 text-blue-100"
                     }`}
                   >
                     {trade.status}
                   </span>
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.quantity}
+                  ${trade.entryPrice?.toFixed(2)}
                 </td>
                 <td className="px-4 py-2 text-sm text-gray-200">
-                  {trade.entryPrice}
+                  {trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}
+                </td>
+                <td
+                  className={`px-4 py-2 text-sm font-medium ${
+                    trade.profitLoss > 0
+                      ? "text-green-400"
+                      : trade.profitLoss < 0
+                      ? "text-red-400"
+                      : "text-gray-200"
+                  }`}
+                >
+                  {formatPnL(trade.profitLoss)}
                 </td>
               </tr>
             ))}
@@ -91,7 +122,7 @@ const FuturesTradeHistory = ({ trades }) => {
         {trades.map((trade, index) => (
           <div
             key={trade._id}
-            className=" border-b border-[#2f2f2f] p-4 shadow-md"
+            className="border-b border-[#2f2f2f] p-4 shadow-md"
           >
             <div className="flex justify-between items-center">
               <span className="flex items-center gap-3">
@@ -113,18 +144,48 @@ const FuturesTradeHistory = ({ trades }) => {
 
             <div className="mt-2 text-white text-sm">
               <div className="flex justify-between mt-1">
-                <span>Quantity</span>
-                <span>{trade?.quantity?.toFixed(2)}</span>
+                <span>Type</span>
+                <span className="capitalize">{trade.type}</span>
               </div>
 
               <div className="flex justify-between mt-1">
                 <span>Entry Price</span>
-                <span>{trade.entryPrice?.toFixed(2)}</span>
+                <span>${trade.entryPrice?.toFixed(2)}</span>
+              </div>
+
+              <div className="flex justify-between mt-1">
+                <span>Close Price</span>
+                <span>
+                  {trade.closePrice ? `$${trade.closePrice.toFixed(2)}` : "--"}
+                </span>
+              </div>
+
+              <div className="flex justify-between mt-1">
+                <span>PNL (USDT)</span>
+                <span
+                  className={`font-medium ${
+                    trade.profitLoss > 0
+                      ? "text-green-400"
+                      : trade.profitLoss < 0
+                      ? "text-red-400"
+                      : "text-white"
+                  }`}
+                >
+                  {formatPnL(trade.profitLoss)}
+                </span>
               </div>
 
               <div className="flex justify-between mt-1">
                 <span className="text-red-400">Status</span>
-                <span className="border border-red-400 px-2 py-1 rounded-md">
+                <span
+                  className={`border px-2 py-1 rounded-md ${
+                    trade.status === "open"
+                      ? "border-green-400 text-green-400"
+                      : trade.status === "liquidated"
+                      ? "border-red-400 text-red-400"
+                      : "border-blue-400 text-blue-400"
+                  }`}
+                >
                   {trade.status?.toUpperCase()}
                 </span>
               </div>

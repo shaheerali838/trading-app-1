@@ -2,6 +2,7 @@ import { useState, useEffect } from "react";
 import axios from "axios";
 import { motion } from "framer-motion";
 import { Link } from "react-router-dom";
+import API from "../../utils/api";
 
 const NewsSection = () => {
   const [news, setNews] = useState([]);
@@ -10,9 +11,7 @@ const NewsSection = () => {
   useEffect(() => {
     const fetchNews = async () => {
       try {
-        const response = await axios.get(
-          `${import.meta.env.VITE_API_URL}/api/news`
-        );
+        const response = await API.get("/news");
         setNews(response.data.news.slice(0, 3)); // Get only the 3 latest news
         setLoading(false);
       } catch (error) {
@@ -53,7 +52,7 @@ const NewsSection = () => {
   }
 
   return (
-    <section className="py-16 bg-[#1a1a1a]">
+    <section className="py-16 bg-[#000000]">
       <div className="container mx-auto px-4">
         <motion.div
           initial={{ opacity: 0, y: 20 }}
@@ -93,12 +92,6 @@ const NewsSection = () => {
                 <p className="text-gray-400 mb-4">
                   {truncateText(item.description, 120)}
                 </p>
-                <Link
-                  to={`/news/${item._id}`}
-                  className="inline-block text-[#00FF7F] hover:text-white transition-colors duration-300"
-                >
-                  Read More →
-                </Link>
               </div>
             </motion.div>
           ))}

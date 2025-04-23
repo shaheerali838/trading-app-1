@@ -17,10 +17,10 @@ const Home = () => {
       <div className="home">
         <AnimatedSection>
           <Hero />
+          <NewsSection />
           <CryptoCarousel />
           <Testimonials />
           <WhyChoosUs />
-          <NewsSection />
           <Faqs />
           <Slider />
         </AnimatedSection>

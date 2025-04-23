@@ -51,6 +51,7 @@ const resources = {
       admin_panel: "Admin Panel",
       assets_wallet: "Assets Wallet",
       logout: "Logout",
+      sign_out_of_your_account: "Sign out of your account",
       logout_confirmation: "Are you sure you want to logout from this account?",
       confirm: "Confirm",
 
@@ -172,6 +173,7 @@ const resources = {
       admin_panel: "Panel de Administración",
       assets_wallet: "Billetera de Activos",
       logout: "Cerrar Sesión",
+      sign_out_of_your_account: "Cerrar sesión de su cuenta",
       logout_confirmation:
         "¿Está seguro de que desea cerrar sesión de esta cuenta?",
       confirm: "Confirmar",
@@ -295,6 +297,7 @@ const resources = {
       admin_panel: "Panneau d'Administration",
       assets_wallet: "Portefeuille d'Actifs",
       logout: "Déconnexion",
+      sign_out_of_your_account: "Se déconnecter de votre compte",
       logout_confirmation:
         "Êtes-vous sûr de vouloir vous déconnecter de ce compte?",
       confirm: "Confirmer",
@@ -418,6 +421,7 @@ const resources = {
       admin_panel: "Admin-Panel",
       assets_wallet: "Vermögenswerte-Wallet",
       logout: "Abmelden",
+      sign_out_of_your_account: "Abmelden von Ihrem Konto",
       logout_confirmation:
         "Sind Sie sicher, dass Sie sich von diesem Konto abmelden möchten?",
       confirm: "Bestätigen",
