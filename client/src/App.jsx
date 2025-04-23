@@ -59,7 +59,6 @@ const App = () => {
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
               <Route path="/market" element={<Market />} />
-              <Route path="/trade" element={<Trade />} />
               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />

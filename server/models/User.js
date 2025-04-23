@@ -25,7 +25,6 @@ const UserSchema = new mongoose.Schema(
       verificationStatus: {
         type: String,
         enum: ["pending", "verified", "rejected"],
-        default: "pending",
       },
       rejectionReason: { type: String },
     },

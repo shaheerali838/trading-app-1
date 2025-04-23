@@ -37,16 +37,54 @@ export const getWallet = createAsyncThunk(
     try {
       dispatch(setLoading(true));
 
-      const response = await API.get("/user/getwallet", {
+      // Detect if user is on iOS/macOS
+      const userAgent = navigator.userAgent.toLowerCase();
+      const isApple = /(mac|iphone|ipad|ipod)/i.test(userAgent);
+
+      // Use a different configuration for Apple devices if needed
+      const config = {
         headers: {
           "Content-Type": "application/json",
         },
-      });
+        timeout: isApple ? 30000 : 10000, // Longer timeout for Apple devices
+      };
 
-      return response.data; // Return object, NOT string
+      // Make the API request with the appropriate configuration
+      const response = await API.get("/user/getwallet", config);
+
+      // Ensure we have valid data before returning
+      if (!response.data) {
+        throw new Error("Invalid wallet data received");
+      }
+
+      // Add safety checks for wallet properties
+      const walletData = response.data;
+
+      // Ensure all required wallet properties exist
+      const safeWallet = {
+        spotWallet: walletData.spotWallet || 0,
+        exchangeWallet: walletData.exchangeWallet || 0,
+        futuresWallet: walletData.futuresWallet || 0,
+        perpetualsWallet: walletData.perpetualsWallet || 0,
+        holdings: Array.isArray(walletData.holdings) ? walletData.holdings : [],
+        exchangeHoldings: Array.isArray(walletData.exchangeHoldings)
+          ? walletData.exchangeHoldings
+          : [],
+        frozenAssets: Array.isArray(walletData.frozenAssets)
+          ? walletData.frozenAssets
+          : [],
+        ...walletData,
+      };
+
+      return safeWallet;
     } catch (error) {
-      toast.error(error.response.data.message);
-      return rejectWithValue(error.response.data);
+      console.error("Wallet fetch error:", error);
+      toast.error(
+        error.response?.data?.message || "Failed to fetch wallet data"
+      );
+      return rejectWithValue(
+        error.response?.data || { message: "Network error occurred" }
+      );
     } finally {
       dispatch(setLoading(false)); // Stop loading after request
     }
@@ -137,7 +175,7 @@ export const transferFunds = createAsyncThunk(
         amount,
         asset: transferAsset,
       });
-      toast.success(response?.data?.message );
+      toast.success(response?.data?.message);
       return response.data;
     } catch (error) {
       toast.error(error.response?.data?.message || "Transfer failed");

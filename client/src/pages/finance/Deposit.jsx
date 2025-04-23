@@ -6,7 +6,7 @@ import AnimatedHeading from "../../components/animation/AnimateHeading";
 import { Link } from "react-router-dom";
 import ethQr from "../../assets/etherium-qr.jpeg";
 import btcQr from "../../assets/btc-qr.jpeg";
-import solanaQr from "../../assets/solana-qr.jpeg";
+import solanaQr from "../../assets/salona-qr.jpeg";
 import tronQr from "../../assets/tron-qr.jpeg";
 
 function Deposit() {
@@ -134,7 +134,11 @@ function Deposit() {
   const getQrCode = () => {
     if (network === "Bitcoin") {
       return btcQr;
-    } else if (network === "Ethereum (ERC20)" || network === "Arbitrum One" || network === "Polygon POS") {
+    } else if (
+      network === "Ethereum (ERC20)" ||
+      network === "Arbitrum One" ||
+      network === "Polygon POS"
+    ) {
       return ethQr;
     } else if (network === "Solana") {
       return solanaQr;

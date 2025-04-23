@@ -13,18 +13,48 @@ const Assets = ({ type }) => {
   const { coins } = useSelector((state) => state.market);
   const [usdtData, setUsdtData] = useState(null);
   const [walletValue, setWalletValue] = useState(0);
+  const [isLoading, setIsLoading] = useState(true);
+  const [isApplePlatform, setIsApplePlatform] = useState(false);
+
+  // Detect if user is on iOS/macOS
+  useEffect(() => {
+    const userAgent = navigator.userAgent.toLowerCase();
+    const isApple = /(mac|iphone|ipad|ipod)/i.test(userAgent);
+    setIsApplePlatform(isApple);
+  }, []);
 
   useEffect(() => {
-    dispatch(fetchMarketData());
-    if (type === "spot") {
-      dispatch(getWallet());
-    } else if (type === "futures") {
-      dispatch(fetchOpenPositions());
-    }
-  }, [dispatch, type]);
+    const fetchData = async () => {
+      setIsLoading(true);
+      try {
+        await dispatch(fetchMarketData());
+        if (type === "spot") {
+          await dispatch(getWallet());
+        } else if (type === "futures") {
+          await dispatch(fetchOpenPositions());
+        }
+      } catch (error) {
+        console.error("Error fetching wallet data:", error);
+      } finally {
+        setIsLoading(false);
+      }
+    };
+
+    fetchData();
+
+    // Set up refresh interval
+    const interval = setInterval(
+      () => {
+        fetchData();
+      },
+      isApplePlatform ? 20000 : 10000
+    ); // Longer interval for Apple devices
+
+    return () => clearInterval(interval);
+  }, [dispatch, type, isApplePlatform]);
 
   useEffect(() => {
-    if (coins.length > 0) {
+    if (coins && coins.length > 0) {
       setUsdtData(getCoinData("USDT"));
     }
   }, [coins]);
@@ -34,7 +64,7 @@ const Assets = ({ type }) => {
   }, [type, wallet, coins, openPositions]);
 
   const calculateWalletValue = () => {
-    if (!wallet || !coins.length) return;
+    if (!wallet || !coins || !coins.length) return;
 
     let value = 0;
 
@@ -51,7 +81,9 @@ const Assets = ({ type }) => {
                 (c) => c.symbol === holding.asset.toLowerCase()
               );
               if (!coin) return total;
-              return total + coin.current_price * holding.quantity;
+              return (
+                total + (coin.current_price || 0) * (holding.quantity || 0)
+              );
             },
             0
           );
@@ -68,7 +100,7 @@ const Assets = ({ type }) => {
               (c) => c.symbol === holding.asset.toLowerCase()
             );
             if (!coin) return total;
-            return total + coin.current_price * holding.quantity;
+            return total + (coin.current_price || 0) * (holding.quantity || 0);
           }, 0);
           value += holdingsValue;
         }
@@ -77,16 +109,11 @@ const Assets = ({ type }) => {
       case "futures":
         // Base USDT value
         value = wallet.futuresWallet || 0;
-
-        // Could add value of open positions here if needed
-        // Currently not implementing as it would require complex PnL calculations
         break;
 
       case "perpetuals":
         // Base USDT value
         value = wallet.perpetualsWallet || 0;
-
-        // Could add value of perpetual positions here if needed
         break;
 
       default:
@@ -97,16 +124,31 @@ const Assets = ({ type }) => {
   };
 
   const getCoinData = (symbol) => {
-    if (!symbol) return null;
+    if (!symbol || !coins || !coins.length) return null;
     return coins.find(
-      (coin) => coin.symbol.toUpperCase() === symbol.toUpperCase()
+      (coin) =>
+        coin &&
+        coin.symbol &&
+        symbol &&
+        coin.symbol.toUpperCase() === symbol.toUpperCase()
     );
   };
 
-  const calculateValue = (marketPrice, quantity) => {
-    if (!marketPrice) return 0;
-    return marketPrice * quantity;
+  const calculateValue = (price, quantity) => {
+    if (!price || !quantity) return 0;
+    return price * quantity;
   };
+
+  // Display a loading state if data is being fetched
+  if (isLoading) {
+    return (
+      <div className="bg-[#242424] p-6 rounded-lg mb-6">
+        <h2 className="text-lg font-semibold text-white mb-4">
+          Loading assets...
+        </h2>
+      </div>
+    );
+  }
 
   // Function to safely extract the base coin from a trading pair
   const extractBaseCoin = (pair) => {
@@ -118,9 +160,6 @@ const Assets = ({ type }) => {
     // For other formats, return the pair as is or handle appropriately
     return pair;
   };
-
-  console.log("the wallet is", wallet);
-
   return (
     <div className="min-h-screen max-w-7xl mx-auto">
       {/* Display wallet-specific total valuation at the top */}
