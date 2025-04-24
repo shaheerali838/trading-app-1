@@ -2,7 +2,7 @@ import { motion } from "framer-motion";
 import Faqs from "../components/home/Faqs";
 import AnimatedHeading from "../components/animation/AnimateHeading";
 
-function About() {
+function About(props) {
   const features = [
     {
       title: "Secure Trading",
@@ -60,7 +60,7 @@ function About() {
         animate={{ opacity: 1, y: 0 }}
         className=""
       >
-        <div className="bg-gradient min-h-screen flex flex-col justify-center">
+        <div className={`${props.mode} min-h-screen flex flex-col justify-center`}>
           <div className="text-center mb-12">
             <AnimatedHeading>
               <h1 className="text-4xl font-bold mb-4">About Our Platform</h1>
@@ -71,7 +71,7 @@ function About() {
             </p>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6">
+          <div className={` ${props.mode} grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6`}>
             {features.map((feature, index) => (
               <motion.div
                 key={feature.title}
@@ -80,7 +80,7 @@ function About() {
                 transition={{ delay: index * 0.1 }}
                 className="card text-center"
               >
-                <div className="text-4xl mb-4">{feature.icon}</div>
+                <div className={`text-4xl mb-4`}>{feature.icon}</div>
                 <h3 className="text-xl font-bold mb-2">{feature.title}</h3>
                 <p className="text-light/60">{feature.description}</p>
               </motion.div>
@@ -88,7 +88,7 @@ function About() {
           </div>
         </div>
 
-        <Faqs />
+        <Faqs mode={props.mode}/>
       </motion.div>
     </div>
   );
