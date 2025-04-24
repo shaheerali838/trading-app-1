@@ -1,6 +1,4 @@
 @import "tailwindcss";
-@tailwind base;
-@tailwind components;
 @tailwind utilities;
 /* Core CSS required for Ionic components to work properly */
 
@@ -64,10 +62,12 @@
 }
 
 @keyframes up-down {
+
   0%,
   100% {
     transform: translateY(0);
   }
+
   50% {
     transform: translateY(-20px);
   }
@@ -76,13 +76,26 @@
 .animate-up-down {
   animation: up-down 3s ease-in-out infinite;
 }
+
 .smooth-transition {
   transition: all 0.2s ease-in-out;
 }
+
 .shadow-top {
   box-shadow: 0 -4px 6px -1px #1e90ff, 0 -2px 4px -1px #1e90ff;
 }
 
 .border-primary {
   border: 1px solid var(--primary-color);
+}
+
+
+.dark-class {
+  background: var(--background-gradient);
+  color: white;
+}
+
+.light-class {
+  background: white;
+  color: black;
 }

@@ -4,7 +4,7 @@ import CountUp from "react-countup";
 import HeroImgSrc from "../../assets/hero.png";
 import PropTypes from "prop-types";
 
-const Hero = () => {
+const Hero = (props) => {
   const { t } = useTranslation();
 
   const counts = [
@@ -28,11 +28,17 @@ const Hero = () => {
     },
   ];
   return (
-    <section className="heroSection min-h-[98vh] bg-gradient flex flex-col justify-center items-center">
+    <section
+      className={`heroSection min-h-[98vh]   flex flex-col ${props.mode}  justify-center items-center`}
+    >
       <div className="wrapper flex flex-col md:flex-row justify-center items-center">
         <div className="first text-center md:text-left md:mr-8">
           <div className="heading flex flex-col items-end">
-            <h1 className="text-4xl md:text-6xl font-bold text-white">
+            <h1
+              className={`text-4xl ${
+                props.mode === "light-class" ? "text-black" : "text-white"
+              } md:text-6xl font-bold `}
+            >
               {t("trusted_trading")}
             </h1>
             <p className="text-4xl md:text-5xl text-primary mt-4">
@@ -59,5 +65,8 @@ const Hero = () => {
     </section>
   );
 };
-
+Hero.propTypes = {
+  mode: PropTypes.string.isRequired,
+  toggleMode: PropTypes.func.isRequired,
+};
 export default Hero;

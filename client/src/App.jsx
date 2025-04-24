@@ -1,4 +1,4 @@
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import Navbar from "./components/layout/Navbar";
 import Footer from "./components/layout/Footer";
 import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
@@ -37,6 +37,20 @@ import TranslationWrapper from "./components/layout/TranslationWrapper.jsx";
 import ManageNews from "./pages/admin/ManageNews.jsx";
 
 const App = () => {
+  const [Mode, setMode] = useState("dark-class");
+
+  const toggleMode = () => {
+    if (Mode === "dark-class") {
+      setMode("light-class");
+      // setText("#000000");
+      document.body.style.backgroundColor = "#F0F8FF";
+    } else {
+      setMode("dark-class");
+      // setText("#ffffff");
+      document.body.style.backgroundColor = "#181818";
+    }
+  };
+
   const dispatch = useDispatch();
   const { loading } = useSelector((state) => state.global);
 
@@ -50,11 +64,11 @@ const App = () => {
     <TranslationWrapper>
       <div className="bg-gradient text-white overflow-hidden">
         <Router>
-          <Navbar />
+          <Navbar mode={Mode} toggleMode={toggleMode} />
           <main className="pt-[82px]">
             {loading && <Loader />}
             <Routes>
-              <Route path="/" element={<Home />} />
+              <Route path="/" element={<Home mode={Mode} />} />
               <Route path="/login" element={<LogIn />} />
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />

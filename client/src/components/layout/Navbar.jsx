@@ -1,7 +1,10 @@
 import { useState, useEffect } from "react";
+import { BsSun, BsMoon } from "react-icons/bs";
+
 import { Link, NavLink, useLocation, useNavigate } from "react-router-dom";
 import logoSrc from "../../assets/logo.png";
 import { motion } from "framer-motion";
+import PropTypes from "prop-types";
 import {
   Menu,
   MenuHandler,
@@ -19,7 +22,7 @@ import { MdCandlestickChart, MdOutlinePersonOutline } from "react-icons/md";
 import { setShowChart } from "../../store/slices/globalSlice";
 import { LuMessageCircleQuestion } from "react-icons/lu";
 
-const Navbar = () => {
+const Navbar = (props) => {
   const { t } = useTranslation();
   const { user } = useSelector((state) => state.user);
   const [openMenu, setOpenMenu] = useState(false);
@@ -67,7 +70,7 @@ const Navbar = () => {
 
   return (
     <header
-      className={`fixed w-full top-0 z-10  smooth-transition ${
+      className={`fixed w-full top-0 z-10 ${props.mode}  smooth-transition ${
         isScrolled ? "bg-opacity-50 backdrop-blur-lg" : "bg-transparent"
       }`}
     >
@@ -265,7 +268,30 @@ const Navbar = () => {
             </NavLink>
           )}
         </div>
+        <div className="toggle relative top-[-13px] ml-2 right-0">
+          <div className="form-check form-switch">
+            <button
+              className="w-6 h-auto form-check-input"
+              type="checkbox"
+              id="flexSwitchCheckDefault"
+              onClick={props.toggleMode}
+            ></button>
+            <label
+              className={`form-check-label  text-${
+                props.mode === "dark-class" ? "dark" : "light"
+              }`}
+              htmlFor="flexSwitchCheckDefault"
+            >
+              {props.mode === "dark-class" ? (
+                <BsSun className="text-yellow-400 text-xl" />
+              ) : (
+                <BsMoon className="text-gray-700 text-xl" />
+              )}
 
+              {/* Simplified label */}
+            </label>
+          </div>
+        </div>
         {mobileMenuOpen && (
           <motion.div
             initial={{ x: "100%" }}
@@ -361,5 +387,8 @@ const Navbar = () => {
     </header>
   );
 };
-
+Navbar.propTypes = {
+  mode: PropTypes.string.isRequired,
+  toggleMode: PropTypes.func.isRequired,
+};
 export default Navbar;
