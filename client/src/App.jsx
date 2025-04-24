@@ -72,7 +72,7 @@ const App = () => {
               <Route path="/login" element={<LogIn />} />
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About />} />
-              <Route path="/market" element={<Market />} />
+              <Route path="/market" element={<Market mode={Mode} />} />
               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
                 <Route path="/admin/users/manage" element={<ManageUser />} />

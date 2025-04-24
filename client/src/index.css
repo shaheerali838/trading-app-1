@@ -9,7 +9,7 @@
   --tertiary1-color: #d32f2f;
   --tertiary2-color: #1c1c1c;
   --tertiary3-color: #eaeaea;
-  --background-gradient: linear-gradient(to bottom, #000000, #181818);
+  /* --background-gradient: linear-gradient(to bottom, #000000, #181818); */
   --background-gradient-reverse: linear-gradient(to top, #000000, #181818);
 }
 
