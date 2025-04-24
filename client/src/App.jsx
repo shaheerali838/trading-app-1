@@ -117,7 +117,7 @@ const App = () => {
               </Route>
             </Routes>
           </main>
-          <Footer />
+          <Footer mode={Mode} />
           <BottomNavbar />
           <ToastContainer
             position="top-right"
