@@ -3,8 +3,9 @@ import { useDispatch, useSelector } from "react-redux";
 import { fetchMarketData } from "../store/slices/marketSlice";
 import { useNavigate } from "react-router-dom";
 import Loader from "../components/layout/Loader";
+import PropTypes from "prop-types";
 
-function Market() {
+function Market(props) {
   const dispatch = useDispatch();
   const navigate = useNavigate();
   const { coins, status } = useSelector((state) => state.market);
@@ -19,11 +20,14 @@ function Market() {
     navigate("/trade");
   };
 
+
   return (
-    <div className="min-h-screen max-w-7xl mx-auto px-4">
+    <div className={`min-h-screen ${props.mode} max-w-7xl mx-auto px-4`}>
       {/* Desktop Table Layout */}
       <div className="hidden md:block">
-        <table className="min-w-full bg-transparent rounded-lg shadow-md backdrop-blur-xl">
+        <table
+          className={`min-w-full ${props.mode}   rounded-lg shadow-md backdrop-blur-xl`}
+        >
           <thead>
             <tr className="border-y flex justify-evenly">
               <th className="px-4 py-2 w-1/5">Name</th>
@@ -54,7 +58,10 @@ function Market() {
                 >
                   {coin.price_change_percentage_24h.toFixed(2)}%
                 </td>
-                <td onClick={handleBuy} className="hidden cursor-pointer md:inline px-4 py-2 w-1/5 text-primary">
+                <td
+                  onClick={handleBuy}
+                  className="hidden cursor-pointer md:inline px-4 py-2 w-1/5 text-primary"
+                >
                   Trade
                 </td>
               </tr>
@@ -107,4 +114,8 @@ function Market() {
   );
 }
 
+Market.propTypes = {
+  mode: PropTypes.string.isRequired,
+  toggleMode: PropTypes.func.isRequired,
+};
 export default Market;
