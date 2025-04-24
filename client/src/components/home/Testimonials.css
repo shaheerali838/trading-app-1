@@ -36,22 +36,26 @@
   text-align: center;
   color: #ffffff;
 }
+
 .testimonials-profile-circle {
   align-items: center;
   display: flex;
   justify-content: center;
   padding-top: 20px;
 }
+
 .testimonial-avatar {
   width: 100px;
   height: 100px;
   border: 3px solid #1d8ba0;
   border-radius: 50%;
 }
+
 .review-by {
   color: #1d8ba0;
   font-size: 18px;
 }
+
 .swiper-pagination-bullet-active {
   background-color: #ffffff !important;
   border: 2px solid #1d8ba0 !important;
@@ -62,6 +66,7 @@
   height: 1px !important;
   /* padding-right: 5px !important; */
 }
+
 .swiper-pagination-bullet {
   background-color: #ffffff !important;
   border: 2px solid #1d8ba0 !important;
@@ -129,4 +134,14 @@
   .review-by {
     font-size: 12px;
   }
+}
+
+.dark-class {
+  background: var(--background-gradient) !important;
+  color: white !important;
+}
+
+.light-class {
+  background: white !important;
+  color: black !important;
 }

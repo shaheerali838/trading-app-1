@@ -76,7 +76,7 @@ const Navbar = (props) => {
     >
       <nav className="container mx-auto flex justify-between items-center p-4">
         <div className="logo-container flex items-center">
-          <Link to={"/"} className="">
+          <Link to={"/"} className="hover:text-[#00FF7F]">
             <i>
               <img className="w-[100px]" src={logoSrc} alt="LOGO" />
             </i>
@@ -119,10 +119,24 @@ const Navbar = (props) => {
               </Link>
             )}
 
-            <Link to={"/"} className="text-white hover:text-[#00FF7F]">
+            <Link
+              to={"/"}
+              className={`${
+                props.mode === "dark-class"
+                  ? "hover:text-[#00FF7F]"
+                  : "text-black"
+              } `}
+            >
               {t("home")}
             </Link>
-            <Link to={"/market"} className="text-white hover:text-[#00FF7F]">
+            <Link
+              to={"/market"}
+              className={`${
+                props.mode === "dark-class"
+                  ? "hover:text-[#00FF7F]"
+                  : "text-black"
+              } `}
+            >
               {t("market")}
             </Link>
             <Menu
@@ -136,12 +150,20 @@ const Navbar = (props) => {
                   variant="text"
                   className="flex items-center gap-3 text-white hover:text-secondary font-normal capitalize m-0 p-0 pr-1"
                 >
-                  <span className="text-[16px]">{t("trade")}</span>
+                  <span
+                    className={`${
+                      props.mode === "dark-class"
+                        ? "dark-class hover:text-[#00FF7F]"
+                        : "text-black"
+                    }  flex justify-center item-center mb-4 text-[16px] block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]`}
+                  >
+                    {t("trade")}
+                  </span>
                   <VscChevronDown
                     strokeWidth={2.5}
-                    className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
-                      openMenu ? "rotate-180" : ""
-                    }`}
+                    className={`h-3.5 w-3.5 p-0 m-0 text-black transition-transform ${
+                      openMenu ? "rotate-180" : "hover:text-[#00FF7F]"
+                    } `}
                   />
                 </Button>
               </MenuHandler>
@@ -149,7 +171,11 @@ const Navbar = (props) => {
                 <MenuItem>
                   <Link
                     to={"/trade"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className={`${
+                      props.mode === "dark-class"
+                        ? "hover:text-[#00FF7F]"
+                        : "text-black"
+                    }  block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]`}
                   >
                     {t("spot")}
                   </Link>
@@ -157,7 +183,11 @@ const Navbar = (props) => {
                 <MenuItem>
                   <Link
                     to={"/futures"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className={`${
+                      props.mode === "dark-class"
+                        ? "hover:text-[#00FF7F]"
+                        : "text-black"
+                    }  block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]`}
                   >
                     {t("trading")}
                   </Link>
@@ -165,17 +195,35 @@ const Navbar = (props) => {
                 <MenuItem>
                   <Link
                     to={"/perpetual"}
-                    className="block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]"
+                    className={`${
+                      props.mode === "dark-class"
+                        ? "hover:text-[#00FF7F]"
+                        : "text-black"
+                    }  block m-0 px-4 py-2 text-sm w-full text-tertiary2 hover:bg-gray-300 hover:text-[#00FF7F]`}
                   >
                     {t("perpetual")}
                   </Link>
                 </MenuItem>
               </MenuList>
             </Menu>
-            <Link to={"/wallet"} className="text-white hover:text-[#00FF7F]">
+            <Link
+              to={"/wallet"}
+              className={`${
+                props.mode === "dark-class"
+                  ? "hover:text-[#00FF7F]"
+                  : "text-black"
+              }`}
+            >
               {t("wallet")}
             </Link>
-            <Link to={"/about"} className="text-white hover:text-[#00FF7F]">
+            <Link
+              to={"/about"}
+              className={`${
+                props.mode === "dark-class"
+                  ? "hover:text-[#00FF7F]"
+                  : "text-black"
+              }`}
+            >
               {t("about")}
             </Link>
           </div>
@@ -210,7 +258,7 @@ const Navbar = (props) => {
                     <VscChevronDown
                       strokeWidth={2.5}
                       className={`h-3.5 w-3.5 p-0 m-0 transition-transform ${
-                        openMenu ? "rotate-180" : ""
+                        openMenu ? "rotate-180" : "hover:text-[#00FF7F]"
                       }`}
                     />
                   </Button>

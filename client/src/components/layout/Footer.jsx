@@ -2,11 +2,11 @@ import { Link } from "react-router-dom";
 import { useTranslation } from "react-i18next";
 import LogoSrc from "../../assets/logo.png";
 
-const Footer = () => {
+const Footer = (props) => {
   const { t } = useTranslation();
 
   return (
-    <footer className="bg-[#1A1A1A] text-[#F5F5F5] py-8 shadow-top">
+    <footer className={`${props.mode} text-[#F5F5F5] py-8 shadow-top`}>
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-evenly items-center">
           <div className="mb-4 md:mb-0">
@@ -17,11 +17,11 @@ const Footer = () => {
                 </i>
               </Link>
             </div>
-            <p className="mt-2 text-[#F5F5F5]">{t("trusted_trading")}</p>
+            <p className={`mt-2 ${(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}`}>{t("trusted_trading")}</p>
           </div>
           <div className="flex gap-8 justify-center flex-wrap  md:flex-row space-y-4 md:space-y-0 md:space-x-16">
             <div>
-              <h3 className="text-xl font-semibold text-[#1E90FF]">
+              <h3 className={`text-xl font-semibold ${(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}`}>
                 {t("company")}
               </h3>
               <ul className="mt-2 space-y-2">
@@ -98,7 +98,7 @@ const Footer = () => {
           </div>
         </div>
         <div className="mt-8 text-center">
-          <p className="text-[#F5F5F5]">
+          <p className={(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}>
             &copy; 2025 BitEx. {t("all_rights_reserved")}
           </p>
         </div>
