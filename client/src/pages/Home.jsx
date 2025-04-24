@@ -23,7 +23,7 @@ const Home = (props) => {
           <Testimonials mode={props.mode} />
           <WhyChoosUs />
           <Faqs />
-          <Slider />
+          <Slider mode={props.mode} />
         </AnimatedSection>
       </div>
     </>

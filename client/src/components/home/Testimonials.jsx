@@ -98,7 +98,11 @@ const Testimonials = (props) => {
                 paddingRight: 20,
                 paddingLeft: 20,
               }}
-              className="w-[80vw] bg-gray-500 rounded-xl md:w-full"
+              className={`${
+                props.mode === "dark-class"
+                  ? "bg-gradient-reverse"
+                  : " bg-gray-400 rounded-xl p-5"
+              } `}
             >
               <div className="testimonials-profile-circle">
                 <img
@@ -109,14 +113,18 @@ const Testimonials = (props) => {
               </div>
               <p
                 className={`${
-                  props.mode === "dark-class" ? "dark-class" : "light-class"
-                } text-gray-400`}
+                  props.mode === "dark-class"
+                    ? "bg-transparent text-white"
+                    : "bg-transparent"
+                } text-gray-800`}
               >
                 {testimonial.name}
               </p>
               <p
                 className={`${
-                  props.mode === "dark-class" ? "dark-class" : "light-class"
+                  props.mode === "dark-class"
+                    ? "bg-transparent"
+                    : "text-gray-600 bg-transparent"
                 } testimonial-text`}
               >
                 {testimonial.testimonial}

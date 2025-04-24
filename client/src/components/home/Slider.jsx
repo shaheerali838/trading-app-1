@@ -1,15 +1,20 @@
 import React from "react";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import PropTypes from "prop-types";
 
-const Slider = () => {
+const Slider = (props) => {
   return (
     <div>
-      <section className="slide bg-gradient ">
+      <section
+        className={`${
+          props.mode === "dark-class" ? "dark-class" : "light-class"
+        } testimonial-text`}
+      >
         <div className="heading flex justify-center">
           <AnimatedHeading>
             <h2 className="w-[60vw] text-center text-4xl py-20 font-bold">
-            Trade Cryptocurrency Safely and Securely
-            Your Assets, Our Top Priority
+              Trade Cryptocurrency Safely and Securely Your Assets, Our Top
+              Priority
             </h2>
           </AnimatedHeading>
         </div>
@@ -29,6 +34,10 @@ const Slider = () => {
       </section>
     </div>
   );
+};
+
+Slider.propTypes = {
+  mode: PropTypes.string.isRequired,
 };
 
 export default Slider;
