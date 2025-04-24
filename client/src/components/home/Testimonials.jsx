@@ -1,5 +1,6 @@
 import React from "react";
 import { Swiper, SwiperSlide } from "swiper/react";
+import PropTypes from "prop-types";
 import "swiper/css";
 import "swiper/css/effect-coverflow";
 import "swiper/css/pagination";
@@ -11,7 +12,7 @@ import avatarIVImg from "../../assets/4.jpg";
 import { EffectCoverflow, Navigation, Pagination } from "swiper/modules";
 import "./Testimonials.css";
 
-const Testimonials = () => {
+const Testimonials = (props) => {
   const testimonials = [
     {
       id: 1,
@@ -30,9 +31,11 @@ const Testimonials = () => {
     {
       id: 3,
       name: "Smith",
-      avatar: avatarIIIImg, 
-      testimonial: "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and high-quality services."
-    }, {
+      avatar: avatarIIIImg,
+      testimonial:
+        "I have had a positive experience with this company. Their team is friendly and helpful, and they always go the extra mile to ensure that my needs are met. I would definitely recommend them to anyone in need of reliable and high-quality services.",
+    },
+    {
       id: 4,
       name: "James",
       avatar: avatarIVImg,
@@ -41,9 +44,17 @@ const Testimonials = () => {
     },
   ];
   return (
-    <section className="testimonials min-h-screen flex flex-col items-center justify-center bg-gradient-reverse text-white text-center">
+    <section
+      className={`${props.mode}  testimonials min-h-screen flex flex-col items-center justify-center  text-center`}
+    >
       <AnimatedHeading>
-        <h2 className="text-4xl font-bold mb-8 text-white">Testimonials</h2>
+        <h2
+          className={`${
+            props.mode === "dark-class" ? "dark-class" : "light-class"
+          }  text-4xl font-bold mb-8 `}
+        >
+          Testimonials
+        </h2>
       </AnimatedHeading>
       <Swiper
         loop={true}
@@ -56,7 +67,7 @@ const Testimonials = () => {
           disableOnInteraction: false,
         }}
         modules={[EffectCoverflow, Pagination, Navigation]}
-        className="mySwiper"
+        className="mySwiper "
         effect={"coverflow"}
         coverflowEffect={{
           rotate: 10,
@@ -81,32 +92,53 @@ const Testimonials = () => {
         }}
       >
         {testimonials.map((testimonial) => (
-        <SwiperSlide key={testimonial.id} className="swiper-slide ">
-          <div
-            style={{
-              paddingRight: 20,
-              paddingLeft: 20,
-            }}
-            className="w-[80vw] md:w-full"
-          >
-            <div className="testimonials-profile-circle">
-              <img
-                src={testimonial.avatar}
-                alt="testimonial-avatar"
-                className="testimonial-avatar"
-              />
+          <SwiperSlide key={testimonial.id} className="swiper-slide ">
+            <div
+              style={{
+                paddingRight: 20,
+                paddingLeft: 20,
+              }}
+              className={`${
+                props.mode === "dark-class"
+                  ? "bg-gradient-reverse"
+                  : " bg-gray-400 rounded-xl p-5"
+              } `}
+            >
+              <div className="testimonials-profile-circle">
+                <img
+                  src={testimonial.avatar}
+                  alt="testimonial-avatar"
+                  className="testimonial-avatar"
+                />
+              </div>
+              <p
+                className={`${
+                  props.mode === "dark-class"
+                    ? "bg-transparent text-white"
+                    : "bg-transparent"
+                } text-gray-800`}
+              >
+                {testimonial.name}
+              </p>
+              <p
+                className={`${
+                  props.mode === "dark-class"
+                    ? "bg-transparent"
+                    : "text-gray-600 bg-transparent"
+                } testimonial-text`}
+              >
+                {testimonial.testimonial}
+              </p>
             </div>
-            <p className="text-gray-400">{testimonial.name}</p>
-            <p className="testimonial-text">
-              {testimonial.testimonial}
-            </p>
-            
-          </div>
-        </SwiperSlide>
+          </SwiperSlide>
         ))}
       </Swiper>
     </section>
   );
+};
+
+Testimonials.propTypes = {
+  mode: PropTypes.string.isRequired,
 };
 
 export default Testimonials;

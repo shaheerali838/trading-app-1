@@ -18,11 +18,12 @@ const Home = (props) => {
       <div className="home">
         <AnimatedSection>
           <Hero mode={props.mode} />
-          <NewsSection />
-          <CryptoCarousel />
-          <Testimonials />
-          <WhyChoosUs />
-          <Faqs />
+          <NewsSection mode={props.mode} />
+          <CryptoCarousel mode={props.mode} />
+          <Testimonials mode={props.mode} />
+          <WhyChoosUs mode={props.mode} />
+          <Faqs mode={props.mode} />
+
           <Slider />
         </AnimatedSection>
       </div>
@@ -31,6 +32,5 @@ const Home = (props) => {
 };
 Home.propTypes = {
   mode: PropTypes.string.isRequired,
-  toggleMode: PropTypes.func.isRequired,
 };
 export default Home;
