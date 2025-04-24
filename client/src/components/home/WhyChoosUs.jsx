@@ -1,14 +1,15 @@
 import { useTranslation } from "react-i18next";
 import ImgSrc from "../../assets/whyChooseUs.png";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import PropTypes from "prop-types";
 
-const WhyChoosUs = () => {
+const WhyChoosUs = (props) => {
   const { t } = useTranslation();
 
   return (
-    <section className=" whyChooseUs min-h-screen flex flex-col justify-center items-center bg-gradient">
+    <section className={`whyChooseUs min-h-screen flex flex-col justify-center items-center ${props.mode === "light-class" ? "bg-white": "bg-gradient"}`}>
       <AnimatedHeading>
-        <h2 className="text-4xl font-bold text-white mb-10">
+        <h2 className={`text-4xl font-bold ${props.mode} mb-10`}>
           {t("why_choose_us")}
         </h2>
       </AnimatedHeading>
@@ -19,7 +20,7 @@ const WhyChoosUs = () => {
           <h3 className="mt-4 font-semibold text-primary">
             {t("secure_trading")}
           </h3>
-          <p className="mt-2 text-[#F5F5F5]">{t("secure_trading_desc")}</p>
+          <p className={`mt-2 ${props.mode === "light-class" ? "text-black" : "text-[#F5F5F5]"}`}>{t("secure_trading_desc")}</p>
         </div>
         <div className=" image mx-4 animate-up-down">
           <img src={ImgSrc} alt={t("why_choose_us")} />
@@ -28,17 +29,21 @@ const WhyChoosUs = () => {
           <h3 className="mt-4 font-semibold text-primary">
             {t("fast_transactions")}
           </h3>
-          <p className="text-[#F5F5F5]">{t("fast_transactions_desc")}</p>
+          <p className={` ${props.mode === "light-class" ? "text-black" : "text-[#F5F5F5]"}`}>{t("fast_transactions_desc")}</p>
         </div>
       </div>
       <div className="w-[70vw] mt-8 md:w-[25vw] text-center">
         <h3 className="mt-4 font-semibold text-primary">
           {t("market_insights")}
         </h3>
-        <p className=" text-[#F5F5F5]">{t("market_insights_desc")}</p>
+        <p className={`${props.mode === "light-class" ? "text-black" : "text-[#F5F5F5]"}`}>{t("market_insights_desc")}</p>
       </div>
     </section>
   );
+};
+
+WhyChoosUs.propTypes = {
+  mode: PropTypes.string.isRequired,
 };
 
 export default WhyChoosUs;

@@ -5,8 +5,9 @@ import {
   AccordionBody,
 } from "@material-tailwind/react";
 import AnimatedHeading from "../../components/animation/AnimateHeading";
+import PropTypes from "prop-types";
 
-const Faqs = () => {
+const Faqs = (props) => {
   const [open, setOpen] = useState(0);
   const CUSTOM_ANIMATION = {
     mount: { scale: 1 },
@@ -50,9 +51,9 @@ const Faqs = () => {
 
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
   return (
-    <section className="faqs min-h-screen px-8 bg-gradient-reverse w-full text-white flex flex-col justify-center text-start">
+    <section className={`faqs min-h-screen px-8 ${props.mode === "light-class" ? "bg-white" : "bg-gradient-reverse"} w-full text-white flex flex-col justify-center text-start`}>
       <AnimatedHeading>
-        <h2 className="text-4xl font-bold mb-24 text-white text-center">
+        <h2 className={`text-4xl font-bold mb-24 ${props.mode} text-center`}>
           Frequently Asked Questions
         </h2>
       </AnimatedHeading>
@@ -65,7 +66,7 @@ const Faqs = () => {
           >
             <AccordionHeader
               onClick={() => handleOpen(faq.id)}
-              className={` bg-tertiary2 ${
+              className={` ${props.mode === "light-class" ? "light-class" : "bg-tertiary2"} ${
                 faqs.length === faq.id
                   ? "rounded-b-lg"
                   : faq.id === 1
@@ -75,7 +76,7 @@ const Faqs = () => {
             >
               {faq.question}
             </AccordionHeader>
-            <AccordionBody className="bg-tertiary2 text-tertiary3 px-4 text-2xl">
+            <AccordionBody className={`${props.mode} px-4 text-2xl`}>
               {faq.answer}
             </AccordionBody>
           </Accordion>
@@ -83,6 +84,10 @@ const Faqs = () => {
       </div>
     </section>
   );
+};
+
+Faqs.propTypes = {
+  mode: PropTypes.string.isRequired,
 };
 
 export default Faqs;
