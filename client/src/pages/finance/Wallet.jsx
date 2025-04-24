@@ -52,7 +52,7 @@ const transferablePairs = [
   "DOTUS",
   "LTC",
 ];
-const Wallet = () => {
+const Wallet = (props) => {
   const [open, setOpen] = useState(false);
   const [fromAsset, setFromAsset] = useState("");
   const [toAsset, setToAsset] = useState("ETH");
@@ -268,7 +268,7 @@ const Wallet = () => {
   };
 
   return (
-    <div className="min-h-[100vh] mx-auto md:px-6 py-4">
+    <div className={`min-h-[100vh] mx-auto md:px-6  py-4`}>
       <motion.div
         initial={{ opacity: 0, y: 20 }}
         animate={{ opacity: 1, y: 0 }}
@@ -280,7 +280,7 @@ const Wallet = () => {
           {!showAssets ? (
             <>
               {/* Total Assets Section */}
-              <div className="bg-[#242424] p-6 rounded-lg mb-6">
+              <div className={`bg-[#242424] p-6 rounded-lg mb-6`}>
                 <h2 className="bg-transparent text-lg font-semibold text-[#00FF7F]">
                   Total Assets
                 </h2>

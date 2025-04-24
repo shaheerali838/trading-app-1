@@ -69,7 +69,7 @@ const App = () => {
             {loading && <Loader />}
             <Routes>
               <Route path="/" element={<Home mode={Mode} />} />
-              <Route path="/login" element={<LogIn />} />
+              <Route path="/login" element={<LogIn mode={Mode}/>} />
               <Route path="/register" element={<SignUp />} />
               <Route path="/about" element={<About mode={Mode} />} />
               <Route path="/market" element={<Market mode={Mode} />} />
@@ -100,7 +100,7 @@ const App = () => {
                 <Route path="/admin/news/manage" element={<ManageNews />} />
               </Route>
               <Route element={<ProtectedRoute />}>
-                <Route path="/wallet" element={<Wallet />} />
+                <Route path="/wallet" element={<Wallet mode={Mode} />} />
                 <Route path="/profile" element={<Profile />} />
                 <Route path="/wallet/deposit" element={<Deposit />} />
                 <Route path="/wallet/withdraw" element={<Withdraw />} />
