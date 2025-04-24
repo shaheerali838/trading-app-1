@@ -15,7 +15,6 @@ const Faqs = (props) => {
   };
 
   const faqs = [
-
     {
       id: 1,
       question: "What is crypto?",
@@ -51,9 +50,19 @@ const Faqs = (props) => {
 
   const handleOpen = (value) => setOpen(open === value ? 0 : value);
   return (
-    <section className={`faqs min-h-screen px-8 ${props.mode === "light-class" ? "bg-white" : "bg-gradient-reverse"} w-full text-white flex flex-col justify-center text-start`}>
+    <section
+      className={`faqs min-h-screen px-8 ${
+        props.mode === "light-class" ? "bg-white" : "bg-gradient-reverse"
+      } w-full text-white flex flex-col justify-center text-start`}
+    >
       <AnimatedHeading>
-        <h2 className={`text-4xl font-bold mb-24 ${props.mode} text-center`}>
+        <h2
+          className={`text-4xl font-bold mb-24 ${
+            props.mode === "dark-class"
+              ? "bg-transparent"
+              : "bg-transparent text-black"
+          } text-center`}
+        >
           Frequently Asked Questions
         </h2>
       </AnimatedHeading>
@@ -66,7 +75,9 @@ const Faqs = (props) => {
           >
             <AccordionHeader
               onClick={() => handleOpen(faq.id)}
-              className={` ${props.mode === "light-class" ? "light-class" : "bg-tertiary2"} ${
+              className={` ${
+                props.mode === "light-class" ? "light-class" : "bg-tertiary2"
+              } ${
                 faqs.length === faq.id
                   ? "rounded-b-lg"
                   : faq.id === 1

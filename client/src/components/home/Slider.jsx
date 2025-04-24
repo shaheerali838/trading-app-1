@@ -19,7 +19,7 @@ const Slider = (props) => {
           </AnimatedHeading>
         </div>
 
-        <div className="overflow-hidden whitespace-nowrap h-20 bg-transparent text-secondary py-3 flex justify-center items-center text-2xl font-bold border-t-[.5px] border-[#EAEAEA]">
+        <div className="overflow-hidden whitespace-nowrap h-20 bg-transparent text-secondary py-3 flex justify-center items-center text-2xl font-bold border-t-[.8px] border-[#E0E0E0]">
           <marquee behavior="scroll" direction="left">
             <span className="px-16">Bitcoin (BTC)</span>
             <span className="px-16">Ethereum (ETH)</span>

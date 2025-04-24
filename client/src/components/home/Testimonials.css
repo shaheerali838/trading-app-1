@@ -135,13 +135,3 @@
     font-size: 12px;
   }
 }
-
-.dark-class {
-  background: var(--background-gradient) !important;
-  color: white !important;
-}
-
-.light-class {
-  background: white !important;
-  color: black !important;
-}

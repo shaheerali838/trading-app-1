@@ -24,7 +24,7 @@ const Home = (props) => {
           <WhyChoosUs mode={props.mode} />
           <Faqs mode={props.mode} />
 
-          <Slider />
+          <Slider mode={props.mode} />
         </AnimatedSection>
       </div>
     </>

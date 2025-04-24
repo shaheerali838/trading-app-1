@@ -58,7 +58,13 @@ const Hero = (props) => {
             <p className="count text-2xl text-primary">
               <CountUp end={count.end} duration={2} /> {count.symbol}
             </p>
-            <p className="text-tertiary3">{count.text}</p>
+            <p
+              className={`${
+                props.mode === "dark-class" ? "text-tertiary3" : "text-black"
+              }`}
+            >
+              {count.text}
+            </p>
           </div>
         ))}
       </div>

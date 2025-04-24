@@ -43,11 +43,11 @@ const App = () => {
     if (Mode === "dark-class") {
       setMode("light-class");
       // setText("#000000");
-      document.body.style.backgroundColor = "#F0F8FF";
+      // document.body.style.backgroundColor = "#F0F8FF";
     } else {
       setMode("dark-class");
       // setText("#ffffff");
-      document.body.style.backgroundColor = "#181818";
+      // document.body.style.backgroundColor = "#181818";
     }
   };
 

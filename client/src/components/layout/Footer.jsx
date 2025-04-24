@@ -6,7 +6,9 @@ const Footer = (props) => {
   const { t } = useTranslation();
 
   return (
-    <footer className={`${props.mode} text-[#F5F5F5] py-8 shadow-top`}>
+    <footer
+      className={`${props.mode} text-[#F5F5F5] py-8 shadow-top mb-[-13px]`}
+    >
       <div className="container mx-auto px-4">
         <div className="flex flex-col md:flex-row justify-evenly items-center">
           <div className="mb-4 md:mb-0">
@@ -17,11 +19,25 @@ const Footer = (props) => {
                 </i>
               </Link>
             </div>
-            <p className={`mt-2 ${(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}`}>{t("trusted_trading")}</p>
+            <p
+              className={`mt-2 ${
+                props.mode === "dark-class"
+                  ? "text-[#F5F5F5]"
+                  : "text-[#000000]"
+              }`}
+            >
+              {t("trusted_trading")}
+            </p>
           </div>
           <div className="flex gap-8 justify-center flex-wrap  md:flex-row space-y-4 md:space-y-0 md:space-x-16">
             <div>
-              <h3 className={`text-xl font-semibold ${(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}`}>
+              <h3
+                className={`text-xl font-semibold ${
+                  props.mode === "dark-class"
+                    ? "text-[#F5F5F5]"
+                    : "text-[#000000]"
+                }`}
+              >
                 {t("company")}
               </h3>
               <ul className="mt-2 space-y-2">
@@ -98,7 +114,11 @@ const Footer = (props) => {
           </div>
         </div>
         <div className="mt-8 text-center">
-          <p className={(props.mode === 'dark-class'?'text-[#F5F5F5]':'text-[#000000]')}>
+          <p
+            className={
+              props.mode === "dark-class" ? "text-[#F5F5F5]" : "text-[#000000]"
+            }
+          >
             &copy; 2025 BitEx. {t("all_rights_reserved")}
           </p>
         </div>

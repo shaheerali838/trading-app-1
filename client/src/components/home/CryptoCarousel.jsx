@@ -15,10 +15,16 @@ import PropTypes from "prop-types";
 const CryptoCarousel = (props) => {
   const navigate = useNavigate();
   return (
-    <section className={`cryptoCarousel min-h-screen px-4 md:px-0 pt-[30vh] bg-gradient ${props.mode} text-center`}>
+    <section
+      className={`cryptoCarousel min-h-screen px-4 md:px-0 pt-[30vh]  ${props.mode} text-center`}
+    >
       <div>
         <AnimatedHeading>
-          <h2 className={`text-4xl font-bold mb-24 ${props.mode}`}>
+          <h2
+            className={`text-4xl font-bold mb-24 ${
+              props.mode === "dark-class" ? "bg-transparent" : ""
+            }`}
+          >
             Crypto Trading Pairs
           </h2>
         </AnimatedHeading>
@@ -48,7 +54,11 @@ const CryptoCarousel = (props) => {
           className="mySwiper"
         >
           <SwiperSlide>
-            <div className="p-6 bg-gray-400 rounded-lg shadow-md">
+            <div
+              className={`${
+                props.mode === "dark-class" ? "dark-class" : "bg-gray-400"
+              } p-6 rounded-lg shadow-md`}
+            >
               <img src={btcLogo} alt="BTC" className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-primary">BTC/USDT</h3>
               <p className="mt-2 text-[#00FF7F]">+2.5%</p>
@@ -66,7 +76,11 @@ const CryptoCarousel = (props) => {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className="p-6 bg-gray-400 rounded-lg shadow-md">
+            <div
+              className={`${
+                props.mode === "dark-class" ? "dark-class" : "bg-gray-400"
+              } p-6 rounded-lg shadow-md`}
+            >
               <img src={ethLogo} alt="ETH" className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-primary">ETH/USDT</h3>
               <p className="mt-2 text-[#D32F2F]">-1.2%</p>
@@ -84,7 +98,11 @@ const CryptoCarousel = (props) => {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className="p-6 bg-gray-400 rounded-lg shadow-md">
+            <div
+              className={`${
+                props.mode === "dark-class" ? "dark-class" : "bg-gray-400"
+              } p-6 rounded-lg shadow-md`}
+            >
               <img src={bnbLogo} alt="BNB" className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-primary">BNB/USDT</h3>
               <p className="mt-2 text-[#00FF7F]">+3.8%</p>
@@ -102,7 +120,11 @@ const CryptoCarousel = (props) => {
             </div>
           </SwiperSlide>
           <SwiperSlide>
-            <div className="p-6 bg-gray-400 rounded-lg shadow-md">
+            <div
+              className={`${
+                props.mode === "dark-class" ? "dark-class" : "bg-gray-400"
+              } p-6  rounded-lg shadow-md`}
+            >
               <img src={adaLogo} alt="ADA" className="w-16 h-16 mx-auto mb-4" />
               <h3 className="text-xl font-semibold text-primary">ADA/USDT</h3>
               <p className="mt-2 text-[#D32F2F]">-0.5%</p>
