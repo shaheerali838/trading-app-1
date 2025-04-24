@@ -88,7 +88,7 @@ function About(props) {
           </div>
         </div>
 
-        <Faqs />
+        <Faqs mode={props.mode}/>
       </motion.div>
     </div>
   );
