@@ -20,7 +20,7 @@ const Home = (props) => {
           <Hero mode={props.mode} />
           <NewsSection />
           <CryptoCarousel />
-          <Testimonials />
+          <Testimonials mode={props.mode} />
           <WhyChoosUs />
           <Faqs />
           <Slider />
