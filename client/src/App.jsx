@@ -70,7 +70,7 @@ const App = () => {
             <Routes>
               <Route path="/" element={<Home mode={Mode} />} />
               <Route path="/login" element={<LogIn mode={Mode}/>} />
-              <Route path="/register" element={<SignUp />} />
+              <Route path="/register" element={<SignUp mode={Mode} />} />
               <Route path="/about" element={<About mode={Mode} />} />
               <Route path="/market" element={<Market mode={Mode} />} />
               <Route element={<AdminProtectedRoute />}>

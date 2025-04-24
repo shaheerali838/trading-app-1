@@ -6,7 +6,7 @@ import { registerUser } from "../store/slices/userSlice";
 import axios from "axios";
 import { useNavigate } from "react-router-dom";
 
-const Signup = () => {
+const Signup = (props) => {
   const dispatch = useDispatch();
   const [email, setEmail] = useState("");
   const [password, setPassword] = useState("");
@@ -25,7 +25,7 @@ const Signup = () => {
     dispatch(registerUser({ email, password, firstName, lastName }));
   };
   return (
-    <div className="min-h-screen bg-gradient flex flex-col justify-center items-center">
+    <div className={`min-h-screen ${props.mode} flex flex-col justify-center items-center`}>
       <AnimatedHeading>
         <h1 className="text-4xl font-bold">SignUp</h1>
       </AnimatedHeading>
@@ -70,7 +70,7 @@ const Signup = () => {
           </button>
           <p className="w-full text-center text-gray-500">
             Already Have an account?{" "}
-            <a href="" className="text-white">
+            <a href="" className={`${props.mode}`}>
               LogIn
             </a>
           </p>
