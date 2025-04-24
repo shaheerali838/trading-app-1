@@ -71,7 +71,7 @@ const App = () => {
               <Route path="/" element={<Home mode={Mode} />} />
               <Route path="/login" element={<LogIn />} />
               <Route path="/register" element={<SignUp />} />
-              <Route path="/about" element={<About />} />
+              <Route path="/about" element={<About mode={Mode} />} />
               <Route path="/market" element={<Market mode={Mode} />} />
               <Route element={<AdminProtectedRoute />}>
                 <Route path="/admin/dashboard" element={<AdminDashboard />} />
