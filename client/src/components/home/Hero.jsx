@@ -67,6 +67,5 @@ const Hero = (props) => {
 };
 Hero.propTypes = {
   mode: PropTypes.string.isRequired,
-  toggleMode: PropTypes.func.isRequired,
 };
 export default Hero;
